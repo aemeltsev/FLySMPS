@@ -65,7 +65,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VACmax</string>
+        <string>VACmax [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_2">
@@ -78,7 +78,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>FSw</string>
+        <string>FSw [Hz]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_3">
@@ -101,7 +101,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VACmin</string>
+        <string>VACmin [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_4">
@@ -134,7 +134,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>FLine</string>
+        <string>FLine [Hz]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_6">
@@ -197,7 +197,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut1</string>
+        <string>VOut1 [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_7">
@@ -210,7 +210,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>IOut1</string>
+        <string>IOut1 [A]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_8">
@@ -223,7 +223,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut2</string>
+        <string>VOut2 [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_9">
@@ -236,7 +236,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>IOut2</string>
+        <string>IOut2 [A]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_11">
@@ -259,7 +259,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut3</string>
+        <string>VOut3 [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_11">
@@ -272,7 +272,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut3</string>
+        <string>IOut3 [A]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_19">
@@ -285,7 +285,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut4</string>
+        <string>VOut4 [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_20">
@@ -298,7 +298,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VOut4</string>
+        <string>IOut4 [A]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_19">
@@ -331,7 +331,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VAux</string>
+        <string>VAux [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_21">
@@ -364,7 +364,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>IAux</string>
+        <string>IAux [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_23">
@@ -380,7 +380,7 @@
       <widget class="QLineEdit" name="lineEdit_24">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>340</x>
          <y>120</y>
          <width>41</width>
          <height>20</height>
@@ -392,18 +392,18 @@
         <rect>
          <x>140</x>
          <y>120</y>
-         <width>61</width>
+         <width>181</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>POutmax</string>
+        <string>Power Out. Max. [W]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_25">
        <property name="geometry">
         <rect>
-         <x>340</x>
+         <x>470</x>
          <y>120</y>
          <width>41</width>
          <height>20</height>
@@ -413,7 +413,7 @@
       <widget class="QLabel" name="label_24">
        <property name="geometry">
         <rect>
-         <x>270</x>
+         <x>400</x>
          <y>120</y>
          <width>61</width>
          <height>16</height>
@@ -433,7 +433,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Tamb</string>
+        <string>Tamb [C]</string>
        </property>
       </widget>
      </widget>
@@ -469,7 +469,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VReflMax</string>
+        <string>VReflMax [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_26">
@@ -505,7 +505,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VSpike</string>
+        <string>VSpike [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_27">
@@ -538,7 +538,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Vfsec</string>
+        <string>Vfsec [V]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_29">
@@ -551,7 +551,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VBf</string>
+        <string>VBf [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_29">
@@ -597,7 +597,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VDSmax</string>
+        <string>VDSmax [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_13">
@@ -640,7 +640,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>IDSmax</string>
+        <string>IDSmax [A]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_14">
@@ -653,7 +653,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Trise</string>
+        <string>Trise [ns]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_15">
@@ -666,7 +666,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Tfall</string>
+        <string>Tfall [ns]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_16">
@@ -689,7 +689,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Rdson</string>
+        <string>Rdson [R]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_17">
@@ -722,7 +722,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Qg</string>
+        <string>Qg [nC]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_18">
@@ -735,7 +735,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>VGS</string>
+        <string>VGS [V]</string>
        </property>
       </widget>
      </widget>
