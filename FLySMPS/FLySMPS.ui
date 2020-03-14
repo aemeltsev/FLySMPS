@@ -27,7 +27,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -37,9 +37,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>10</y>
         <width>661</width>
-        <height>191</height>
+        <height>181</height>
        </rect>
       </property>
       <property name="title">
@@ -826,6 +826,32 @@
      <attribute name="title">
       <string>Inp. Diode Bridge and Cap.</string>
      </attribute>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>661</width>
+        <height>201</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Diode Bridge:</string>
+      </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_6">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>219</y>
+        <width>661</width>
+        <height>241</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Bulk Capacitor:</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
