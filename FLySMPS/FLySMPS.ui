@@ -45,7 +45,7 @@
       <property name="title">
        <string>Specification:</string>
       </property>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="VACmax">
        <property name="geometry">
         <rect>
          <x>80</x>
@@ -824,17 +824,32 @@
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Input Diode Bridge</string>
+      <string>Inp. Diode Bridge and Cap.</string>
      </attribute>
     </widget>
     <widget class="QWidget" name="tab_5">
      <attribute name="title">
-      <string>Input Capacitor</string>
+      <string>Transf. Electr.</string>
      </attribute>
     </widget>
     <widget class="QWidget" name="tab_6">
      <attribute name="title">
-      <string>Transformer</string>
+      <string>Transf. Struct.</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_3">
+     <attribute name="title">
+      <string>MOSFET</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>Out. Сircuit</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_7">
+     <attribute name="title">
+      <string>Control</string>
      </attribute>
     </widget>
    </widget>

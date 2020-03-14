@@ -26,10 +26,14 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        FLySMPS.cpp
+        FLySMPS.cpp \
+    diodebridge.cpp \
+    bulkcap.cpp
 
 HEADERS += \
-        FLySMPS.h
+        FLySMPS.h \
+    diodebridge.h \
+    bulkcap.h
 
 FORMS += \
         FLySMPS.ui
