@@ -27,7 +27,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -420,7 +420,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Eff</string>
+        <string>Eff.</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_25">
@@ -433,7 +433,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Tamb [C]</string>
+        <string>T.amb [C]</string>
        </property>
       </widget>
      </widget>
@@ -452,7 +452,7 @@
       <widget class="QLineEdit" name="lineEdit_2">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>150</x>
          <y>30</y>
          <width>41</width>
          <height>20</height>
@@ -464,18 +464,18 @@
         <rect>
          <x>10</x>
          <y>30</y>
-         <width>61</width>
+         <width>131</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>VReflMax [V]</string>
+        <string>Refllected Voltage Max [V]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_26">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>150</x>
          <y>60</y>
          <width>41</width>
          <height>20</height>
@@ -487,12 +487,12 @@
         <rect>
          <x>10</x>
          <y>60</y>
-         <width>61</width>
+         <width>121</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>EffTrans</string>
+        <string>Efficiency Trans.</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_27">
@@ -511,7 +511,7 @@
       <widget class="QLineEdit" name="lineEdit_27">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>150</x>
          <y>90</y>
          <width>41</width>
          <height>20</height>
@@ -521,7 +521,7 @@
       <widget class="QLineEdit" name="lineEdit_28">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>150</x>
          <y>120</y>
          <width>41</width>
          <height>20</height>
@@ -557,7 +557,7 @@
       <widget class="QLineEdit" name="lineEdit_29">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>150</x>
          <y>150</y>
          <width>41</width>
          <height>20</height>
