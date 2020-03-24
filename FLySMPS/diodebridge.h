@@ -20,7 +20,7 @@ public:
     double DiodeConductTime(double IDiodePeak, double DiodeCurrentSlope);
 
     double MinPeakInVoltage(int VACmin);
-    double MaxPeakInVoltage(double VACmax);
+    double MaxPeakInVoltage(int VACmax);
 };
 
 #endif // DIODEBRIDGE_H
