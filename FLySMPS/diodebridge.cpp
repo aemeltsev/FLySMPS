@@ -11,9 +11,9 @@ DiodeBridge::DiodeBridge()
   * @param  None
   * @retval None
   */
-double DiodeBridge::IDiodePeak()
+double DiodeBridge::IDiodePeak(double ICBulckPeak, double ILoadMax)
 {
-    return PI+PI;
+    return ICBulckPeak+ILoadMax;
 }
 
 /**
@@ -21,9 +21,9 @@ double DiodeBridge::IDiodePeak()
   * @param  None
   * @retval None
   */
-double DiodeBridge::IDiodeRMS()
+double DiodeBridge::IDiodeRMS(double ILoadAVG, double FLine, double ConductTime)
 {
-    return PI+PI;
+    return ILoadAVG/(sqrt(3*FLine*ConductTime));
 }
 
 /**

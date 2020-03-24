@@ -8,8 +8,8 @@ class DiodeBridge
 public:
     DiodeBridge();
 
-    double IDiodePeak();
-    double IDiodeRMS();
+    double IDiodePeak(double ICBulckPeak, double ILoadMax);
+    double IDiodeRMS(double ILoadAVG, double FLine, double ConductTime);
     double IDiodeAVG();
 
     double IDiodeRMSTot();
