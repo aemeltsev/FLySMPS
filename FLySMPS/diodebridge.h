@@ -14,13 +14,13 @@ public:
 
     double IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTime);
 
-    double ILoadAVG();
+    double ILoadAVG(double IDiodePeak, double FLine, double ConductTime);
+    
+    double DiodeCurrentSlope(double IDiodePeak, double ILoad, double TotCharTime);
+    double DiodeConductTime(double IDiodePeak, double DiodeCurrentSlope);
 
-    double DiodeConductTime();
-    double DiodeCurrentSlope();
-
-    double MinPeakInVoltage();
-    double MaxPeakInVoltage();
+    double MinPeakInVoltage(int VACmin);
+    double MaxPeakInVoltage(double VACmax);
 };
 
 #endif // DIODEBRIDGE_H

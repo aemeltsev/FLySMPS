@@ -51,9 +51,9 @@ double DiodeBridge::IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTi
   * @param  None
   * @retval None
   */
-double DiodeBridge::ILoadAVG()
+double DiodeBridge::ILoadAVG(double IDiodePeak, double FLine, double ConductTime)
 {
-    return PI+PI;
+    return IDiodePeak*FLine*ConductTime;
 }
 
 /**
@@ -61,9 +61,9 @@ double DiodeBridge::ILoadAVG()
   * @param  None
   * @retval None
   */
-double DiodeBridge::DiodeConductTime()
+double DiodeBridge::DiodeConductTime(double IDiodePeak, double DiodeCurrentSlope)
 {
-    return PI+PI;
+    return IDiodePeak/DiodeCurrentSlope;
 }
 
 /**
@@ -71,9 +71,9 @@ double DiodeBridge::DiodeConductTime()
   * @param  None
   * @retval None
   */
-double DiodeBridge::DiodeCurrentSlope()
+double DiodeBridge::DiodeCurrentSlope(double IDiodePeak, double ILoad, double TotCharTime)
 {
-    return PI+PI;
+    return (IDiodePeak-ILoad)/TotCharTime;
 }
 
 /**
@@ -81,9 +81,9 @@ double DiodeBridge::DiodeCurrentSlope()
   * @param  None
   * @retval None
   */
-double DiodeBridge::MinPeakInVoltage()
+double DiodeBridge::MinPeakInVoltage(int VACmin)
 {
-    return PI+PI;
+    return (double)VACmin*sqrt(2);
 }
 
 /**
