@@ -31,9 +31,9 @@ double DiodeBridge::IDiodeRMS(double ILoadAVG, double FLine, double ConductTime)
   * @param  None
   * @retval None
   */
-double DiodeBridge::IDiodeAVG()
+double DiodeBridge::IDiodeAVG(double ILoadAVG)
 {
-    return PI+PI;
+    return ILoadAVG/2;
 }
 
 /**
@@ -41,9 +41,9 @@ double DiodeBridge::IDiodeAVG()
   * @param  None
   * @retval None
   */
-double DiodeBridge::IDiodeRMSTot()
+double DiodeBridge::IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTime)
 {
-    return PI+PI;
+    return (ILoadAVG*sqrt(2))/(sqrt(3*FLine*ConductTime));
 }
 
 /**

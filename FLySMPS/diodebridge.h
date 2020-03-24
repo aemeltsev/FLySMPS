@@ -10,9 +10,9 @@ public:
 
     double IDiodePeak(double ICBulckPeak, double ILoadMax);
     double IDiodeRMS(double ILoadAVG, double FLine, double ConductTime);
-    double IDiodeAVG();
+    double IDiodeAVG(double ILoadAVG);
 
-    double IDiodeRMSTot();
+    double IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTime);
 
     double ILoadAVG();
 
