@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////
 #ifndef BULKCAP_H
 #define BULKCAP_H
+#include <math.h>
 
 
 class BulkCap
