@@ -30,7 +30,7 @@ double DiodeBridge::IDiodePeak(double ICBulckPeak, double ILoadMax)
   * @param  ConductTime - diode total conduction time
   * @retval IDiodeRMS - rms current diode
   */
-double DiodeBridge::IDiodeRMS(double ILoadAVG, double FLine, double ConductTime)
+double DiodeBridge::IDiodeRMS(double ILoadAVG, int FLine, double ConductTime)
 {
     return ILoadAVG/(sqrt(3*FLine*ConductTime));
 }
@@ -52,7 +52,7 @@ double DiodeBridge::IDiodeAVG(double ILoadAVG)
   * @param  ConductTime - diode total conduction time
   * @retval IDiodeRMSTot - total rms current diode
   */
-double DiodeBridge::IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTime)
+double DiodeBridge::IDiodeRMSTot(double ILoadAVG, int FLine, double ConductTime)
 {
     return (ILoadAVG*sqrt(2))/(sqrt(3*FLine*ConductTime));
 }
@@ -64,7 +64,7 @@ double DiodeBridge::IDiodeRMSTot(double ILoadAVG, double FLine, double ConductTi
   * @param  ConductTime - diode total conduction time
   * @retval ILoadAVG - average dc current
   */
-double DiodeBridge::ILoadAVG(double IDiodePeak, double FLine, double ConductTime)
+double DiodeBridge::ILoadAVG(double IDiodePeak, int FLine, double ConductTime)
 {
     return IDiodePeak*FLine*ConductTime;
 }

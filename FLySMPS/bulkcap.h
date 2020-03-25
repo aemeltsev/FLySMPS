@@ -13,7 +13,7 @@ class BulkCap
 public:
     BulkCap();
 
-    double DeltaT();
+    double DeltaT(double VInMin, double VRectMinPeak, int FLine);
     double ChargTime();
 
     double CapValue();
