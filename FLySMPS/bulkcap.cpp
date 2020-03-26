@@ -15,6 +15,8 @@ BulkCap::BulkCap()
 /**
   * @brief
   * @param
+  * @param
+  * @param
   * @retval
   */
 double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
