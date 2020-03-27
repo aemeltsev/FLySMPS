@@ -13,11 +13,12 @@ BulkCap::BulkCap()
 }
 
 /**
-  * @brief
-  * @param
-  * @param
-  * @param
-  * @retval
+  * @brief The total refueling time from Vmin to Vpeak
+  * @param VInMin - minimum voltage value after diode blidge and capacitor
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param FLine - frequency in power line
+  * @retval DeltaT - Calculating time value from Vmin to Vpeak
+  *
   */
 double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
 {
@@ -25,63 +26,78 @@ double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief The total charging time
+  * @param VInMin - minimum voltage value after diode blidge and capacitor
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param FLine - frequency in power line
+  * @retval ChargTime - total charging time value
   */
-double BulkCap::ChargTime()
+double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int FLine)
 {
-    return 2*cos(PI);
+    return ((1/(4*FLine))-(BulkCap::DeltaT(VInMin, VRectMinPeak, FLine)));
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief Calculate the bulk capacitor value
+  * @param VInMin - minimum voltage value after diode blidge and capacitor
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param FLine - frequency in power line
+  * @param POut - summary output power of the converter
+  * @param Eff - efficiency
+  * @retval CapValue - bulk capacitor value
   */
-double BulkCap::CapValue()
+double BulkCap::CapValue(double VInMin, double VRectMinPeak, int FLine, double POut, double Eff)
 {
-    return 2*cos(PI);
+    return ((2*POut)*(1/(4*FLine))+(DeltaT(VInMin, VRectMinPeak, FLine)))/(Eff*((VRectMinPeak*VRectMinPeak)-(VInMin*VInMin)));
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief Load peak current value
+  * @param POut - summary output power of the converter
+  * @param Eff - efficiency
+  * @param VInMinRMS - Minimum RMS value line voltage
+  * @retval ILoadMax - peak current value
   */
-double BulkCap::ILoadMax()
+double BulkCap::ILoadMax(double POut, double Eff, int VInMinRMS)
 {
-    return 2*cos(PI);
+    return POut/(Eff*VInMinRMS);
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief Load minimum current value
+  * @param POut - summary output power of the converter
+  * @param Eff - efficiency
+  * @param VInMaxRMS - Maximum RMS value line voltage
+  * @retval ILoadMin - minimum current value
   */
-double BulkCap::ILoadMin()
+double BulkCap::ILoadMin(double POut, double Eff, int VInMaxRMS)
 {
-    return 2*cos(PI);
+    return POut/(Eff*VInMaxRMS);
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief The bulk capacitor peak current
+  * @param CapVal - bulk capacitor value
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param VInMin - minimum voltage value after diode blidge and capacitor
+  * @param FLine - frequency in power line
+  * @retval IBulkCapPeak - bulk capacitor peak current
   */
-double BulkCap::IBulkCapPeak()
+double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int FLine)
 {
-    return 2*cos(PI);
+    return (2*PI*FLine*CapVal*VRectMinPeak*(cos(2*PI*FLine*DeltaT(VInMin, VRectMinPeak, FLine))));
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief Calculate bulk capacitor RMS current value
+  * @param ILoadAVG - diode average current
+  * @param DiodeConductTime - total conduction time for diode
+  * @param FLine - frequency in power line
+  * @retval IBulkCapRMS - bulk capacitor RMS current
   */
-double BulkCap::IBulkCapRMS()
+double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int FLine)
 {
-    return 2*cos(PI);
+    return ILoadAVG*(sqrt((2/(3*FLine*DiodeConductTime))-1));
 }
 
 /**
