@@ -18,7 +18,6 @@ BulkCap::BulkCap()
   * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
   * @param FLine - frequency in power line
   * @retval DeltaT - Calculating time value from Vmin to Vpeak
-  *
   */
 double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
 {
@@ -34,7 +33,7 @@ double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
   */
 double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int FLine)
 {
-    return ((1/(4*FLine))-(BulkCap::DeltaT(VInMin, VRectMinPeak, FLine)));
+    return ((1/(4*FLine))-(DeltaT(VInMin, VRectMinPeak, FLine)));
 }
 
 /**
@@ -101,21 +100,26 @@ double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int FLine)
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief Recalculation after input capacitor selection
+  * @param VInMin - minimum voltage value after diode blidge and capacitor
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param POut - summary output power of the converter
+  * @param CapVal - bulk capacitor value
+  * @param FLine - frequency in power line
+  * @retval VMinInp - recalculation after input capacitor selection
   */
-double BulkCap::VMinInp()
+double BulkCap::VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int FLine)
 {
-    return 2*cos(PI);
+    return sqrt((VRectMinPeak*VRectMinPeak)-((2*POut*((1/(4*FLine)-DeltaT(VInMin, VRectMinPeak, FLine))))/(CapVal)));
 }
 
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief VDCMin simply the average value of MinIng and VRectMinPeak
+  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
+  * @param VMinInp - recalculation after input capacitor selection
+  * @retval VDCMin - simply the average value of MinIng and VRectMinPeak
   */
-double BulkCap::VDCMin()
+double BulkCap::VDCMin(double VRectMinPeak, double VMinInp)
 {
-    return 2*cos(PI);
+    return (VRectMinPeak + VMinInp)/2;
 }

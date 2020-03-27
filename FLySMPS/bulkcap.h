@@ -23,8 +23,8 @@ public:
     double IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int FLine);
     double IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int FLine);
 
-    double VMinInp();
-    double VDCMin();
+    double VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int FLine);
+    double VDCMin(double VRectMinPeak, double VMinInp);
 
 };
 
