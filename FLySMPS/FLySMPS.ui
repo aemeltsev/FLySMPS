@@ -1560,13 +1560,13 @@
        <property name="geometry">
         <rect>
          <x>220</x>
-         <y>180</y>
+         <y>210</y>
          <width>51</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>Ae [m2]</string>
+        <string>lg [m]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_67">
@@ -1574,19 +1574,19 @@
         <rect>
          <x>220</x>
          <y>150</y>
-         <width>41</width>
+         <width>61</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>WaAe</string>
+        <string>WaAe [m4]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_70">
        <property name="geometry">
         <rect>
          <x>220</x>
-         <y>210</y>
+         <y>180</y>
          <width>61</width>
          <height>16</height>
         </rect>
@@ -1657,7 +1657,7 @@
        <rect>
         <x>19</x>
         <y>259</y>
-        <width>301</width>
+        <width>311</width>
         <height>201</height>
        </rect>
       </property>
@@ -1680,7 +1680,7 @@
       <widget class="QLineEdit" name="lineEdit_62">
        <property name="geometry">
         <rect>
-         <x>190</x>
+         <x>200</x>
          <y>60</y>
          <width>91</width>
          <height>20</height>
@@ -1703,7 +1703,7 @@
       <widget class="QLineEdit" name="lineEdit_63">
        <property name="geometry">
         <rect>
-         <x>190</x>
+         <x>200</x>
          <y>90</y>
          <width>91</width>
          <height>20</height>
@@ -1715,65 +1715,19 @@
         <rect>
          <x>10</x>
          <y>90</y>
-         <width>171</width>
+         <width>181</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Jm - max. curr. dens. use &lt;5A/m2</string>
+        <string>Jm - max. curr. dens. use &lt;5 [A/m2]</string>
        </property>
       </widget>
       <widget class="QLineEdit" name="lineEdit_61">
        <property name="geometry">
         <rect>
-         <x>190</x>
+         <x>200</x>
          <y>30</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_72">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>130</y>
-         <width>51</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Wa [m2]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_71">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>130</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_73">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>160</y>
-         <width>51</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>MLT [m]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_72">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>160</y>
          <width>91</width>
          <height>20</height>
         </rect>
@@ -1790,7 +1744,7 @@
        </rect>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>Core parameters:</string>
       </property>
       <widget class="QLineEdit" name="lineEdit_67">
        <property name="geometry">
@@ -1816,26 +1770,72 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
-         <width>71</width>
+         <y>60</y>
+         <width>51</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>VDSMax [V]</string>
+        <string>MPL [m]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_69">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>120</y>
-         <width>71</width>
+         <y>90</y>
+         <width>51</width>
          <height>16</height>
         </rect>
        </property>
        <property name="text">
-        <string>VDSMax [V]</string>
+        <string>Ae [m2]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_71">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>30</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_72">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>60</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_73">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>51</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>MLT [m]</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_72">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>51</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Wa [m2]</string>
        </property>
       </widget>
      </widget>
