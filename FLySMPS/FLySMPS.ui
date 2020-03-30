@@ -1896,7 +1896,7 @@
         <x>20</x>
         <y>10</y>
         <width>661</width>
-        <height>261</height>
+        <height>291</height>
        </rect>
       </property>
       <property name="title">
@@ -1962,23 +1962,10 @@
         </rect>
        </property>
       </widget>
-      <widget class="QLabel" name="label_78">
-       <property name="geometry">
-        <rect>
-         <x>50</x>
-         <y>20</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>POut [W]</string>
-       </property>
-      </widget>
       <widget class="QLabel" name="label_79">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>50</x>
          <y>20</y>
          <width>31</width>
          <height>20</height>
@@ -1991,7 +1978,7 @@
       <widget class="QLabel" name="label_80">
        <property name="geometry">
         <rect>
-         <x>170</x>
+         <x>110</x>
          <y>20</y>
          <width>31</width>
          <height>20</height>
@@ -2109,7 +2096,7 @@
         <rect>
          <x>230</x>
          <y>50</y>
-         <width>61</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
@@ -2117,7 +2104,7 @@
       <widget class="QLabel" name="label_76">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>160</x>
          <y>20</y>
          <width>61</width>
          <height>20</height>
@@ -2132,7 +2119,7 @@
         <rect>
          <x>230</x>
          <y>80</y>
-         <width>61</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
@@ -2140,7 +2127,7 @@
       <widget class="QLineEdit" name="lineEdit_93">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>290</x>
          <y>50</y>
          <width>41</width>
          <height>20</height>
@@ -2150,7 +2137,7 @@
       <widget class="QLineEdit" name="lineEdit_94">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>350</x>
          <y>50</y>
          <width>41</width>
          <height>20</height>
@@ -2160,7 +2147,7 @@
       <widget class="QLineEdit" name="lineEdit_95">
        <property name="geometry">
         <rect>
-         <x>430</x>
+         <x>410</x>
          <y>50</y>
          <width>41</width>
          <height>20</height>
@@ -2170,7 +2157,7 @@
       <widget class="QLineEdit" name="lineEdit_96">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>290</x>
          <y>80</y>
          <width>41</width>
          <height>20</height>
@@ -2180,7 +2167,7 @@
       <widget class="QLineEdit" name="lineEdit_97">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>350</x>
          <y>80</y>
          <width>41</width>
          <height>20</height>
@@ -2190,7 +2177,7 @@
       <widget class="QLineEdit" name="lineEdit_98">
        <property name="geometry">
         <rect>
-         <x>430</x>
+         <x>410</x>
          <y>80</y>
          <width>41</width>
          <height>20</height>
@@ -2202,7 +2189,7 @@
         <rect>
          <x>230</x>
          <y>110</y>
-         <width>61</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
@@ -2210,7 +2197,7 @@
       <widget class="QLineEdit" name="lineEdit_100">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>290</x>
          <y>110</y>
          <width>41</width>
          <height>20</height>
@@ -2220,7 +2207,7 @@
       <widget class="QLineEdit" name="lineEdit_101">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>350</x>
          <y>110</y>
          <width>41</width>
          <height>20</height>
@@ -2230,7 +2217,7 @@
       <widget class="QLineEdit" name="lineEdit_102">
        <property name="geometry">
         <rect>
-         <x>430</x>
+         <x>410</x>
          <y>110</y>
          <width>41</width>
          <height>20</height>
@@ -2242,7 +2229,7 @@
         <rect>
          <x>230</x>
          <y>140</y>
-         <width>61</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
@@ -2250,7 +2237,7 @@
       <widget class="QLineEdit" name="lineEdit_104">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>290</x>
          <y>140</y>
          <width>41</width>
          <height>20</height>
@@ -2260,7 +2247,7 @@
       <widget class="QLineEdit" name="lineEdit_105">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>350</x>
          <y>140</y>
          <width>41</width>
          <height>20</height>
@@ -2270,7 +2257,7 @@
       <widget class="QLineEdit" name="lineEdit_106">
        <property name="geometry">
         <rect>
-         <x>430</x>
+         <x>410</x>
          <y>140</y>
          <width>41</width>
          <height>20</height>
@@ -2280,40 +2267,40 @@
       <widget class="QLabel" name="label_86">
        <property name="geometry">
         <rect>
-         <x>310</x>
+         <x>230</x>
          <y>20</y>
          <width>51</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>IPMax [A]</string>
+        <string>ANS [mm]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_87">
        <property name="geometry">
         <rect>
-         <x>370</x>
+         <x>290</x>
          <y>20</y>
-         <width>51</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>IPMax [A]</string>
+        <string>AWGNS</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_88">
        <property name="geometry">
         <rect>
-         <x>430</x>
+         <x>350</x>
          <y>20</y>
-         <width>51</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>IPMax [A]</string>
+        <string>DS [mm]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_82">
@@ -2373,7 +2360,7 @@
         <rect>
          <x>230</x>
          <y>170</y>
-         <width>61</width>
+         <width>41</width>
          <height>20</height>
         </rect>
        </property>
@@ -2381,7 +2368,7 @@
       <widget class="QLineEdit" name="lineEdit_108">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>470</x>
          <y>50</y>
          <width>41</width>
          <height>20</height>
@@ -2391,7 +2378,7 @@
       <widget class="QLineEdit" name="lineEdit_109">
        <property name="geometry">
         <rect>
-         <x>550</x>
+         <x>530</x>
          <y>50</y>
          <width>41</width>
          <height>20</height>
@@ -2401,7 +2388,7 @@
       <widget class="QLineEdit" name="lineEdit_110">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>470</x>
          <y>80</y>
          <width>41</width>
          <height>20</height>
@@ -2411,7 +2398,7 @@
       <widget class="QLineEdit" name="lineEdit_111">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>470</x>
          <y>110</y>
          <width>41</width>
          <height>20</height>
@@ -2421,7 +2408,7 @@
       <widget class="QLineEdit" name="lineEdit_112">
        <property name="geometry">
         <rect>
-         <x>550</x>
+         <x>530</x>
          <y>80</y>
          <width>41</width>
          <height>20</height>
@@ -2431,7 +2418,7 @@
       <widget class="QLineEdit" name="lineEdit_113">
        <property name="geometry">
         <rect>
-         <x>550</x>
+         <x>530</x>
          <y>110</y>
          <width>41</width>
          <height>20</height>
@@ -2441,7 +2428,7 @@
       <widget class="QLineEdit" name="lineEdit_114">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>470</x>
          <y>140</y>
          <width>41</width>
          <height>20</height>
@@ -2451,7 +2438,7 @@
       <widget class="QLineEdit" name="lineEdit_115">
        <property name="geometry">
         <rect>
-         <x>550</x>
+         <x>530</x>
          <y>140</y>
          <width>41</width>
          <height>20</height>
@@ -2461,27 +2448,93 @@
       <widget class="QLabel" name="label_89">
        <property name="geometry">
         <rect>
-         <x>490</x>
+         <x>410</x>
          <y>20</y>
          <width>51</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>IPMax [A]</string>
+        <string>ISMax [A]</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_90">
        <property name="geometry">
         <rect>
-         <x>550</x>
+         <x>470</x>
          <y>20</y>
          <width>51</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>IPMax [A]</string>
+        <string>ISRMS [A]</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_91">
+       <property name="geometry">
+        <rect>
+         <x>530</x>
+         <y>20</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>JS [A/m2]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_116">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>50</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_117">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>80</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_118">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>110</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_119">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>140</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_92">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>20</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>NL [T/l]</string>
        </property>
       </widget>
      </widget>
@@ -2489,9 +2542,9 @@
       <property name="geometry">
        <rect>
         <x>19</x>
-        <y>279</y>
+        <y>309</y>
         <width>661</width>
-        <height>181</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
