@@ -6,7 +6,6 @@
 #include "bulkcap.h"
 #define PI 3.1415926535897932385
 
-//Constructor
 BulkCap::BulkCap()
 {
 
@@ -19,7 +18,7 @@ BulkCap::BulkCap()
   * @param FLine - frequency in power line
   * @retval DeltaT - Calculating time value from Vmin to Vpeak
   */
-double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
+double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int8_t FLine)
 {
     return (asin(VInMin/VRectMinPeak))/(2*PI*FLine);
 }
@@ -31,7 +30,7 @@ double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int FLine)
   * @param FLine - frequency in power line
   * @retval ChargTime - total charging time value
   */
-double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int FLine)
+double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int8_t FLine)
 {
     return ((1/(4*FLine))-(DeltaT(VInMin, VRectMinPeak, FLine)));
 }
@@ -45,7 +44,7 @@ double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int FLine)
   * @param Eff - efficiency
   * @retval CapValue - bulk capacitor value
   */
-double BulkCap::CapValue(double VInMin, double VRectMinPeak, int FLine, double POut, double Eff)
+double BulkCap::CapValue(double VInMin, double VRectMinPeak, int8_t FLine, double POut, double Eff)
 {
     return ((2*POut)*(1/(4*FLine))+(DeltaT(VInMin, VRectMinPeak, FLine)))/(Eff*((VRectMinPeak*VRectMinPeak)-(VInMin*VInMin)));
 }
@@ -57,7 +56,7 @@ double BulkCap::CapValue(double VInMin, double VRectMinPeak, int FLine, double P
   * @param VInMinRMS - Minimum RMS value line voltage
   * @retval ILoadMax - peak current value
   */
-double BulkCap::ILoadMax(double POut, double Eff, int VInMinRMS)
+double BulkCap::ILoadMax(double POut, double Eff, int8_t VInMinRMS)
 {
     return POut/(Eff*VInMinRMS);
 }
@@ -69,7 +68,7 @@ double BulkCap::ILoadMax(double POut, double Eff, int VInMinRMS)
   * @param VInMaxRMS - Maximum RMS value line voltage
   * @retval ILoadMin - minimum current value
   */
-double BulkCap::ILoadMin(double POut, double Eff, int VInMaxRMS)
+double BulkCap::ILoadMin(double POut, double Eff, int8_t VInMaxRMS)
 {
     return POut/(Eff*VInMaxRMS);
 }
@@ -82,7 +81,7 @@ double BulkCap::ILoadMin(double POut, double Eff, int VInMaxRMS)
   * @param FLine - frequency in power line
   * @retval IBulkCapPeak - bulk capacitor peak current
   */
-double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int FLine)
+double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int8_t FLine)
 {
     return (2*PI*FLine*CapVal*VRectMinPeak*(cos(2*PI*FLine*DeltaT(VInMin, VRectMinPeak, FLine))));
 }
@@ -94,7 +93,7 @@ double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, 
   * @param FLine - frequency in power line
   * @retval IBulkCapRMS - bulk capacitor RMS current
   */
-double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int FLine)
+double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int8_t FLine)
 {
     return ILoadAVG*(sqrt((2/(3*FLine*DiodeConductTime))-1));
 }
@@ -108,7 +107,7 @@ double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int FLine)
   * @param FLine - frequency in power line
   * @retval VMinInp - recalculation after input capacitor selection
   */
-double BulkCap::VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int FLine)
+double BulkCap::VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int8_t FLine)
 {
     return sqrt((VRectMinPeak*VRectMinPeak)-((2*POut*((1/(4*FLine)-DeltaT(VInMin, VRectMinPeak, FLine))))/(CapVal)));
 }

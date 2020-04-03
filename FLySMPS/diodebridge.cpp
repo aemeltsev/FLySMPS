@@ -4,9 +4,7 @@
 //
 ////////////////////////////////////////////////////////////
 #include "diodebridge.h"
-//#define PI 3.1415926535897932385;
 
-//Constructor
 DiodeBridge::DiodeBridge()
 {
 
@@ -30,7 +28,7 @@ double DiodeBridge::IDiodePeak(double ICBulckPeak, double ILoadMax)
   * @param  ConductTime - diode total conduction time
   * @retval IDiodeRMS - rms current diode
   */
-double DiodeBridge::IDiodeRMS(double ILoadAVG, int FLine, double ConductTime)
+double DiodeBridge::IDiodeRMS(double ILoadAVG, int8_t FLine, double ConductTime)
 {
     return ILoadAVG/(sqrt(3*FLine*ConductTime));
 }
@@ -52,7 +50,7 @@ double DiodeBridge::IDiodeAVG(double ILoadAVG)
   * @param  ConductTime - diode total conduction time
   * @retval IDiodeRMSTot - total rms current diode
   */
-double DiodeBridge::IDiodeRMSTot(double ILoadAVG, int FLine, double ConductTime)
+double DiodeBridge::IDiodeRMSTot(double ILoadAVG, int8_t FLine, double ConductTime)
 {
     return (ILoadAVG*sqrt(2))/(sqrt(3*FLine*ConductTime));
 }
@@ -64,7 +62,7 @@ double DiodeBridge::IDiodeRMSTot(double ILoadAVG, int FLine, double ConductTime)
   * @param  ConductTime - diode total conduction time
   * @retval ILoadAVG - average dc current
   */
-double DiodeBridge::ILoadAVG(double IDiodePeak, int FLine, double ConductTime)
+double DiodeBridge::ILoadAVG(double IDiodePeak, int8_t FLine, double ConductTime)
 {
     return IDiodePeak*FLine*ConductTime;
 }
@@ -97,7 +95,7 @@ double DiodeBridge::DiodeCurrentSlope(double IDiodePeak, double ILoad, double To
   * @param  VACmin - minimum ac line amplitude value
   * @retval MinPeakInVoltage - minimum peak value
   */
-double DiodeBridge::MinPeakInVoltage(int VACmin)
+double DiodeBridge::MinPeakInVoltage(int8_t VACmin)
 {
     return VACmin*sqrt(2);
 }
@@ -107,7 +105,7 @@ double DiodeBridge::MinPeakInVoltage(int VACmin)
   * @param  VACmax - maximum ac line amplitude value
   * @retval MaxPeakInVoltage - maximum peak value
   */
-double DiodeBridge::MaxPeakInVoltage(int VACmax)
+double DiodeBridge::MaxPeakInVoltage(int8_t VACmax)
 {
     return VACmax*sqrt(2);
 }
