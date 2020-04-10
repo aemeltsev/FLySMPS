@@ -7,6 +7,7 @@
 #define DIODEBRIDGE_H
 #include <cmath>
 #include <cstdint>
+#include <structdata.h>
 
 class DiodeBridge
 {
@@ -24,8 +25,8 @@ public:
     double DiodeCurrentSlope(double IDiodePeak, double ILoad, double TotCharTime);
     double DiodeConductTime(double IDiodePeak, double DiodeCurrentSlope);
 
-    double MinPeakInVoltage(int8_t VACmin);
-    double MaxPeakInVoltage(int8_t VACmax);
+    double MinPeakInVoltage(InputValue * ivalue);
+    double MaxPeakInVoltage(InputValue * ivalue);
 };
 
 #endif // DIODEBRIDGE_H

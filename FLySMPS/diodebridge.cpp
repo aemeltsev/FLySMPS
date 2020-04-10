@@ -13,7 +13,7 @@ DiodeBridge::DiodeBridge()
 /**
   * @brief  Calculate the diode peak current
   * @param  ICBulckPeak - bulk capacitor peak current
-  * @param  ILoadMax - load maximum current
+  * @param  ILoadMax - load maximum current::
   * @retval IDiodePeak - diode peak current
   */
 double DiodeBridge::IDiodePeak(double ICBulckPeak, double ILoadMax)
@@ -95,9 +95,9 @@ double DiodeBridge::DiodeCurrentSlope(double IDiodePeak, double ILoad, double To
   * @param  VACmin - minimum ac line amplitude value
   * @retval MinPeakInVoltage - minimum peak value
   */
-double DiodeBridge::MinPeakInVoltage(int8_t VACmin)
+double DiodeBridge::MinPeakInVoltage(InputValue * ivalue)
 {
-    return VACmin*sqrt(2);
+    return ivalue->VACmin*sqrt(2);
 }
 
 /**
@@ -105,7 +105,7 @@ double DiodeBridge::MinPeakInVoltage(int8_t VACmin)
   * @param  VACmax - maximum ac line amplitude value
   * @retval MaxPeakInVoltage - maximum peak value
   */
-double DiodeBridge::MaxPeakInVoltage(int8_t VACmax)
+double DiodeBridge::MaxPeakInVoltage(InputValue * ivalue)
 {
-    return VACmax*sqrt(2);
+    return  ivalue->VACmax*sqrt(2);
 }
