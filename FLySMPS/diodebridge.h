@@ -14,19 +14,19 @@ class DiodeBridge
 public:
     DiodeBridge();
 
-    double IDiodePeak(double ICBulckPeak, double ILoadMax);
-    double IDiodeRMS(double ILoadAVG, int8_t FLine, double ConductTime);
-    double IDiodeAVG(double ILoadAVG);
+    double IDiodePeak(BCap* bcvalue);
+    double IDiodeRMS(InputValue* ivalue, DBridge* dbvalue);
+    double IDiodeAVG(DBridge* dbvalue);
 
-    double IDiodeRMSTot(double ILoadAVG, int8_t FLine, double ConductTime);
+    double IDiodeRMSTot(DBridge* dbvalue, InputValue* ivalue);
 
-    double ILoadAVG(double IDiodePeak, int8_t FLine, double ConductTime);
+    double ILoadAVG(DBridge* dbvalue, InputValue* ivalue);
     
-    double DiodeCurrentSlope(double IDiodePeak, double ILoad, double TotCharTime);
-    double DiodeConductTime(double IDiodePeak, double DiodeCurrentSlope);
+    double DiodeCurrentSlope(DBridge* dbvalue, BCap* bcvalue);
+    double DiodeConductTime(DBridge* dbvalue);
 
-    double MinPeakInVoltage(InputValue * ivalue);
-    double MaxPeakInVoltage(InputValue * ivalue);
+    double MinPeakInVoltage(InputValue* ivalue);
+    double MaxPeakInVoltage(InputValue* ivalue);
 };
 
 #endif // DIODEBRIDGE_H
