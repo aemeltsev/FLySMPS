@@ -15,7 +15,7 @@ DiodeBridge::DiodeBridge()
   */
 double DiodeBridge::IDiodePeak(BCap* bcvalue)
 {
-    return bcvalue->bcapacitor_peak_curr+bcvalue->load_curr_max;
+    return (bcvalue->bcapacitor_peak_curr)+(bcvalue->load_curr_max);
 }
 /**
   * @brief  Root mean square value of current diode
@@ -87,7 +87,7 @@ double DiodeBridge::DiodeCurrentSlope(DBridge* dbvalue, BCap* bcvalue)
   */
 double DiodeBridge::MinPeakInVoltage(InputValue* ivalue)
 {
-    return ivalue->input_volt_ac_min*sqrt(2);
+    return (ivalue->input_volt_ac_min)*sqrt(2);
 }
 /**
   * @brief  Solve maximum peak value
@@ -96,5 +96,5 @@ double DiodeBridge::MinPeakInVoltage(InputValue* ivalue)
   */
 double DiodeBridge::MaxPeakInVoltage(InputValue* ivalue)
 {
-    return  ivalue->input_volt_ac_max*sqrt(2);
+    return  (ivalue->input_volt_ac_max)*sqrt(2);
 }
