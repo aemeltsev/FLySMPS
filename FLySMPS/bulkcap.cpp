@@ -18,9 +18,11 @@ BulkCap::BulkCap()
   * @param FLine - frequency in power line
   * @retval DeltaT - Calculating time value from Vmin to Vpeak
   */
-double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int8_t FLine)
+double BulkCap::DeltaT(InputValue* ivalue)
 {
-    return (asin(VInMin/VRectMinPeak))/(2*PI*FLine);
+    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
+    return (asin(volt_out/(ivalue->input_volt_ac_min*sqrt(2))))/(2*PI*(ivalue->freq_line));
 }
 
 /**
@@ -30,9 +32,9 @@ double BulkCap::DeltaT(double VInMin, double VRectMinPeak, int8_t FLine)
   * @param FLine - frequency in power line
   * @retval ChargTime - total charging time value
   */
-double BulkCap::ChargTime(double VInMin, double VRectMinPeak, int8_t FLine)
-{
-    return ((1/(4*FLine))-(DeltaT(VInMin, VRectMinPeak, FLine)));
+double BulkCap::ChargTime(InputValue* ivalue)
+{ 
+    return ((1/(4*(ivalue->freq_line)))-(DeltaT(ivalue)));
 }
 
 /**
@@ -56,9 +58,9 @@ double BulkCap::CapValue(double VInMin, double VRectMinPeak, int8_t FLine, doubl
   * @param VInMinRMS - Minimum RMS value line voltage
   * @retval ILoadMax - peak current value
   */
-double BulkCap::ILoadMax(double POut, double Eff, int8_t VInMinRMS)
+double BulkCap::ILoadMax(InputValue* ivalue, DBridge* dbvalue)
 {
-    return POut/(Eff*VInMinRMS);
+    return (ivalue->power_out_max)/((ivalue->eff)*(dbvalue->in_min_rms_voltage));
 }
 
 /**
@@ -68,9 +70,9 @@ double BulkCap::ILoadMax(double POut, double Eff, int8_t VInMinRMS)
   * @param VInMaxRMS - Maximum RMS value line voltage
   * @retval ILoadMin - minimum current value
   */
-double BulkCap::ILoadMin(double POut, double Eff, int8_t VInMaxRMS)
+double BulkCap::ILoadMin(InputValue* ivalue, DBridge* dbvalue)
 {
-    return POut/(Eff*VInMaxRMS);
+    return (ivalue->power_out_max)/((ivalue->eff)*(dbvalue->in_max_rms_voltage));
 }
 
 /**

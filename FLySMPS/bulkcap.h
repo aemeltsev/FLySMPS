@@ -7,19 +7,20 @@
 #define BULKCAP_H
 #include <cmath>
 #include <cstdint>
+#include <structdata.h>
 
 class BulkCap
 {
 public:
     BulkCap();
 
-    double DeltaT(double VInMin, double VRectMinPeak, int8_t FLine);
-    double ChargTime(double VInMin, double VRectMinPeak, int8_t FLine);
+    double DeltaT(InputValue *ivalue);
+    double ChargTime(InputValue *ivalue);
 
     double CapValue(double VInMin, double VRectMinPeak, int8_t FLine, double POut, double Eff);
 
-    double ILoadMax(double POut, double Eff, int8_t VInMinRMS);
-    double ILoadMin(double POut, double Eff, int8_t VInMaxRMS);
+    double ILoadMax(InputValue* ivalue, DBridge* dbvalue);
+    double ILoadMin(InputValue* ivalue, DBridge* dbvalue);
     double IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int8_t FLine);
     double IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int8_t FLine);
 
