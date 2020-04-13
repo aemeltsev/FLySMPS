@@ -46,9 +46,11 @@ double BulkCap::ChargTime(InputValue* ivalue)
   * @param Eff - efficiency
   * @retval CapValue - bulk capacitor value
   */
-double BulkCap::CapValue(double VInMin, double VRectMinPeak, int8_t FLine, double POut, double Eff)
+double BulkCap::CapValue(InputValue* ivalue)
 {
-    return ((2*POut)*(1/(4*FLine))+(DeltaT(VInMin, VRectMinPeak, FLine)))/(Eff*((VRectMinPeak*VRectMinPeak)-(VInMin*VInMin)));
+    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
+    return ((2*(ivalue->power_out_max))*(1/(4*ivalue->freq_line))+(DeltaT(ivalue)))/((ivalue->eff)*((volt_rrms*volt_rrms)-(volt_out*volt_out)));
 }
 
 /**
@@ -83,9 +85,11 @@ double BulkCap::ILoadMin(InputValue* ivalue, DBridge* dbvalue)
   * @param FLine - frequency in power line
   * @retval IBulkCapPeak - bulk capacitor peak current
   */
-double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int8_t FLine)
+double BulkCap::IBulkCapPeak(BCap* bcvalue, InputValue* ivalue)
 {
-    return (2*PI*FLine*CapVal*VRectMinPeak*(cos(2*PI*FLine*DeltaT(VInMin, VRectMinPeak, FLine))));
+    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
+    return (2*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(volt_out)*(cos(2*PI*(ivalue->freq_line)*DeltaT(ivalue))));
 }
 
 /**
@@ -95,9 +99,9 @@ double BulkCap::IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, 
   * @param FLine - frequency in power line
   * @retval IBulkCapRMS - bulk capacitor RMS current
   */
-double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int8_t FLine)
+double BulkCap::IBulkCapRMS(DBridge *dbvalue, InputValue* ivalue)
 {
-    return ILoadAVG*(sqrt((2/(3*FLine*DiodeConductTime))-1));
+    return dbvalue->load_avg_curr*(sqrt((2/(3*(ivalue->freq_line)*(dbvalue->diode_cond_time)))-1));
 }
 
 /**
@@ -109,9 +113,11 @@ double BulkCap::IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int8_t FLi
   * @param FLine - frequency in power line
   * @retval VMinInp - recalculation after input capacitor selection
   */
-double BulkCap::VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int8_t FLine)
+double BulkCap::VMinInp(BCap* bcvalue, InputValue* ivalue)
 {
-    return sqrt((VRectMinPeak*VRectMinPeak)-((2*POut*((1/(4*FLine)-DeltaT(VInMin, VRectMinPeak, FLine))))/(CapVal)));
+    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
+    return sqrt((volt_out*volt_out)-((2*(ivalue->power_out_max)*((1/(4*ivalue->freq_line)-DeltaT(ivalue))))/(bcvalue->bcapacitor_value)));
 }
 
 /**
@@ -120,7 +126,9 @@ double BulkCap::VMinInp(double VInMin, double VRectMinPeak, double POut, double 
   * @param VMinInp - recalculation after input capacitor selection
   * @retval VDCMin - simply the average value of MinIng and VRectMinPeak
   */
-double BulkCap::VDCMin(double VRectMinPeak, double VMinInp)
+double BulkCap::VDCMin(BCap* bcvalue, InputValue* ivalue)
 {
-    return (VRectMinPeak + VMinInp)/2;
+    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
+    return (volt_out+(bcvalue->input_min_voltage))/2;
 }

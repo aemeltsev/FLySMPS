@@ -17,15 +17,15 @@ public:
     double DeltaT(InputValue *ivalue);
     double ChargTime(InputValue *ivalue);
 
-    double CapValue(double VInMin, double VRectMinPeak, int8_t FLine, double POut, double Eff);
+    double CapValue(InputValue *ivalue);
 
     double ILoadMax(InputValue* ivalue, DBridge* dbvalue);
     double ILoadMin(InputValue* ivalue, DBridge* dbvalue);
-    double IBulkCapPeak(double CapVal, double VRectMinPeak, double VInMin, int8_t FLine);
-    double IBulkCapRMS(double ILoadAVG, double DiodeConductTime, int8_t FLine);
+    double IBulkCapPeak(BCap *bcvalue, InputValue *ivalue);
+    double IBulkCapRMS(DBridge *dbvalue, InputValue* ivalue);
 
-    double VMinInp(double VInMin, double VRectMinPeak, double POut, double CapVal, int8_t FLine);
-    double VDCMin(double VRectMinPeak, double VMinInp);
+    double VMinInp(BCap* bcvalue, InputValue* ivalue);
+    double VDCMin(BCap *bcvalue, InputValue *ivalue);
 
 };
 
