@@ -11,6 +11,16 @@ BulkCap::BulkCap()
 
 }
 
+double BulkCap::VRRMS(InputValue* ivalue)
+{
+    return ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+}
+
+double BulkCap::VDOut(InputValue* ivalue)
+{
+    return ((ivalue->input_volt_ac_min)*sqrt(2))-VRRMS(ivalue);
+}
+
 /**
   * @brief The total refueling time from Vmin to Vpeak
   * @param VInMin - minimum voltage value after diode blidge and capacitor
@@ -20,9 +30,7 @@ BulkCap::BulkCap()
   */
 double BulkCap::DeltaT(InputValue* ivalue)
 {
-    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
-    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
-    return (asin(volt_out/(ivalue->input_volt_ac_min*sqrt(2))))/(2*PI*(ivalue->freq_line));
+    return (asin(VDOut(ivalue)/(ivalue->input_volt_ac_min*sqrt(2))))/(2*PI*(ivalue->freq_line));
 }
 
 /**
@@ -48,9 +56,7 @@ double BulkCap::ChargTime(InputValue* ivalue)
   */
 double BulkCap::CapValue(InputValue* ivalue)
 {
-    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
-    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
-    return ((2*(ivalue->power_out_max))*(1/(4*ivalue->freq_line))+(DeltaT(ivalue)))/((ivalue->eff)*((volt_rrms*volt_rrms)-(volt_out*volt_out)));
+    return ((2*(ivalue->power_out_max))*(1/(4*ivalue->freq_line))+(DeltaT(ivalue)))/((ivalue->eff)*((VRRMS(ivalue)*VRRMS(ivalue))-(VDOut(ivalue)*VDOut(ivalue))));
 }
 
 /**
@@ -87,9 +93,7 @@ double BulkCap::ILoadMin(InputValue* ivalue, DBridge* dbvalue)
   */
 double BulkCap::IBulkCapPeak(BCap* bcvalue, InputValue* ivalue)
 {
-    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
-    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
-    return (2*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(volt_out)*(cos(2*PI*(ivalue->freq_line)*DeltaT(ivalue))));
+    return (2*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(VDOut(ivalue))*(cos(2*PI*(ivalue->freq_line)*DeltaT(ivalue))));
 }
 
 /**
@@ -115,9 +119,7 @@ double BulkCap::IBulkCapRMS(DBridge *dbvalue, InputValue* ivalue)
   */
 double BulkCap::VMinInp(BCap* bcvalue, InputValue* ivalue)
 {
-    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
-    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
-    return sqrt((volt_out*volt_out)-((2*(ivalue->power_out_max)*((1/(4*ivalue->freq_line)-DeltaT(ivalue))))/(bcvalue->bcapacitor_value)));
+    return sqrt((VDOut(ivalue)*VDOut(ivalue))-((2*(ivalue->power_out_max)*((1/(4*ivalue->freq_line)-DeltaT(ivalue))))/(bcvalue->bcapacitor_value)));
 }
 
 /**
@@ -128,7 +130,5 @@ double BulkCap::VMinInp(BCap* bcvalue, InputValue* ivalue)
   */
 double BulkCap::VDCMin(BCap* bcvalue, InputValue* ivalue)
 {
-    double volt_rrms = ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
-    double volt_out = ((ivalue->input_volt_ac_min)*sqrt(2))-volt_rrms;
-    return (volt_out+(bcvalue->input_min_voltage))/2;
+    return (VDOut(ivalue)+(bcvalue->input_min_voltage))/2;
 }

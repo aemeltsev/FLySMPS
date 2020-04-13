@@ -27,6 +27,10 @@ public:
     double VMinInp(BCap* bcvalue, InputValue* ivalue);
     double VDCMin(BCap *bcvalue, InputValue *ivalue);
 
+private:
+    double VDOut(InputValue* ivalue);
+    double VRRMS(InputValue* ivalue);
+
 };
 
 #endif // BULKCAP_H
