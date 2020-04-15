@@ -20,6 +20,7 @@ struct InputValue
     int16_t volt_out_aux;
     int16_t curr_out_aux;
     double eff;
+    double power_out_max;
     //Pre-design
     int16_t refl_volt_max;
     double eff_transf;
@@ -27,7 +28,7 @@ struct InputValue
     double volt_diode_drop_sec;
     double volt_diode_drop_bridge;
 };
-
+//
 struct DBridge
 {
     double diode_peak_curr;
@@ -40,7 +41,7 @@ struct DBridge
     double in_min_rms_voltage;
     double in_max_rms_voltage;
 };
-
+//
 struct BCap
 {
     double delta_t;
@@ -52,6 +53,54 @@ struct BCap
     double bcapacitor_rms_curr;
     double input_min_voltage;
     double input_dc_min_voltage;
+};
+//
+struct FBTransformer
+{
+    double max_duty_cycle;
+    double inp_power;
+
+    double volt_drain_sour_on;
+    double volt_drain_sour_max;
+    double curr_primary_aver;
+    double curr_primary_peak_peak;
+    double curr_primary_peak;
+    double curr_primary_valley;
+    double curr_primary_rms;
+
+    double primary_induct;
+    double number_primary_al;
+    double number_primary_ba;
+
+    double core_geometry_coeff;
+    double wa_ae;
+    double curr_dens;
+    double length_air_gap;
+    double b_max_actual;
+    double volt_reflected_post;
+    double max_duty_cycle_post;
+
+    double edge_coeff;
+    double width_bobin_eff;
+    double ae_eff; //Effective winding cross-section(Wae)
+
+    double n_out_power;
+    double n_out_coeff_power;
+
+    //Winding
+    double copper_ae;//(AP) or (ANS)
+    double max_wire_awg;//(AWGP) or (AWGNS)
+    double cop_wire_diam;//(DP) or (DS)
+    double copper_ae_post;//
+    double wire_curr_dens;//(JP) or (JS)
+    double num_tur_per_lay;//Number of turns per layer(NL)
+    double num_lay;//(LNp)
+
+    //Secondary number of turns
+    double numb_second;
+    double turns_ratio;//Primary to secondary turns ratio
+    double curr_peak_second;//Peak current(IAMax)
+    double curr_rms_second;//RMS current(ISRMS)
 };
 
 #endif // STRUCTDATA_H
