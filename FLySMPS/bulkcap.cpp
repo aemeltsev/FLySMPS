@@ -13,12 +13,12 @@ BulkCap::BulkCap()
 
 double BulkCap::VRRMS(InputValue* ivalue)
 {
-    return ((ivalue->input_volt_ac_min)*(1/(sqrt(2))))-((ivalue->input_volt_ac_min)*(2/PI));
+    return ((ivalue->input_volt_ac_min)*(1./(sqrt(2))))-((ivalue->input_volt_ac_min)*(2./PI));
 }
 
 double BulkCap::VDOut(InputValue* ivalue)
 {
-    return ((ivalue->input_volt_ac_min)*sqrt(2))-VRRMS(ivalue);
+    return ((ivalue->input_volt_ac_min)*sqrt(2.))-VRRMS(ivalue);
 }
 
 /**
@@ -30,7 +30,7 @@ double BulkCap::VDOut(InputValue* ivalue)
   */
 double BulkCap::DeltaT(InputValue* ivalue)
 {
-    return (asin(VDOut(ivalue)/(ivalue->input_volt_ac_min*sqrt(2))))/(2*PI*(ivalue->freq_line));
+    return (asin(VDOut(ivalue)/(ivalue->input_volt_ac_min*sqrt(2))))/(2.*PI*(ivalue->freq_line));
 }
 
 /**
@@ -42,7 +42,7 @@ double BulkCap::DeltaT(InputValue* ivalue)
   */
 double BulkCap::ChargTime(InputValue* ivalue)
 { 
-    return ((1/(4*(ivalue->freq_line)))-(DeltaT(ivalue)));
+    return ((1./(4.*(ivalue->freq_line)))-(DeltaT(ivalue)));
 }
 
 /**
@@ -56,7 +56,7 @@ double BulkCap::ChargTime(InputValue* ivalue)
   */
 double BulkCap::CapValue(InputValue* ivalue)
 {
-    return ((2*(ivalue->power_out_max))*(1/(4*ivalue->freq_line))+(DeltaT(ivalue)))/((ivalue->eff)*((VRRMS(ivalue)*VRRMS(ivalue))-(VDOut(ivalue)*VDOut(ivalue))));
+    return ((2.*(ivalue->power_out_max))*(1./(4.*ivalue->freq_line))+(DeltaT(ivalue)))/((ivalue->eff)*((VRRMS(ivalue)*VRRMS(ivalue))-(VDOut(ivalue)*VDOut(ivalue))));
 }
 
 /**
@@ -93,7 +93,7 @@ double BulkCap::ILoadMin(InputValue* ivalue, DBridge* dbvalue)
   */
 double BulkCap::IBulkCapPeak(BCap* bcvalue, InputValue* ivalue)
 {
-    return (2*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(VDOut(ivalue))*(cos(2*PI*(ivalue->freq_line)*DeltaT(ivalue))));
+    return (2.*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(VDOut(ivalue))*(cos(2.*PI*(ivalue->freq_line)*DeltaT(ivalue))));
 }
 
 /**
@@ -105,7 +105,7 @@ double BulkCap::IBulkCapPeak(BCap* bcvalue, InputValue* ivalue)
   */
 double BulkCap::IBulkCapRMS(DBridge *dbvalue, InputValue* ivalue)
 {
-    return dbvalue->load_avg_curr*(sqrt((2/(3*(ivalue->freq_line)*(dbvalue->diode_cond_time)))-1));
+    return dbvalue->load_avg_curr*(sqrt((2./(3.*(ivalue->freq_line)*(dbvalue->diode_cond_time)))-1));
 }
 
 /**
@@ -119,7 +119,7 @@ double BulkCap::IBulkCapRMS(DBridge *dbvalue, InputValue* ivalue)
   */
 double BulkCap::VMinInp(BCap* bcvalue, InputValue* ivalue)
 {
-    return sqrt((VDOut(ivalue)*VDOut(ivalue))-((2*(ivalue->power_out_max)*((1/(4*ivalue->freq_line)-DeltaT(ivalue))))/(bcvalue->bcapacitor_value)));
+    return sqrt((VDOut(ivalue)*VDOut(ivalue))-((2.*(ivalue->power_out_max)*((1./(4.*ivalue->freq_line)-DeltaT(ivalue))))/(bcvalue->bcapacitor_value)));
 }
 
 /**
@@ -130,5 +130,5 @@ double BulkCap::VMinInp(BCap* bcvalue, InputValue* ivalue)
   */
 double BulkCap::VDCMin(BCap* bcvalue, InputValue* ivalue)
 {
-    return (VDOut(ivalue)+(bcvalue->input_min_voltage))/2;
+    return (VDOut(ivalue)+(bcvalue->input_min_voltage))/2.;
 }

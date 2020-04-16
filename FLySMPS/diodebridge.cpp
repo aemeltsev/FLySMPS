@@ -26,7 +26,7 @@ double DiodeBridge::IDiodePeak(BCap* bcvalue)
   */
 double DiodeBridge::IDiodeRMS(InputValue* ivalue, DBridge* dbvalue)
 {
-    return (dbvalue->load_avg_curr)/(sqrt(3*(ivalue->freq_line)*(dbvalue->diode_cond_time)));
+    return (dbvalue->load_avg_curr)/(sqrt(3.*(ivalue->freq_line)*(dbvalue->diode_cond_time)));
 }
 /**
   * @brief  Calculate diode average current
@@ -35,7 +35,7 @@ double DiodeBridge::IDiodeRMS(InputValue* ivalue, DBridge* dbvalue)
   */
 double DiodeBridge::IDiodeAVG(DBridge* dbvalue)
 {
-    return (dbvalue->load_avg_curr)/2;
+    return (dbvalue->load_avg_curr)/2.;
 }
 /**
   * @brief  Total root mean square value of current diode
@@ -46,7 +46,7 @@ double DiodeBridge::IDiodeAVG(DBridge* dbvalue)
   */
 double DiodeBridge::IDiodeRMSTot(DBridge* dbvalue, InputValue* ivalue)
 {
-    return ((dbvalue->load_avg_curr)*sqrt(2))/(sqrt(3*(ivalue->freq_line)*(dbvalue->diode_cond_time)));
+    return ((dbvalue->load_avg_curr)*sqrt(2.))/(sqrt(3*(ivalue->freq_line)*(dbvalue->diode_cond_time)));
 }
 /**
   * @brief  Calculate the average dc current
@@ -87,7 +87,7 @@ double DiodeBridge::DiodeCurrentSlope(DBridge* dbvalue, BCap* bcvalue)
   */
 double DiodeBridge::MinPeakInVoltage(InputValue* ivalue)
 {
-    return (ivalue->input_volt_ac_min)*sqrt(2);
+    return (ivalue->input_volt_ac_min)*sqrt(2.);
 }
 /**
   * @brief  Solve maximum peak value
@@ -96,5 +96,5 @@ double DiodeBridge::MinPeakInVoltage(InputValue* ivalue)
   */
 double DiodeBridge::MaxPeakInVoltage(InputValue* ivalue)
 {
-    return  (ivalue->input_volt_ac_max)*sqrt(2);
+    return  (ivalue->input_volt_ac_max)*sqrt(2.);
 }
