@@ -57,20 +57,18 @@ struct BCap
 //
 struct FBTransformer
 {
-    double max_duty_cycle;
-    double inp_power;
+    double max_duty_cycle;//Max duty cycle
+    double inp_power;//Input power
 
-    double volt_drain_sour_on;
-    double volt_drain_sour_max;
-    double curr_primary_aver;
-    double curr_primary_peak_peak;
-    double curr_primary_peak;
-    double curr_primary_valley;
-    double curr_primary_rms;
+    double curr_primary_aver;//Primary average current during turn-on
+    double curr_primary_peak_peak;//Primary peak-to-peak current
+    double curr_primary_peak;//Primary peak current
+    double curr_primary_valley;//Primary valley current
+    double curr_primary_rms;//Primary RMS current
 
-    double primary_induct;
-    double number_primary_al;
-    double number_primary_ba;
+    double primary_induct;//Primary inductance
+    double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
+    double number_primary_bmax;//Calculate minimum primary number of turns use Bmax(max. flux density)
 
     double core_geometry_coeff;
     double wa_ae;
@@ -101,6 +99,12 @@ struct FBTransformer
     double turns_ratio;//Primary to secondary turns ratio
     double curr_peak_second;//Peak current(IAMax)
     double curr_rms_second;//RMS current(ISRMS)
+};
+//
+struct PMosfet
+{
+    double volt_drain_sour_on;//Mosfet max. average drop on R_DS(on) in ON-stage
+    double volt_drain_sour_max;//Maximum drain voltage in OFF-stage
 };
 
 #endif // STRUCTDATA_H
