@@ -37,7 +37,7 @@ public:
     //Post-calculated maximum duty cycle(DMaxPost)
     double MaxDutyCyclePost();
     //Correction factor F. - the edge coefficient(FFC)
-    double CfEdge();
+    double FringFluxFact();
     //Power of output n
     double NPower();
     //Output power coefficient(Kl)
@@ -59,6 +59,7 @@ public:
     double TRatio();//Primary to secondary turns ratio
     double SPeakCurr();//Peak current(IAMax)
     double ISecRMS();//RMS current(ISRMS)
+private:
 
 
 

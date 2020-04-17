@@ -35,7 +35,8 @@ HEADERS += \
         FLySMPS.h \
     diodebridge.h \
     bulkcap.h \
-    flytransformer.h
+    flytransformer.h \
+    structdata.h
 
 FORMS += \
         FLySMPS.ui

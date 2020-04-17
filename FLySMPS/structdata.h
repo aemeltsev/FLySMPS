@@ -68,18 +68,18 @@ struct FBTransformer
 
     double primary_induct;//Primary inductance
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
-    double number_primary_bmax;//Calculate minimum primary number of turns use Bmax(max. flux density)
+    double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
 
-    double core_geometry_coeff;
-    double wa_ae;
-    double curr_dens;
-    double length_air_gap;
-    double b_max_actual;
-    double volt_reflected_post;
-    double max_duty_cycle_post;
+    double core_geometry_coeff;//Core geometry factor K_g
+    double wa_ae;//Product of areas factor W_a*A_e
+    double curr_dens;//The maximum current density
+    double length_air_gap;//Air-gap length considered with fringing effect
+    double b_max_actual;//Recalc actual flux density
+    double volt_reflected_post;//Recalc reflected voltage
+    double max_duty_cycle_post;//Recalc maximum duty cycle
 
-    double edge_coeff;
-    double width_bobin_eff;
+    double fring_flux_coeff;//Fringing effect factor depends from the length of the gap and cross-sectional area
+    double width_bobin_eff;//
     double ae_eff; //Effective winding cross-section(Wae)
 
     double n_out_power;
