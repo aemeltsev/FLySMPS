@@ -1,25 +1,28 @@
 #ifndef FLYTRANSFORMER_H
 #define FLYTRANSFORMER_H
-
+#include <cmath>
+#include <cstdint>
+#include <structdata.h>
 
 class FlyTransformer
 {
 public:
     FlyTransformer();
-    //Calculate input power and maximum duty
-    double MaxDutyCycle();
-    double InpPower();
+    double DutyCycleDCM(InputValue *ivalue, BCap *bcvalue);//Maximum duty cycle
+    double InputPower(InputValue *ivalue);//Maximum input power
+    double PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//Output primary inductance
+
+    //All current primary side
+    double CurrPriAver(InputValue *ivalue, BCap *bcvalue, FBTransformer *fbtvalue);//()
+    double CurrPriPeakToPeak();//()
+    double CurrPriMax();//()
+    double CurrPriValley();//()
+    double CurrPriRMS();//()
+
     //Otput drain-source mosfet voltage values
     double VDSOn();//
     double VDSMax();//
-    //All current primary side
-    double IPAver();//()
-    double IPPeakPeak();//()
-    double IPMax();//()
-    double IPValley();//()
-    double IPRMS();//()
-    //Output primary inductance and primary turns use AL, or Bmax and Ae
-    double PInduct();
+
     double NPimaryAL();
     double NPimaryBA();
     //Core geometry coefficient(Kg)

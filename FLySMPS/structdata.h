@@ -59,6 +59,7 @@ struct FBTransformer
 {
     double max_duty_cycle;//Max duty cycle
     double inp_power;//Input power
+    double primary_induct;//Primary inductance
 
     double curr_primary_aver;//Primary average current during turn-on
     double curr_primary_peak_peak;//Primary peak-to-peak current
@@ -66,7 +67,6 @@ struct FBTransformer
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
 
-    double primary_induct;//Primary inductance
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
     double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
 
@@ -99,6 +99,8 @@ struct FBTransformer
     double turns_ratio;//Primary to secondary turns ratio
     double curr_peak_second;//Peak current(IAMax)
     double curr_rms_second;//RMS current(ISRMS)
+private:
+    double KRF;
 };
 //
 struct PMosfet
