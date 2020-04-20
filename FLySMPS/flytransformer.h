@@ -13,11 +13,11 @@ public:
     double PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//Output primary inductance
 
     //All current primary side
-    double CurrPriAver(InputValue *ivalue, BCap *bcvalue, FBTransformer *fbtvalue);//()
-    double CurrPriPeakToPeak();//()
-    double CurrPriMax();//()
-    double CurrPriValley();//()
-    double CurrPriRMS();//()
+    double CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue);//()
+    double CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//()
+    double CurrPriMax(FBTransformer *fbtvalue);//()
+    double CurrPriValley(FBTransformer *fbtvalue);//()
+    double CurrPriRMS(FBTransformer *fbtvalue);//()
 
     //Otput drain-source mosfet voltage values
     double VDSOn();//
@@ -63,12 +63,7 @@ public:
     double SPeakCurr();//Peak current(IAMax)
     double ISecRMS();//RMS current(ISRMS)
 private:
-
-
-
-
-
-
+    double KRF;
 };
 
 #endif // FLYTRANSFORMER_H
