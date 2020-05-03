@@ -8,19 +8,24 @@ class FlyTransformer
 {
 public:
     FlyTransformer();
+
     double DutyCycleDCM(InputValue *ivalue, BCap *bcvalue);//Maximum duty cycle
     double InputPower(InputValue *ivalue);//Maximum input power
     double PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//Output primary inductance
 
     //All current primary side
-    double CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue);//()
-    double CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//()
-    double CurrPriMax(FBTransformer *fbtvalue);//()
-    double CurrPriValley(FBTransformer *fbtvalue);//()
-    double CurrPriRMS(FBTransformer *fbtvalue);//()
+    double CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//
+    double CurrPriMax(FBTransformer *fbtvalue);//
+    double CurrPriValley(FBTransformer *fbtvalue);//
+    double CurrPriRMS(FBTransformer *fbtvalue);//
+
+    double EnergyStoredChoke(FBTransformer *fbtvalue);//
+
+    void setMagneteValues(double currdens, double utilfact, double fluxdens, double krf);
 
     //Otput drain-source mosfet voltage values
     double VDSOn();//
+    double CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue);//
     double VDSMax();//
 
     double NPimaryAL();
@@ -64,6 +69,13 @@ public:
     double ISecRMS();//RMS current(ISRMS)
 private:
     double KRF;
+
+    double curr_dens;//The maximum current density
+    double core_win_util_fact;//Window utilization factor
+    double flux_dens_max;//Saturation magnetic field density
+    double ElectrCondCoeff();
+
+
 };
 
 #endif // FLYTRANSFORMER_H

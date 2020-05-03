@@ -76,4 +76,33 @@ double FlyTransformer::CurrPriRMS(FBTransformer *fbtvalue)
 {
     return sqrt((3.*(fbtvalue->curr_primary_aver*fbtvalue->curr_primary_aver)+((fbtvalue->curr_primary_peak_peak/2.)*(fbtvalue->curr_primary_peak_peak/2.)))*(fbtvalue->max_duty_cycle/3.));
 }
-
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::EnergyStoredChoke(FBTransformer *fbtvalue)
+{
+    return (fbtvalue->primary_induct*((fbtvalue->curr_primary_peak)*(fbtvalue->curr_primary_peak)))/2.;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::ElectrCondCoeff()
+{
+    return core_win_util_fact*curr_dens*flux_dens_max;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void FlyTransformer::setMagneteValues(double currdens, double utilfact, double fluxdens, double krf)
+{
+    currdens = curr_dens;
+    utilfact = core_win_util_fact;
+    fluxdens = flux_dens_max;
+    krf = KRF;
+}
