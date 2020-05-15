@@ -106,3 +106,57 @@ void FlyTransformer::setMagneteValues(double currdens, double utilfact, double f
     fluxdens = flux_dens_max;
     krf = KRF;
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
+{
+    return (4.*(fbtvalue->energy_stored_choke))/(fbtvalue->electr_cond_coeff);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::CoreWinToCoreSect(FBTransformer *fbtvalue, InputValue *ivalue)
+{
+    double fubar = (ivalue->power_out_max)/(fbtvalue->electr_cond_coeff*ivalue->freq_switch);
+    return pow(fubar, (4./3.));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void FlyTransformer::setCoreSelection(double ap, double mu_rc, double ac, double wa, double vc, double lt, double lc, double hw, double al)
+{
+    ap = core_area_product;
+    mu_rc = core_permeal;
+    ac = core_cross_sect_area;
+    wa = core_wind_area;
+    vc = core_vol;
+    lt = mean_leng_per_turn;
+    lc = mean_mag_path_leng;
+    hw = core_win_height;
+    al = ind_fact;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NPimaryAL(FBTransformer *fbtvalue)
+{
+    return sqrt((fbtvalue->primary_induct)/ind_fact);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NPimaryBA(FBTransformer *fbtvalue)
+{
+    return ((fbtvalue->primary_induct)*(fbtvalue->curr_primary_peak_peak))/(flux_dens_max*core_cross_sect_area);
+}

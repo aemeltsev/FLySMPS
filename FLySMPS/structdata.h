@@ -67,12 +67,17 @@ struct FBTransformer
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
 
+    double energy_stored_choke;
+    double electr_cond_coeff;
+    double core_area_product;//Core area product Ap
+
+    double core_win_core_sect;////Product of areas factor W_a*A_e
+
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
     double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
 
-    double core_geometry_coeff;//Core geometry factor K_g
-    double wa_ae;//Product of areas factor W_a*A_e
-    double curr_dens;//The maximum current density
+
+
     double length_air_gap;//Air-gap length considered with fringing effect
     double b_max_actual;//Recalc actual flux density
     double volt_reflected_post;//Recalc reflected voltage
@@ -99,8 +104,6 @@ struct FBTransformer
     double turns_ratio;//Primary to secondary turns ratio
     double curr_peak_second;//Peak current(IAMax)
     double curr_rms_second;//RMS current(ISRMS)
-private:
-    double KRF;
 };
 //
 struct PMosfet
