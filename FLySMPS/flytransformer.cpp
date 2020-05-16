@@ -160,3 +160,39 @@ double FlyTransformer::NPimaryBA(FBTransformer *fbtvalue)
 {
     return ((fbtvalue->primary_induct)*(fbtvalue->curr_primary_peak_peak))/(flux_dens_max*core_cross_sect_area);
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::WireAreaWind(FBTransformer *fbtvalue, bool alcf)
+{
+    double fubar;
+    if(alcf)
+    {
+        fubar = (core_wind_area*core_win_util_fact)/fbtvalue->number_primary_al;
+    }
+    else
+    {
+        fubar = (core_wind_area*core_win_util_fact)/fbtvalue->number_primary_bmax;
+    }
+    return fubar;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::CurrDens(FBTransformer *fbtvalue)
+{
+    return fbtvalue->curr_primary_peak/fbtvalue->wire_area_wind;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NPrimaryWireArea(FBTransformer *fbtvalue)
+{
+    return (core_win_util_fact*core_wind_area)/fbtvalue->wire_area_wind;
+}

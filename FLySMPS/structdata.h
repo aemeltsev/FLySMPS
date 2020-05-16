@@ -76,7 +76,7 @@ struct FBTransformer
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
     double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
 
-
+    double wire_area_wind;//
 
     double length_air_gap;//Air-gap length considered with fringing effect
     double b_max_actual;//Recalc actual flux density

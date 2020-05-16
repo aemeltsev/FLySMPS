@@ -31,12 +31,11 @@ public:
     double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
     double NPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
 
+    double WireAreaWind(FBTransformer *fbtvalue, bool cff);//Cross-sectional area of the winding bare wire
+    double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
+    double NPrimaryWireArea(FBTransformer *fbtvalue);//
 
-
-    //Maximum current density of the wire(Jm)
-    double CurrDens();
-    //The air-gap length(lg)
-    double LengthAG();
+    double LengthAirGap();//The air-gap length(lg)
     //Actual flux density(BMaxAct)
     double BMaxAct();
     //Post-calculated reflected voltage(VRPost)
@@ -75,11 +74,12 @@ public:
     double VDSMax();//
 
 private:
+
     double KRF;
 
-    double curr_dens;//The maximum current density
-    double core_win_util_fact;//Window utilization factor
-    double flux_dens_max;//Saturation magnetic field density
+    double curr_dens;//Jm - the maximum current density
+    double core_win_util_fact;//Ku - window utilization factor
+    double flux_dens_max;//Bm - saturation magnetic field density
     double ElectrCondCoeff();
     double EnergyStoredChoke(FBTransformer *fbtvalue);//
 
@@ -94,6 +94,9 @@ private:
     double core_win_height;//height of the window
     double ind_fact;//Al(inductance factor TDK)
     /* Core selection */
+
+
+
 
 
 };
