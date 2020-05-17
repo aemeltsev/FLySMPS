@@ -81,13 +81,18 @@ struct FBTransformer
     double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
 
     double wire_area_wind;//
-
+    double number_primary_aw;//
     double length_air_gap;//Air-gap length considered with fringing effect
+
+    double fring_flux_coeff;//Fringing effect factor depends from the length of the gap and cross-sectional area
+    double fring_area;//
+    double fring_flux_fact;//
+
     double b_max_actual;//Recalc actual flux density
     double volt_reflected_post;//Recalc reflected voltage
     double max_duty_cycle_post;//Recalc maximum duty cycle
 
-    double fring_flux_coeff;//Fringing effect factor depends from the length of the gap and cross-sectional area
+
     double width_bobin_eff;//
     double ae_eff; //Effective winding cross-section(Wae)
 

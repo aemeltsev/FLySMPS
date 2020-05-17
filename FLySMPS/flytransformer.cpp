@@ -214,3 +214,32 @@ double FlyTransformer::LengthAirGap(FBTransformer *fbtvalue, bool alcf)
     }
     return fubar;
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void FlyTransformer::setMechanDimension(double f, double c)
+{
+    f = F;
+    c = C;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::FringArea(FBTransformer *fbtvalue)
+{
+    return (2.*1.*(fbtvalue->length_air_gap))*(C + F +(2.*1.*(fbtvalue->length_air_gap)));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::FringFluxFact(FBTransformer *fbtvalue)
+{
+    return 1 + (fbtvalue->fring_area/core_cross_sect_area);
+}
+

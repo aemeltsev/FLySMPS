@@ -33,14 +33,17 @@ public:
     double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
     double NPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
 
+    /*Wire Selection*/
     double WireAreaWind(FBTransformer *fbtvalue, bool alcf);//Cross-sectional area of the winding bare wire
     double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
     double NPrimaryWireArea(FBTransformer *fbtvalue);//
+    /*Wire Selection*/
 
     /*Air-Gap Length Considered with Fringing Effect*/
     double LengthAirGap(FBTransformer *fbtvalue, bool alcf);//The air-gap length(lg)
-    double FringArea();
-    double FringFluxFact();//Correction factor F. - the edge coefficient(FFC)
+    void setMechanDimension(double f, double c);
+    double FringArea(FBTransformer *fbtvalue);
+    double FringFluxFact(FBTransformer *fbtvalue);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/
 
     double BMaxAct();//Actual flux density(BMaxAct)
@@ -101,10 +104,13 @@ private:
     double ind_fact;//Al(inductance factor TDK)
     /* Core selection */
 
-
-
-
-
+    /* Mechanical dimensions */
+    /* Rectangular Air Gap */
+    double F;
+    double C;
+    /* Round Air Gap */
+    double D;
+    /* Mechanical dimensions */
 };
 
 #endif // FLYTRANSFORMER_H
