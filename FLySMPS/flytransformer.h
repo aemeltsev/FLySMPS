@@ -13,45 +13,51 @@ public:
     double InputPower(InputValue *ivalue);//Maximum input power
     double PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//Output primary inductance
 
-    //All current primary side
-    double CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue);//
-    double CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);//
-    double CurrPriMax(FBTransformer *fbtvalue);//
-    double CurrPriValley(FBTransformer *fbtvalue);//
-    double CurrPriRMS(FBTransformer *fbtvalue);//
+    /*All current primary side*/
+    double CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue);
+    double CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue);
+    double CurrPriMax(FBTransformer *fbtvalue);
+    double CurrPriValley(FBTransformer *fbtvalue);
+    double CurrPriRMS(FBTransformer *fbtvalue);
+    /*All current primary side*/
 
     void setMagneteValues(double currdens, double utilfact, double fluxdens, double krf);
 
+    /*Core Geometry Factor and Core Selection*/
     double CoreAreaProd(FBTransformer *fbtvalue);//Core geometry coefficient(Ap)
-
     double CoreWinToCoreSect(FBTransformer *fbtvalue, InputValue *ivalue);//Cross-sectional area to Window area core(WaAe)
+    /*Core Geometry Factor and Core Selection*/
 
     void setCoreSelection(double ap, double mu_rc, double ac, double wa, double vc, double lt, double lc, double hw, double al);
 
     double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
     double NPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
 
-    double WireAreaWind(FBTransformer *fbtvalue, bool cff);//Cross-sectional area of the winding bare wire
+    double WireAreaWind(FBTransformer *fbtvalue, bool alcf);//Cross-sectional area of the winding bare wire
     double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
     double NPrimaryWireArea(FBTransformer *fbtvalue);//
 
-    double LengthAirGap();//The air-gap length(lg)
-    //Actual flux density(BMaxAct)
-    double BMaxAct();
-    //Post-calculated reflected voltage(VRPost)
-    double VRPost();
-    //Post-calculated maximum duty cycle(DMaxPost)
-    double MaxDutyCyclePost();
-    //Correction factor F. - the edge coefficient(FFC)
-    double FringFluxFact();
-    //Power of output n
-    double NPower();
-    //Output power coefficient(Kl)
-    double NCfPower();
-    //Effective bobbin width(BWe)
-    double WidthBE();
-    //Effective winding cross-section(Wae)
-    double EffectAe();
+    /*Air-Gap Length Considered with Fringing Effect*/
+    double LengthAirGap(FBTransformer *fbtvalue, bool alcf);//The air-gap length(lg)
+    double FringArea();
+    double FringFluxFact();//Correction factor F. - the edge coefficient(FFC)
+    /*Air-Gap Length Considered with Fringing Effect*/
+
+    double BMaxAct();//Actual flux density(BMaxAct)
+
+    double VRPost();//Post-calculated reflected voltage(VRPost)
+
+    double MaxDutyCyclePost();//Post-calculated maximum duty cycle(DMaxPost)
+
+
+
+    double NPower();//Power of output n
+
+    double NCfPower();//Output power coefficient(Kl)
+
+    double WidthBE();//Effective bobbin width(BWe)
+
+    double EffectAe();//Effective winding cross-section(Wae)
 
 
     //Winding

@@ -196,3 +196,21 @@ double FlyTransformer::NPrimaryWireArea(FBTransformer *fbtvalue)
 {
     return (core_win_util_fact*core_wind_area)/fbtvalue->wire_area_wind;
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::LengthAirGap(FBTransformer *fbtvalue, bool alcf)
+{
+    double fubar;
+    if(alcf)
+    {
+        fubar = ((MU_Z*core_cross_sect_area*pow(fbtvalue->number_primary_al, 2))/(fbtvalue->primary_induct))-(mean_mag_path_leng/core_permeal);
+    }
+    else
+    {
+        fubar = ((MU_Z*core_cross_sect_area*pow(fbtvalue->number_primary_bmax, 2))/(fbtvalue->primary_induct))-(mean_mag_path_leng/core_permeal);
+    }
+    return fubar;
+}

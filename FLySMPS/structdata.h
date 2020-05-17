@@ -1,6 +1,10 @@
 #ifndef STRUCTDATA_H
 #define STRUCTDATA_H
 #include <cstdint>
+
+#define PI   3.1415926535897932385
+#define MU_Z 4.*PI*1e-7
+
 struct InputValue
 {
     int16_t input_volt_ac_max;
