@@ -87,14 +87,11 @@ struct FBTransformer
     double fring_flux_coeff;//Fringing effect factor depends from the length of the gap and cross-sectional area
     double fring_area;//
     double fring_flux_fact;//
-
-    double b_max_actual;//Recalc actual flux density
-    double volt_reflected_post;//Recalc reflected voltage
-    double max_duty_cycle_post;//Recalc maximum duty cycle
-
-
-    double width_bobin_eff;//
-    double ae_eff; //Effective winding cross-section(Wae)
+    
+    double actual_num_primary;
+    double actual_b_peak;//Calc peak flux density
+    double actual_volt_reflected;//Recalc reflected voltage
+    double actual_max_duty_cycle;//Recalc maximum duty cycle
 
     double n_out_power;
     double n_out_coeff_power;
@@ -109,10 +106,11 @@ struct FBTransformer
     double num_lay;//(LNp)
 
     //Secondary number of turns
-    double numb_second;
     double turns_ratio;//Primary to secondary turns ratio
     double curr_peak_second;//Peak current(IAMax)
     double curr_rms_second;//RMS current(ISRMS)
+    double numb_second;
+
 };
 //
 struct PMosfet

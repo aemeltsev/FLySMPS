@@ -240,6 +240,42 @@ double FlyTransformer::FringArea(FBTransformer *fbtvalue)
   */
 double FlyTransformer::FringFluxFact(FBTransformer *fbtvalue)
 {
-    return 1 + (fbtvalue->fring_area/core_cross_sect_area);
+    return 1. + (fbtvalue->fring_area/core_cross_sect_area);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::actNumPrimary(FBTransformer *fbtvalue)
+{
+    return sqrt(((fbtvalue->primary_induct)/MU_Z*core_cross_sect_area)*(fbtvalue->length_air_gap + (mean_mag_path_leng/core_permeal)));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::actFluxDensPeak(FBTransformer *fbtvalue)
+{
+    return ((MU_Z*fbtvalue->actual_num_primary)/(fbtvalue->length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue->curr_primary_peak + (fbtvalue->curr_primary_peak_peak/2.));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::actVoltageRefl(InputValue *ivalue, FBTransformer *fbtvalue, double numSec)
+{
+    return (ivalue->volt_out_one + ivalue->volt_diode_drop_sec)*(fbtvalue->actual_num_primary/numSec);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue)
+{
+    return fbtvalue->actual_volt_reflected/(fbtvalue->actual_volt_reflected + bcvalue->input_min_voltage);
 }
 

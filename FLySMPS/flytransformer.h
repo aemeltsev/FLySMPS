@@ -45,13 +45,19 @@ public:
     double FringArea(FBTransformer *fbtvalue);
     double FringFluxFact(FBTransformer *fbtvalue);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/
+    
+    /*Recalc Np, Bm, RefVoltage, DutyCycle*/
+    double actNumPrimary(FBTransformer *fbtvalue);
+    double actFluxDensPeak(FBTransformer *fbtvalue);//Actual flux density(BmAct)
+    double actVoltageRefl(InputValue *ivalue, FBTransformer *fbtvalue, double numSec);//Post-calculated reflected voltage(VRPost)
+    double actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
+    /*Recalc Np, Bm, RefVoltage, DutyCycle*/
+    
+    
 
-    double BMaxAct();//Actual flux density(BMaxAct)
+    
 
-    double VRPost();//Post-calculated reflected voltage(VRPost)
-
-    double MaxDutyCyclePost();//Post-calculated maximum duty cycle(DMaxPost)
-
+   
 
 
     double NPower();//Power of output n
