@@ -60,9 +60,9 @@ public:
    
 
 
-    double NPower();//Power of output n
+    double NumOutPower(double OutCurr, double OutVolt);//Power of output n
 
-    double NCfPower();//Output power coefficient(Kl)
+    double NumCoeffPower(InputValue *ivalue, double OutPower);//Output power coefficient(Kl)
 
     double WidthBE();//Effective bobbin width(BWe)
 

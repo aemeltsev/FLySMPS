@@ -278,4 +278,21 @@ double FlyTransformer::actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue)
 {
     return fbtvalue->actual_volt_reflected/(fbtvalue->actual_volt_reflected + bcvalue->input_min_voltage);
 }
-
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NumOutPower(double OutCurr, double OutVolt)
+{
+    return OutCurr*OutVolt;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NumCoeffPower(InputValue *ivalue, double OutPower)
+{
+    return OutPower/ivalue->power_out_max;
+}
