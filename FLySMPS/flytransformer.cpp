@@ -4,6 +4,7 @@ FlyTransformer::FlyTransformer()
 {
 
 }
+/*Inductance of primary side*/
 /**
   * @brief
   * @param
@@ -31,6 +32,8 @@ double FlyTransformer::PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputVa
 {
     return ((bcvalue->input_dc_min_voltage*fbtvalue->max_duty_cycle)*(bcvalue->input_dc_min_voltage*fbtvalue->max_duty_cycle))/(2.*fbtvalue->inp_power*ivalue->freq_switch*KRF);
 }
+/*Inductance of primary side*/
+/*All current primary side*/
 /**
   * @brief
   * @param
@@ -76,24 +79,8 @@ double FlyTransformer::CurrPriRMS(FBTransformer *fbtvalue)
 {
     return sqrt((3.*(fbtvalue->curr_primary_aver*fbtvalue->curr_primary_aver)+((fbtvalue->curr_primary_peak_peak/2.)*(fbtvalue->curr_primary_peak_peak/2.)))*(fbtvalue->max_duty_cycle/3.));
 }
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::EnergyStoredChoke(FBTransformer *fbtvalue)
-{
-    return (fbtvalue->primary_induct*((fbtvalue->curr_primary_peak)*(fbtvalue->curr_primary_peak)))/2.;
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::ElectrCondCoeff()
-{
-    return core_win_util_fact*curr_dens*flux_dens_max;
-}
+/*All current primary side*/
+/*Area product calculation*/
 /**
   * @brief
   * @param
@@ -111,18 +98,36 @@ void FlyTransformer::setMagneteValues(double currdens, double utilfact, double f
   * @param
   * @retval
   */
-double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
+double FlyTransformer::EnergyStoredChoke(FBTransformer *fbtvalue)
 {
-    return (4.*(fbtvalue->energy_stored_choke))/(fbtvalue->electr_cond_coeff);
+    return (fbtvalue->primary_induct*((fbtvalue->curr_primary_peak)*(fbtvalue->curr_primary_peak)))/2.;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CoreWinToCoreSect(FBTransformer *fbtvalue, InputValue *ivalue)
+double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
 {
-    double fubar = (ivalue->power_out_max)/(fbtvalue->electr_cond_coeff*ivalue->freq_switch);
+    return (2.*(fbtvalue->energy_stored_choke))/(curr_dens*core_win_util_fact*flux_dens_max);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::DeltaFluxMax(FBTransformer *fbtvalue)
+{
+    return  flux_dens_max*(fbtvalue->curr_primary_peak_peak/(1.1*fbtvalue->curr_primary_peak));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::CoreWinToCoreSect(FBTransformer *fbtvalue)
+{
+    double fubar = (fbtvalue->primary_induct*fbtvalue->curr_primary_rms*fbtvalue->curr_primary_peak)/(flux_dens_max*K_1);
     return pow(fubar, (4./3.));
 }
 /**
@@ -142,6 +147,8 @@ void FlyTransformer::setCoreSelection(double ap, double mu_rc, double ac, double
     hw = core_win_height;
     al = ind_fact;
 }
+/*Area product calculation*/
+/**/
 /**
   * @brief
   * @param
@@ -165,18 +172,9 @@ double FlyTransformer::NPimaryBA(FBTransformer *fbtvalue)
   * @param
   * @retval
   */
-double FlyTransformer::WireAreaWind(FBTransformer *fbtvalue, bool alcf)
+double FlyTransformer::AreaWindTotal(FBTransformer *fbtvalue)
 {
-    double fubar;
-    if(alcf)
-    {
-        fubar = (core_wind_area*core_win_util_fact)/fbtvalue->number_primary_al;
-    }
-    else
-    {
-        fubar = (core_wind_area*core_win_util_fact)/fbtvalue->number_primary_bmax;
-    }
-    return fubar;
+    return (fbtvalue->curr_primary_peak)/curr_dens;
 }
 /**
   * @brief

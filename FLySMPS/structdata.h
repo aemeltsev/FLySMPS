@@ -4,6 +4,7 @@
 
 #define PI   3.1415926535897932385
 #define MU_Z 4.*PI*1e-7
+#define K_1  85*1E-4
 
 struct InputValue
 {

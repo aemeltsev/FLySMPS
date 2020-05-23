@@ -21,23 +21,19 @@ public:
     double CurrPriRMS(FBTransformer *fbtvalue);
     /*All current primary side*/
 
+    /*Core Geometry Factor and Core Selection*/
     void setMagneteValues(double currdens, double utilfact, double fluxdens, double krf);
-
-    /*Core Geometry Factor and Core Selection*/
     double CoreAreaProd(FBTransformer *fbtvalue);//Core geometry coefficient(Ap)
-    double CoreWinToCoreSect(FBTransformer *fbtvalue, InputValue *ivalue);//Cross-sectional area to Window area core(WaAe)
-    /*Core Geometry Factor and Core Selection*/
-
+    double CoreWinToCoreSect(FBTransformer *fbtvalue);//Cross-sectional area to Window area core(WaAe)
+    double DeltaFluxMax(FBTransformer *fbtvalue);
     void setCoreSelection(double ap, double mu_rc, double ac, double wa, double vc, double lt, double lc, double hw, double al);
+    double AreaWindTotal(FBTransformer *fbtvalue);//Cross-sectional area of the winding bare wire
+    double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
+    /*Core Geometry Factor and Core Selection*/
 
     double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
     double NPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
-
-    /*Wire Selection*/
-    double WireAreaWind(FBTransformer *fbtvalue, bool alcf);//Cross-sectional area of the winding bare wire
-    double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
     double NPrimaryWireArea(FBTransformer *fbtvalue);//
-    /*Wire Selection*/
 
     /*Air-Gap Length Considered with Fringing Effect*/
     double LengthAirGap(FBTransformer *fbtvalue, bool alcf);//The air-gap length(lg)
@@ -53,16 +49,13 @@ public:
     double actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
     
-    
-
-    
-
-   
-
-
+    /**/
     double NumOutPower(double OutCurr, double OutVolt);//Power of output n
-
     double NumCoeffPower(InputValue *ivalue, double OutPower);//Output power coefficient(Kl)
+    
+
+
+
 
     double WidthBE();//Effective bobbin width(BWe)
 
@@ -95,7 +88,6 @@ private:
     double curr_dens;//Jm - the maximum current density
     double core_win_util_fact;//Ku - window utilization factor
     double flux_dens_max;//Bm - saturation magnetic field density
-    double ElectrCondCoeff();
     double EnergyStoredChoke(FBTransformer *fbtvalue);//
 
     /* Core selection */
