@@ -254,6 +254,44 @@ double FlyTransformer::actFluxDensPeak(FBTransformer *fbtvalue)
     return ((S_MU_Z*fbtvalue->actual_num_primary)/(fbtvalue->length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue->curr_primary_peak + (fbtvalue->curr_primary_peak_peak/2.));
 }
 /*Air gap methods*/
+/**/
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NumOutPower(double *OutCurr, double *OutVolt)
+{
+    return (*OutCurr)*(*OutVolt);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NumCoeffPower(InputValue *ivalue, double *OutPower)
+{
+    return *OutPower/ivalue->power_out_max;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::NumSecondary(FBTransformer *fbtvalue, InputValue *ivalue, double *OutVolt)
+{
+    return (fbtvalue->actual_num_primary*(*OutVolt)*ivalue->volt_diode_drop_sec)/fbtvalue->actual_volt_reflected;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::TurnsRatio(FBTransformer *fbtvalue, double *NumTurns)
+{
+    return fbtvalue->actual_num_primary/(*NumTurns);
+}
+/**/
 /*Recalc actual methods vreflected and duty*/
 /**
   * @brief
@@ -274,22 +312,34 @@ double FlyTransformer::actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue)
     return fbtvalue->actual_volt_reflected/(fbtvalue->actual_volt_reflected + bcvalue->input_min_voltage);
 }
 /*Recalc actual methods vreflected and duty*/
-/*Secondary side values*/
+/**/
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::NumOutPower(double *OutCurr, double *OutVolt)
+void FlyTransformer::setWindVal(double m, double fcu)
 {
-    return (*OutCurr)*(*OutVolt);
+    m = M;
+    fcu = FCu;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::NumCoeffPower(InputValue *ivalue, double *OutPower)
+double FlyTransformer::EffBobbWidth()
 {
-    return *OutPower/ivalue->power_out_max;
+    return D - (2. * M);
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double FlyTransformer::EffWindCrossSect(FBTransformer *fbtvalue)
+{
+    return (core_wind_area*fbtvalue->eff_bobb_width)/D;
+}
+
+/**/

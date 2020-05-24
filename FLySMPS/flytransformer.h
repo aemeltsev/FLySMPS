@@ -52,14 +52,15 @@ public:
     /**/
     double NumOutPower(double *OutCurr, double *OutVolt);//Power of output n
     double NumCoeffPower(InputValue *ivalue, double *OutPower);//Output power coefficient(Kl)
-    
+    double NumSecondary(FBTransformer *fbtvalue, InputValue *ivalue, double *OutVolt);
+    double TurnsRatio(FBTransformer *fbtvalue, double *NumTurns);//Primary to secondary turns ratio
+    /**/
 
-
-
-
-    double WidthBE();//Effective bobbin width(BWe)
-
-    double EffectAe();//Effective winding cross-section(Wae)
+    /**/
+    void setWindVal(double m, double fcu);
+    double EffBobbWidth();//Effective bobbin width(BWe)
+    double EffWindCrossSect(FBTransformer *fbtvalue);//Effective winding cross-section(ANe)
+    /**/
 
 
     //Winding
@@ -71,8 +72,8 @@ public:
     double NumTurToLay();//Number of turns per layer(NL)
     double NumLay();//(LNp)
     //Secondary number of turns
-    double NSecondary();
-    double TRatio();//Primary to secondary turns ratio
+
+
     double SPeakCurr();//Peak current(IAMax)
     double ISecRMS();//RMS current(ISRMS)
 
@@ -111,6 +112,9 @@ private:
     /* Round Air Gap */
     double Diam;
     /* Mechanical dimensions */
+
+    double M;
+    double FCu;
 };
 
 #endif // FLYTRANSFORMER_H

@@ -2,10 +2,10 @@
 #define STRUCTDATA_H
 #include <cstdint>
 
-#define S_PI     3.1415926535897932385
-#define S_RO_OM  1.72e-8 //Ohm/m
-#define S_MU_Z   4.*S_PI*1e-7 //H/m
-#define S_K_1    85*1E-4
+#define S_PI       3.1415926535897932385
+#define S_RO_OM    1.72E-8 //Ohm/m
+#define S_MU_Z     4.*S_PI*1E-7 //H/m
+#define S_K_1      85*1E-4
 
 struct InputValue
 {
@@ -91,6 +91,7 @@ struct FBTransformer
 
     double actual_volt_reflected;//Recalc reflected voltage
     double actual_max_duty_cycle;//Recalc maximum duty cycle
+    double eff_bobb_width;
 
     //Winding
     double copper_ae;//(AP) or (ANS)
