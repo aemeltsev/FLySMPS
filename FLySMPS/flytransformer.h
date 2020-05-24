@@ -27,8 +27,8 @@ public:
     double CoreWinToCoreSect(FBTransformer *fbtvalue);//Cross-sectional area to Window area core(WaAe)
     double DeltaFluxMax(FBTransformer *fbtvalue);
     void setCoreSelection(double ap, double mu_rc, double ac, double wa, double vc, double lt, double lc, double hw, double al);
-    double AreaWindTotal(FBTransformer *fbtvalue);//Cross-sectional area of the winding bare wire
-    double CurrDens(FBTransformer *fbtvalue);//Maximum current density of the wire(Jm)
+    double AreaWindTotal(FBTransformer *fbtvalue, InputValue *ivalue);//Cross-sectional area of the winding bare wire
+    double CurrentDens(FBTransformer *fbtvalue);
     /*Core Geometry Factor and Core Selection*/
 
     double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
@@ -36,8 +36,8 @@ public:
     double NPrimaryWireArea(FBTransformer *fbtvalue);//
 
     /*Air-Gap Length Considered with Fringing Effect*/
-    double LengthAirGap(FBTransformer *fbtvalue, bool alcf);//The air-gap length(lg)
-    void setMechanDimension(double f, double c);
+    double LengthAirGap(FBTransformer *fbtvalue, double *varNumPrim);//The air-gap length(lg)
+    void setMechanDimension(double f, double c, double e, double d);
     double FringArea(FBTransformer *fbtvalue);
     double FringFluxFact(FBTransformer *fbtvalue);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/
@@ -45,13 +45,13 @@ public:
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
     double actNumPrimary(FBTransformer *fbtvalue);
     double actFluxDensPeak(FBTransformer *fbtvalue);//Actual flux density(BmAct)
-    double actVoltageRefl(InputValue *ivalue, FBTransformer *fbtvalue, double numSec);//Post-calculated reflected voltage(VRPost)
+    double actVoltageRefl(InputValue *ivalue, FBTransformer *fbtvalue, double *varNumSec);//Post-calculated reflected voltage(VRPost)
     double actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
     
     /**/
-    double NumOutPower(double OutCurr, double OutVolt);//Power of output n
-    double NumCoeffPower(InputValue *ivalue, double OutPower);//Output power coefficient(Kl)
+    double NumOutPower(double *OutCurr, double *OutVolt);//Power of output n
+    double NumCoeffPower(InputValue *ivalue, double *OutPower);//Output power coefficient(Kl)
     
 
 
@@ -106,8 +106,10 @@ private:
     /* Rectangular Air Gap */
     double F;
     double C;
-    /* Round Air Gap */
+    double E;
     double D;
+    /* Round Air Gap */
+    double Diam;
     /* Mechanical dimensions */
 };
 

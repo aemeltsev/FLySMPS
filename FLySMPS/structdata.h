@@ -2,9 +2,10 @@
 #define STRUCTDATA_H
 #include <cstdint>
 
-#define PI   3.1415926535897932385
-#define MU_Z 4.*PI*1e-7
-#define K_1  85*1E-4
+#define S_PI     3.1415926535897932385
+#define S_RO_OM  1.72e-8 //Ohm/m
+#define S_MU_Z   4.*S_PI*1e-7 //H/m
+#define S_K_1    85*1E-4
 
 struct InputValue
 {
@@ -72,30 +73,24 @@ struct FBTransformer
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
 
-    double energy_stored_choke;
-    double electr_cond_coeff;
+    double energy_stored_choke;//The stored energy
     double core_area_product;//Core area product Ap
-
+    double delta_flux_max;
     double core_win_core_sect;////Product of areas factor W_a*A_e
+    double area_wind_tot;//
 
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
     double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
-
-    double wire_area_wind;//
     double number_primary_aw;//
-    double length_air_gap;//Air-gap length considered with fringing effect
 
-    double fring_flux_coeff;//Fringing effect factor depends from the length of the gap and cross-sectional area
+    double length_air_gap;//Air-gap length considered with fringing effect
     double fring_area;//
     double fring_flux_fact;//
-    
     double actual_num_primary;
     double actual_b_peak;//Calc peak flux density
+
     double actual_volt_reflected;//Recalc reflected voltage
     double actual_max_duty_cycle;//Recalc maximum duty cycle
-
-    double n_out_power;
-    double n_out_coeff_power;
 
     //Winding
     double copper_ae;//(AP) or (ANS)

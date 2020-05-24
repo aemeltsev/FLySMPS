@@ -4,7 +4,6 @@
 //
 ////////////////////////////////////////////////////////////
 #include "bulkcap.h"
-#define PI 3.1415926535897932385
 
 BulkCap::BulkCap()
 {
@@ -13,7 +12,7 @@ BulkCap::BulkCap()
 
 double BulkCap::VRRMS(InputValue* ivalue)
 {
-    return ((ivalue->input_volt_ac_min)*(1./(sqrt(2))))-((ivalue->input_volt_ac_min)*(2./PI));
+    return ((ivalue->input_volt_ac_min)*(1./(sqrt(2))))-((ivalue->input_volt_ac_min)*(2./S_PI));
 }
 
 double BulkCap::VDOut(InputValue* ivalue)
@@ -30,7 +29,7 @@ double BulkCap::VDOut(InputValue* ivalue)
   */
 double BulkCap::DeltaT(InputValue* ivalue)
 {
-    return (asin(VDOut(ivalue)/(ivalue->input_volt_ac_min*sqrt(2))))/(2.*PI*(ivalue->freq_line));
+    return (asin(VDOut(ivalue)/(ivalue->input_volt_ac_min*sqrt(2))))/(2.*S_PI*(ivalue->freq_line));
 }
 
 /**
@@ -93,7 +92,7 @@ double BulkCap::ILoadMin(InputValue* ivalue, DBridge* dbvalue)
   */
 double BulkCap::IBulkCapPeak(BCap* bcvalue, InputValue* ivalue)
 {
-    return (2.*PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(VDOut(ivalue))*(cos(2.*PI*(ivalue->freq_line)*DeltaT(ivalue))));
+    return (2.*S_PI*(ivalue->freq_line)*(bcvalue->bcapacitor_value)*(VDOut(ivalue))*(cos(2.*S_PI*(ivalue->freq_line)*DeltaT(ivalue))));
 }
 
 /**
