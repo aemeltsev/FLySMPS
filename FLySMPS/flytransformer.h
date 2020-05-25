@@ -31,15 +31,15 @@ public:
     double CurrentDens(FBTransformer *fbtvalue);
     /*Core Geometry Factor and Core Selection*/
 
-    double NPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
-    double NPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
-    double NPrimaryWireArea(FBTransformer *fbtvalue);//
+    double numPimaryAL(FBTransformer *fbtvalue);//Primary turns using inductance factor
+    double numPimaryBA(FBTransformer *fbtvalue);//Primary turns using core area
+    double numPrimaryWireArea(FBTransformer *fbtvalue);//
 
     /*Air-Gap Length Considered with Fringing Effect*/
-    double LengthAirGap(FBTransformer *fbtvalue, double *varNumPrim);//The air-gap length(lg)
+    double agLength(FBTransformer *fbtvalue, double *varNumPrim);//The air-gap length(lg)
     void setMechanDimension(double f, double c, double e, double d);
-    double FringArea(FBTransformer *fbtvalue);
-    double FringFluxFact(FBTransformer *fbtvalue);//Correction factor F. - the edge coefficient(FFC)
+    double agFringArea(FBTransformer *fbtvalue);
+    double agFringFluxFact(FBTransformer *fbtvalue);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/
     
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
@@ -50,32 +50,28 @@ public:
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
     
     /**/
-    double NumOutPower(double *OutCurr, double *OutVolt);//Power of output n
-    double NumCoeffPower(InputValue *ivalue, double *OutPower);//Output power coefficient(Kl)
-    double NumSecondary(FBTransformer *fbtvalue, InputValue *ivalue, double *OutVolt);
-    double TurnsRatio(FBTransformer *fbtvalue, double *NumTurns);//Primary to secondary turns ratio
+    double numOutPower(double *OutCurr, double *OutVolt);//Power of output n
+    double numCoeffPower(InputValue *ivalue, double *OutPower);//Output power coefficient(Kl)
+    double numSecondary(FBTransformer *fbtvalue, InputValue *ivalue, double *OutVolt);
+    double numTurnsRatio(FBTransformer *fbtvalue, double *NumTurns);//Primary to secondary turns ratio
     /**/
 
-    /**/
+    /*Winding*/
     void setWindVal(double m, double fcu);
-    double EffBobbWidth();//Effective bobbin width(BWe)
-    double EffWindCrossSect(FBTransformer *fbtvalue);//Effective winding cross-section(ANe)
-    /**/
-
-
-    //Winding
-    double CopAeP();//(AP) or (ANS)
-    double WireAWG();//(AWGP) or (AWGNS)
-    double CopDiam();//(DP) or (DS)
-    double CopAePPost();//
-    double CurrDes();//(JP) or (JS)
-    double NumTurToLay();//Number of turns per layer(NL)
-    double NumLay();//(LNp)
-    //Secondary number of turns
-
-
-    double SPeakCurr();//Peak current(IAMax)
-    double ISecRMS();//RMS current(ISRMS)
+    double wEffBobbWidth();//Effective bobbin width(BWe)
+    double wEffWindCrossSect(FBTransformer *fbtvalue);//Effective winding cross-section(ANe)
+    double wCoperWireCrossSectArea(FBTransformer *fbtvalue,  double *WindFact);//(AP) or (ANS)
+    double wMaxWireSizeAWG(double *WireCrossSect);//(AWGP) or (AWGNS)
+    void setWireDiam(double awgp, uint16_t np, double ins);
+    double wCoperWireDiam(double *WireSizeAWG);//(DP) or (DS)
+    double wCoperWireCrossSectAreaPost(double *WireDiam);//
+    double wCurrentDenst(FBTransformer *fbtvalue, double *WireAreaPost);//(JP) or (JS)
+    double wNumTurnToLay(FBTransformer *fbtvalue, double *WireDiam);//Number of turns per layer(NL)
+    double wNumLay(FBTransformer *fbtvalue, double *NumTurPerLay);//(LNp)
+    //Current for secondary layers
+    double wSecondCurrPeak(FBTransformer *fbtvalue, double *TurnRatio, double *CoeffPwr);//Peak current(IAMax)
+    double wSecondCurrRMS(FBTransformer *fbtvalue, double *CoeffPwr, double *TurnRatio);//RMS current(ISRMS)
+    /*Winding*/
 
     //Otput drain-source mosfet voltage values
     double VDSOn();//
@@ -115,6 +111,9 @@ private:
 
     double M;
     double FCu;
+    double AWGp;
+    double Np;
+    double INS;
 };
 
 #endif // FLYTRANSFORMER_H

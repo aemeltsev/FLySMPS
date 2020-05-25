@@ -108,6 +108,7 @@ struct FBTransformer
     double curr_rms_second;//RMS current(ISRMS)
     double numb_second;
 
+    double eff_wind_cross_sect;
 };
 //
 struct PMosfet
