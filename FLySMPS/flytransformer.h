@@ -72,12 +72,6 @@ public:
     double wSecondCurrPeak(FBTransformer *fbtvalue, double *TurnRatio, double *CoeffPwr);//Peak current(IAMax)
     double wSecondCurrRMS(FBTransformer *fbtvalue, double *CoeffPwr, double *TurnRatio);//RMS current(ISRMS)
     /*Winding*/
-
-    //Otput drain-source mosfet voltage values
-    double VDSOn();//
-
-    double VDSMax();//
-
 private:
 
     double KRF;
