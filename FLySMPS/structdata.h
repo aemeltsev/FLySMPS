@@ -33,6 +33,7 @@ struct InputValue
     int16_t voltage_spike;
     double volt_diode_drop_sec;
     double volt_diode_drop_bridge;
+    double leakage_induct;
 };
 //
 struct DBridge
@@ -73,48 +74,37 @@ struct FBTransformer
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
 
-    double energy_stored_choke;//The stored energy
     double core_area_product;//Core area product Ap
-    double delta_flux_max;
     double core_win_core_sect;////Product of areas factor W_a*A_e
+    double delta_flux_max;//
     double area_wind_tot;//
+    double curr_dens;//
 
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
-    double number_primary_bmax;//Calculate minimum primary number of turns use B_max(max. flux density)
-    double number_primary_aw;//
+    double number_primary_ba;//Calculate minimum primary number of turns use B_max(max. flux density)
+    double number_primary_wa;//
 
     double length_air_gap;//Air-gap length considered with fringing effect
     double fring_area;//
     double fring_flux_fact;//
     double actual_num_primary;
     double actual_b_peak;//Calc peak flux density
-
     double actual_volt_reflected;//Recalc reflected voltage
     double actual_max_duty_cycle;//Recalc maximum duty cycle
-    double eff_bobb_width;
-
-    //Winding
-    double copper_ae;//(AP) or (ANS)
-    double max_wire_awg;//(AWGP) or (AWGNS)
-    double cop_wire_diam;//(DP) or (DS)
-    double copper_ae_post;//
-    double wire_curr_dens;//(JP) or (JS)
-    double num_tur_per_lay;//Number of turns per layer(NL)
-    double num_lay;//(LNp)
-
-    //Secondary number of turns
-    double turns_ratio;//Primary to secondary turns ratio
-    double curr_peak_second;//Peak current(IAMax)
-    double curr_rms_second;//RMS current(ISRMS)
-    double numb_second;
-
-    double eff_wind_cross_sect;
 };
 //
 struct PMosfet
 {
-    double volt_drain_sour_on;//Mosfet max. average drop on R_DS(on) in ON-stage
-    double volt_drain_sour_max;//Maximum drain voltage in OFF-stage
+    double mosfet_voltage_nom;
+    double mosfet_voltage_max;
+    double mosfet_rise_time;
+
+    double mosfet_conduct_loss;
+    double mosfet_drive_loss;
+    double mosfet_switch_loss;
+    double mosfet_capacit_loss;
+    //double volt_drain_sour_on;//Mosfet max. average drop on R_DS(on) in ON-stage
+    //double volt_drain_sour_max;//Maximum drain voltage in OFF-stage
 };
 
 #endif // STRUCTDATA_H

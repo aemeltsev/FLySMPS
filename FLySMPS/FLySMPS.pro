@@ -29,14 +29,16 @@ SOURCES += \
         FLySMPS.cpp \
     diodebridge.cpp \
     bulkcap.cpp \
-    flytransformer.cpp
+    flytransformer.cpp \
+    swmosfet.cpp
 
 HEADERS += \
         FLySMPS.h \
     diodebridge.h \
     bulkcap.h \
     flytransformer.h \
-    structdata.h
+    structdata.h \
+    swmosfet.h
 
 FORMS += \
         FLySMPS.ui
