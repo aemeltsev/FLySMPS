@@ -109,7 +109,7 @@ double FlyTransformer::EnergyStoredChoke(FBTransformer *fbtvalue)
   */
 double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
 {
-    return (2.*(fbtvalue->energy_stored_choke))/(curr_dens*core_win_util_fact*flux_dens_max);
+    return (2.*(EnergyStoredChoke(fbtvalue)))/(curr_dens*core_win_util_fact*flux_dens_max);
 }
 /**
   * @brief
@@ -337,9 +337,9 @@ double FlyTransformer::wEffBobbWidth()
   * @param
   * @retval
   */
-double FlyTransformer::wEffWindCrossSect(FBTransformer *fbtvalue)
+double FlyTransformer::wEffWindCrossSect()
 {
-    return (core_wind_area*fbtvalue->eff_bobb_width)/D;
+    return (core_wind_area*(wEffBobbWidth()))/D;
 }
 /**
   * @brief
@@ -348,7 +348,7 @@ double FlyTransformer::wEffWindCrossSect(FBTransformer *fbtvalue)
   */
 double FlyTransformer::wCoperWireCrossSectArea(FBTransformer *fbtvalue, double *WindFact)
 {
-    return ((*WindFact)*FCu*fbtvalue->eff_wind_cross_sect)/(fbtvalue->actual_num_primary);
+    return ((*WindFact)*FCu*(wEffWindCrossSect()))/(fbtvalue->actual_num_primary);
 }
 /**
   * @brief
@@ -404,9 +404,9 @@ double FlyTransformer::wCurrentDenst(FBTransformer *fbtvalue, double *WireAreaPo
   * @param
   * @retval
   */
-double FlyTransformer::wNumTurnToLay(FBTransformer *fbtvalue, double *WireDiam)
+double FlyTransformer::wNumTurnToLay(double *WireDiam)
 {
-    return fbtvalue->eff_bobb_width/(Np*((*WireDiam)+(2*INS)));
+    return (wEffBobbWidth())/(Np*((*WireDiam)+(2*INS)));
 }
 /**
   * @brief

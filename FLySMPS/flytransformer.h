@@ -59,14 +59,14 @@ public:
     /*Winding*/
     void setWindVal(double m, double fcu);
     double wEffBobbWidth();//Effective bobbin width(BWe)
-    double wEffWindCrossSect(FBTransformer *fbtvalue);//Effective winding cross-section(ANe)
+    double wEffWindCrossSect();//Effective winding cross-section(ANe)
     double wCoperWireCrossSectArea(FBTransformer *fbtvalue,  double *WindFact);//(AP) or (ANS)
     double wMaxWireSizeAWG(double *WireCrossSect);//(AWGP) or (AWGNS)
     void setWireDiam(double awgp, uint16_t np, double ins);
     double wCoperWireDiam(double *WireSizeAWG);//(DP) or (DS)
     double wCoperWireCrossSectAreaPost(double *WireDiam);//
     double wCurrentDenst(FBTransformer *fbtvalue, double *WireAreaPost);//(JP) or (JS)
-    double wNumTurnToLay(FBTransformer *fbtvalue, double *WireDiam);//Number of turns per layer(NL)
+    double wNumTurnToLay(double *WireDiam);//Number of turns per layer(NL)
     double wNumLay(FBTransformer *fbtvalue, double *NumTurPerLay);//(LNp)
     //Current for secondary layers
     double wSecondCurrPeak(FBTransformer *fbtvalue, double *TurnRatio, double *CoeffPwr);//Peak current(IAMax)
