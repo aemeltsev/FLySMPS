@@ -10,27 +10,27 @@ FlyTransformer::FlyTransformer()
   * @param
   * @retval
   */
-double FlyTransformer::DutyCycleDCM(InputValue *ivalue, BCap *bcvalue)
+double FlyTransformer::DutyCycleDCM(InputValue &ivalue, BCap &bcvalue)
 {
-    return ivalue->refl_volt_max/((ivalue->refl_volt_max)+(bcvalue->input_dc_min_voltage));
+    return ivalue.refl_volt_max/((ivalue.refl_volt_max)+(bcvalue.input_dc_min_voltage));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::InputPower(InputValue *ivalue)
+double FlyTransformer::InputPower(InputValue &ivalue)
 {
-    return (ivalue->power_out_max)/(ivalue->eff);
+    return (ivalue.power_out_max)/(ivalue.eff);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue)
+double FlyTransformer::PriInduct(BCap &bcvalue, FBTransformer &fbtvalue, InputValue &ivalue)
 {
-    return ((bcvalue->input_dc_min_voltage*fbtvalue->max_duty_cycle)*(bcvalue->input_dc_min_voltage*fbtvalue->max_duty_cycle))/(2.*fbtvalue->inp_power*ivalue->freq_switch*KRF);
+    return ((bcvalue.input_dc_min_voltage*fbtvalue.max_duty_cycle)*(bcvalue.input_dc_min_voltage*fbtvalue.max_duty_cycle))/(2.*fbtvalue.inp_power*ivalue.freq_switch*KRF);
 }
 /*Inductance of primary side*/
 /*All current primary side*/
@@ -39,45 +39,45 @@ double FlyTransformer::PriInduct(BCap *bcvalue, FBTransformer *fbtvalue, InputVa
   * @param
   * @retval
   */
-double FlyTransformer::CurrPriAver(BCap *bcvalue, FBTransformer *fbtvalue)
+double FlyTransformer::CurrPriAver(BCap &bcvalue, FBTransformer &fbtvalue)
 {
-    return fbtvalue->inp_power/((bcvalue->input_min_voltage)*(fbtvalue->max_duty_cycle));
+    return fbtvalue.inp_power/((bcvalue.input_min_voltage)*(fbtvalue.max_duty_cycle));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CurrPriPeakToPeak(BCap *bcvalue, FBTransformer *fbtvalue, InputValue *ivalue)
+double FlyTransformer::CurrPriPeakToPeak(BCap &bcvalue, FBTransformer &fbtvalue, InputValue &ivalue)
 {
-    return ((bcvalue->input_dc_min_voltage)*(fbtvalue->max_duty_cycle))/((fbtvalue->primary_induct)*(ivalue->freq_switch));
+    return ((bcvalue.input_dc_min_voltage)*(fbtvalue.max_duty_cycle))/((fbtvalue.primary_induct)*(ivalue.freq_switch));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CurrPriMax(FBTransformer *fbtvalue)
+double FlyTransformer::CurrPriMax(FBTransformer &fbtvalue)
 {
-    return  (fbtvalue->curr_primary_aver)+((fbtvalue->curr_primary_peak_peak)/2);
+    return  (fbtvalue.curr_primary_aver)+((fbtvalue.curr_primary_peak_peak)/2);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CurrPriValley(FBTransformer *fbtvalue)
+double FlyTransformer::CurrPriValley(FBTransformer &fbtvalue)
 {
-    return (fbtvalue->curr_primary_peak)-(fbtvalue->curr_primary_peak_peak);
+    return (fbtvalue.curr_primary_peak)-(fbtvalue.curr_primary_peak_peak);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CurrPriRMS(FBTransformer *fbtvalue)
+double FlyTransformer::CurrPriRMS(FBTransformer &fbtvalue)
 {
-    return sqrt((3.*(fbtvalue->curr_primary_aver*fbtvalue->curr_primary_aver)+((fbtvalue->curr_primary_peak_peak/2.)*(fbtvalue->curr_primary_peak_peak/2.)))*(fbtvalue->max_duty_cycle/3.));
+    return sqrt((3.*(fbtvalue.curr_primary_aver*fbtvalue.curr_primary_aver)+((fbtvalue.curr_primary_peak_peak/2.)*(fbtvalue.curr_primary_peak_peak/2.)))*(fbtvalue.max_duty_cycle/3.));
 }
 /*All current primary side*/
 /*Area product calculation*/
@@ -98,16 +98,16 @@ void FlyTransformer::setMagneteValues(double currdens, double utilfact, double f
   * @param
   * @retval
   */
-double FlyTransformer::EnergyStoredChoke(FBTransformer *fbtvalue)
+double FlyTransformer::EnergyStoredChoke(FBTransformer &fbtvalue)
 {
-    return (fbtvalue->primary_induct*((fbtvalue->curr_primary_peak)*(fbtvalue->curr_primary_peak)))/2.;
+    return (fbtvalue.primary_induct*((fbtvalue.curr_primary_peak)*(fbtvalue.curr_primary_peak)))/2.;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
+double FlyTransformer::CoreAreaProd(FBTransformer &fbtvalue)
 {
     return (2.*(EnergyStoredChoke(fbtvalue)))/(curr_dens*core_win_util_fact*flux_dens_max);
 }
@@ -116,18 +116,18 @@ double FlyTransformer::CoreAreaProd(FBTransformer *fbtvalue)
   * @param
   * @retval
   */
-double FlyTransformer::DeltaFluxMax(FBTransformer *fbtvalue)
+double FlyTransformer::DeltaFluxMax(FBTransformer &fbtvalue)
 {
-    return  flux_dens_max*(fbtvalue->curr_primary_peak_peak/(1.1*fbtvalue->curr_primary_peak));
+    return  flux_dens_max*(fbtvalue.curr_primary_peak_peak/(1.1*fbtvalue.curr_primary_peak));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CoreWinToCoreSect(FBTransformer *fbtvalue)
+double FlyTransformer::CoreWinToCoreSect(FBTransformer &fbtvalue)
 {
-    double fubar = (fbtvalue->primary_induct*fbtvalue->curr_primary_rms*fbtvalue->curr_primary_peak)/(flux_dens_max*S_K_1);
+    double fubar = (fbtvalue.primary_induct*fbtvalue.curr_primary_rms*fbtvalue.curr_primary_peak)/(flux_dens_max*S_K_1);
     return pow(fubar, (4./3.));
 }
 /**
@@ -135,18 +135,18 @@ double FlyTransformer::CoreWinToCoreSect(FBTransformer *fbtvalue)
   * @param
   * @retval
   */
-double FlyTransformer::AreaWindTotal(FBTransformer *fbtvalue, InputValue *ivalue)
+double FlyTransformer::AreaWindTotal(FBTransformer &fbtvalue, InputValue &ivalue)
 {
-    return sqrt((core_win_util_fact*core_wind_area*S_RO_OM*mean_leng_per_turn*pow(fbtvalue->curr_primary_peak,2))/ivalue->power_out_max);
+    return sqrt((core_win_util_fact*core_wind_area*S_RO_OM*mean_leng_per_turn*pow(fbtvalue.curr_primary_peak,2))/ivalue.power_out_max);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::CurrentDens(FBTransformer *fbtvalue)
+double FlyTransformer::CurrentDens(FBTransformer &fbtvalue)
 {
-    return fbtvalue->curr_primary_peak/fbtvalue->area_wind_tot;
+    return fbtvalue.curr_primary_peak/fbtvalue.area_wind_tot;
 }
 /**
   * @brief
@@ -172,27 +172,27 @@ void FlyTransformer::setCoreSelection(double ap, double mu_rc, double ac, double
   * @param
   * @retval
   */
-double FlyTransformer::numPimaryAL(FBTransformer *fbtvalue)
+double FlyTransformer::numPimaryAL(FBTransformer &fbtvalue)
 {
-    return sqrt((fbtvalue->primary_induct)/ind_fact);
+    return sqrt((fbtvalue.primary_induct)/ind_fact);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::numPimaryBA(FBTransformer *fbtvalue)
+double FlyTransformer::numPimaryBA(FBTransformer &fbtvalue)
 {
-    return ((fbtvalue->primary_induct)*(fbtvalue->curr_primary_peak_peak))/(flux_dens_max*core_cross_sect_area);
+    return ((fbtvalue.primary_induct)*(fbtvalue.curr_primary_peak_peak))/(flux_dens_max*core_cross_sect_area);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::numPrimaryWireArea(FBTransformer *fbtvalue)
+double FlyTransformer::numPrimaryWireArea(FBTransformer &fbtvalue)
 {
-    return (core_win_util_fact*core_wind_area)/fbtvalue->area_wind_tot;
+    return (core_win_util_fact*core_wind_area)/fbtvalue.area_wind_tot;
 }
 /*Primary turns*/
 /*Air gap methods*/
@@ -201,9 +201,9 @@ double FlyTransformer::numPrimaryWireArea(FBTransformer *fbtvalue)
   * @param
   * @retval
   */
-double FlyTransformer::agLength(FBTransformer *fbtvalue, double *varNumPrim)
+double FlyTransformer::agLength(FBTransformer &fbtvalue, double &varNumPrim)
 {
-    return ((S_MU_Z*core_cross_sect_area*pow(*varNumPrim, 2))/(fbtvalue->primary_induct))-(mean_mag_path_leng/core_permeal);
+    return ((S_MU_Z*core_cross_sect_area*pow(varNumPrim, 2))/(fbtvalue.primary_induct))-(mean_mag_path_leng/core_permeal);
 }
 /**
   * @brief
@@ -222,36 +222,36 @@ void FlyTransformer::setMechanDimension(double c, double f, double e, double d)
   * @param
   * @retval
   */
-double FlyTransformer::agFringArea(FBTransformer *fbtvalue)
+double FlyTransformer::agFringArea(FBTransformer &fbtvalue)
 {
-    return (2.*1.*(fbtvalue->length_air_gap))*(C + F +(2.*1.*(fbtvalue->length_air_gap)));
+    return (2.*1.*(fbtvalue.length_air_gap))*(C + F +(2.*1.*(fbtvalue.length_air_gap)));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::agFringFluxFact(FBTransformer *fbtvalue)
+double FlyTransformer::agFringFluxFact(FBTransformer &fbtvalue)
 {
-    return 1. + (fbtvalue->fring_area/core_cross_sect_area);
+    return 1. + (fbtvalue.fring_area/core_cross_sect_area);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::actNumPrimary(FBTransformer *fbtvalue)
+double FlyTransformer::actNumPrimary(FBTransformer &fbtvalue)
 {
-    return sqrt(((fbtvalue->primary_induct)/S_MU_Z*core_cross_sect_area)*(fbtvalue->length_air_gap + (mean_mag_path_leng/core_permeal)));
+    return sqrt(((fbtvalue.primary_induct)/S_MU_Z*core_cross_sect_area)*(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::actFluxDensPeak(FBTransformer *fbtvalue)
+double FlyTransformer::actFluxDensPeak(FBTransformer &fbtvalue)
 {
-    return ((S_MU_Z*fbtvalue->actual_num_primary)/(fbtvalue->length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue->curr_primary_peak + (fbtvalue->curr_primary_peak_peak/2.));
+    return ((S_MU_Z*fbtvalue.actual_num_primary)/(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue.curr_primary_peak + (fbtvalue.curr_primary_peak_peak/2.));
 }
 /*Air gap methods*/
 /**/
@@ -260,36 +260,36 @@ double FlyTransformer::actFluxDensPeak(FBTransformer *fbtvalue)
   * @param
   * @retval
   */
-double FlyTransformer::numOutPower(double *OutCurr, double *OutVolt)
+double FlyTransformer::numOutPower(double &OutCurr, double &OutVolt)
 {
-    return (*OutCurr)*(*OutVolt);
+    return (OutCurr)*(OutVolt);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::numCoeffPower(InputValue *ivalue, double *OutPower)
+double FlyTransformer::numCoeffPower(InputValue &ivalue, double &OutPower)
 {
-    return *OutPower/ivalue->power_out_max;
+    return OutPower/ivalue.power_out_max;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::numSecondary(FBTransformer *fbtvalue, InputValue *ivalue, double *OutVolt)
+double FlyTransformer::numSecondary(FBTransformer &fbtvalue, InputValue &ivalue, double &OutVolt)
 {
-    return (fbtvalue->actual_num_primary*(*OutVolt)*ivalue->volt_diode_drop_sec)/fbtvalue->actual_volt_reflected;
+    return (fbtvalue.actual_num_primary*(OutVolt)*(ivalue.volt_diode_drop_sec))/fbtvalue.actual_volt_reflected;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::numTurnsRatio(FBTransformer *fbtvalue, double *NumTurns)
+double FlyTransformer::numTurnsRatio(FBTransformer &fbtvalue, double &NumTurns)
 {
-    return fbtvalue->actual_num_primary/(*NumTurns);
+    return fbtvalue.actual_num_primary/(NumTurns);
 }
 /**/
 /*Recalc actual methods vreflected and duty*/
@@ -298,18 +298,18 @@ double FlyTransformer::numTurnsRatio(FBTransformer *fbtvalue, double *NumTurns)
   * @param
   * @retval
   */
-double FlyTransformer::actVoltageRefl(InputValue *ivalue, FBTransformer *fbtvalue, double *varNumSec)
+double FlyTransformer::actVoltageRefl(InputValue &ivalue, FBTransformer &fbtvalue, double &varNumSec)
 {
-    return (ivalue->volt_out_one + ivalue->volt_diode_drop_sec)*(fbtvalue->actual_num_primary/(*varNumSec));
+    return (ivalue.volt_out_one + ivalue.volt_diode_drop_sec)*(fbtvalue.actual_num_primary/(varNumSec));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::actMaxDutyCycle(FBTransformer *fbtvalue, BCap *bcvalue)
+double FlyTransformer::actMaxDutyCycle(FBTransformer &fbtvalue, BCap &bcvalue)
 {
-    return fbtvalue->actual_volt_reflected/(fbtvalue->actual_volt_reflected + bcvalue->input_min_voltage);
+    return (fbtvalue.actual_volt_reflected)/(fbtvalue.actual_volt_reflected + bcvalue.input_min_voltage);
 }
 /*Recalc actual methods vreflected and duty*/
 /*Winding*/
@@ -346,18 +346,18 @@ double FlyTransformer::wEffWindCrossSect()
   * @param
   * @retval
   */
-double FlyTransformer::wCoperWireCrossSectArea(FBTransformer *fbtvalue, double *WindFact)
+double FlyTransformer::wCoperWireCrossSectArea(FBTransformer &fbtvalue, double &WindFact)
 {
-    return ((*WindFact)*FCu*(wEffWindCrossSect()))/(fbtvalue->actual_num_primary);
+    return ((WindFact)*FCu*(wEffWindCrossSect()))/(fbtvalue.actual_num_primary);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::wMaxWireSizeAWG(double *WireCrossSect)
+double FlyTransformer::wMaxWireSizeAWG(double &WireCrossSect)
 {
-    return (9.97*(1.8277 - (2*log10(2*sqrt((*WireCrossSect)/S_PI)))));
+    return (9.97*(1.8277 - (2*log10(2*sqrt((WireCrossSect)/S_PI)))));
 }
 /**
   * @brief
@@ -375,9 +375,9 @@ void FlyTransformer::setWireDiam(double awgp, uint16_t np, double ins)
   * @param
   * @retval
   */
-double FlyTransformer::wCoperWireDiam(double *WireSizeAWG)
+double FlyTransformer::wCoperWireDiam(double &WireSizeAWG)
 {
-    double snafu = (*WireSizeAWG)/(2.*9.97);
+    double snafu = (WireSizeAWG)/(2.*9.97);
     double fubar = ((1.8277/2.)-(snafu));
     return pow(10., fubar);
 }
@@ -386,36 +386,36 @@ double FlyTransformer::wCoperWireDiam(double *WireSizeAWG)
   * @param
   * @retval
   */
-double FlyTransformer::wCoperWireCrossSectAreaPost(double *WireDiam)
+double FlyTransformer::wCoperWireCrossSectAreaPost(double &WireDiam)
 {
-    return (S_PI/4.)*pow(*WireDiam, 2.)*Np;
+    return (S_PI/4.)*pow(WireDiam, 2.)*Np;
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::wCurrentDenst(FBTransformer *fbtvalue, double *WireAreaPost)
+double FlyTransformer::wCurrentDenst(FBTransformer &fbtvalue, double &WireAreaPost)
 {
-    return fbtvalue->curr_primary_rms/(*WireAreaPost);
+    return (fbtvalue.curr_primary_rms)/(WireAreaPost);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::wNumTurnToLay(double *WireDiam)
+double FlyTransformer::wNumTurnToLay(double &WireDiam)
 {
-    return (wEffBobbWidth())/(Np*((*WireDiam)+(2*INS)));
+    return (wEffBobbWidth())/(Np*((WireDiam)+(2*INS)));
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::wNumLay(FBTransformer *fbtvalue, double *NumTurPerLay)
+double FlyTransformer::wNumLay(FBTransformer &fbtvalue, double &NumTurPerLay)
 {
-    return fbtvalue->actual_num_primary/(*NumTurPerLay);
+    return (fbtvalue.actual_num_primary)/(NumTurPerLay);
 }
 //Current for secondary layers
 /**
@@ -423,18 +423,18 @@ double FlyTransformer::wNumLay(FBTransformer *fbtvalue, double *NumTurPerLay)
   * @param
   * @retval
   */
-double FlyTransformer::wSecondCurrPeak(FBTransformer *fbtvalue, double *TurnRatio, double *CoeffPwr)
+double FlyTransformer::wSecondCurrPeak(FBTransformer &fbtvalue, double &TurnRatio, double &CoeffPwr)
 {
-    return  fbtvalue->curr_primary_peak*(*TurnRatio)*(*CoeffPwr);
+    return  (fbtvalue.curr_primary_peak)*(TurnRatio)*(CoeffPwr);
 }
 /**
   * @brief
   * @param
   * @retval
   */
-double FlyTransformer::wSecondCurrRMS(FBTransformer *fbtvalue, double *CoeffPwr, double *TurnRatio)
+double FlyTransformer::wSecondCurrRMS(FBTransformer &fbtvalue, double &CoeffPwr, double &TurnRatio)
 {
-    double fubar = ((1-fbtvalue->actual_max_duty_cycle)/fbtvalue->actual_max_duty_cycle);
-    return fbtvalue->curr_primary_rms*(*CoeffPwr)*(*TurnRatio)*sqrt(fubar);
+    double fubar = ((1-fbtvalue.actual_max_duty_cycle)/fbtvalue.actual_max_duty_cycle);
+    return fbtvalue.curr_primary_rms*(CoeffPwr)*(TurnRatio)*sqrt(fubar);
 }
 /*Winding*/
