@@ -1,3 +1,6 @@
+/**
+  * License text...
+*/
 #include "swmosfet.h"
 
 SwMosfet::SwMosfet()
@@ -29,9 +32,8 @@ double SwMosfet::swMosfetVoltageMax(PMosfet &pmvalue, InputValue &ivalue)
   */
 double SwMosfet::swMosfetCurrent(FBTransformer &fbtvalue, InputValue &ivalue, DBridge &dbvalue)
 {
-    double leakage = ivalue.leakage_induct * fbtvalue.primary_induct;
     double time_switch = (1/ivalue.freq_switch);
-    return (ivalue.power_out_max/(ivalue.eff * dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle)) + ((dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle * time_switch)/leakage);
+    return (ivalue.power_out_max/(ivalue.eff * dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle)) + ((dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle * time_switch)/swLeakageInduct(fbtvalue, ivalue));
 }
 /**
   * @brief estimated fet vds rise and fall time
@@ -121,4 +123,8 @@ double SwMosfet::swMosfetCustomIdrv(InputValue &ivalue)
 double SwMosfet::getCustomIdrv(InputValue &ivalue)
 {
     return swMosfetCustomIdrv(ivalue);
+}
+double SwMosfet::swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue)
+{
+    return ivalue.leakage_induct * fbtvalue.primary_induct;
 }

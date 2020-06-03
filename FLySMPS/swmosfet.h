@@ -1,3 +1,6 @@
+/**
+  * License text...
+*/
 #ifndef SWMOSFET_H
 #define SWMOSFET_H
 #include <cmath>
@@ -18,6 +21,7 @@ public:
     double swMosfetTotalLoss(PMosfet &pmvalue);
     void setSWValue(double rdson, double qg, double coss, double idrive, int16_t vdrive);
     double getCustomIdrv(InputValue &ivalue);
+
 private:
     double RDSon;
     double Qg;
@@ -25,6 +29,7 @@ private:
     double Idrv;
     int16_t Vdrv;
     double swMosfetCustomIdrv(InputValue &ivalue);
+    double swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue);
 
 };
 
