@@ -187,3 +187,30 @@ double SwMosfet::clCapValue(PMosfet &pmvalue, InputValue &ivalue)
 {
     return pmvalue.snubber_voltage_max/(clVolRip * pmvalue.snubber_res_value * ivalue.freq_switch);
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SwMosfet::setVoltCurrSens(double csv)
+{
+    csVoltCs = csv;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::csCurrRes(FBTransformer &fbtvalue)
+{
+    return csVoltCs/fbtvalue.curr_primary_peak;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::csCurrResLoss(FBTransformer &fbtvalue, PMosfet &pmvalue)
+{
+    return pow(fbtvalue.curr_primary_rms, 2) * pmvalue.curr_sense_res;
+}

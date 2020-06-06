@@ -28,7 +28,9 @@ public:
     void setSnubVoltRipple(int16_t vrp);
     double clCapValue(PMosfet &pmvalue, InputValue &ivalue);
 
-
+    double csCurrRes(FBTransformer &fbtvalue);
+    void setVoltCurrSens(double csv);
+    double csCurrResLoss(FBTransformer &fbtvalue, PMosfet &pmvalue);
 private:
     double RDSon;
     double Qg;
@@ -37,10 +39,10 @@ private:
     int16_t Vdrv;
     double clCurTsPk;
     int16_t clVolRip;
+    double csVoltCs;
     double swMosfetCustomIdrv(InputValue &ivalue);
     double swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue);
     void clCurrPeakTime(FBTransformer &fbtvalue, InputValue &ivalue, double &TurnRat, double &NOutVolt);
-
 };
 
 #endif // SWMOSFET_H

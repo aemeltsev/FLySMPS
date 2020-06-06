@@ -108,6 +108,9 @@ struct PMosfet
     double snubber_pwr_diss;
     double snubber_res_value;
     double snubber_cap_value;
+
+    double curr_sense_res;
+    double curr_sense_res_loss;
 };
 
 #endif // STRUCTDATA_H
