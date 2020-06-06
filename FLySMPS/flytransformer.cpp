@@ -1,3 +1,6 @@
+/**
+  * License text...
+*/
 #include "flytransformer.h"
 
 FlyTransformer::FlyTransformer()
@@ -102,6 +105,7 @@ double FlyTransformer::EnergyStoredChoke(FBTransformer &fbtvalue)
 {
     return (fbtvalue.primary_induct*((fbtvalue.curr_primary_peak)*(fbtvalue.curr_primary_peak)))/2.;
 }
+
 /**
   * @brief
   * @param

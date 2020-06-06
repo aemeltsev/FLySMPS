@@ -124,7 +124,66 @@ double SwMosfet::getCustomIdrv(InputValue &ivalue)
 {
     return swMosfetCustomIdrv(ivalue);
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
 double SwMosfet::swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue)
 {
     return ivalue.leakage_induct * fbtvalue.primary_induct;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, FBTransformer &fbtvalue)
+{
+    return swMosfetVoltageMax(pmvalue, ivalue) - dbvalue.in_max_rms_voltage - fbtvalue.actual_volt_reflected;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SwMosfet::clCurrPeakTime(FBTransformer &fbtvalue, InputValue &ivalue, double &TurnRat, double &NOutVolt)
+{
+    clCurTsPk = (swLeakageInduct(fbtvalue, ivalue)/(TurnRat*NOutVolt))*fbtvalue.curr_primary_peak;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::clPowerDiss(PMosfet &pmvalue, FBTransformer &fbtvalue, InputValue &ivalue)
+{
+    return ((pmvalue.snubber_voltage_max * fbtvalue.curr_primary_peak * clCurTsPk * ivalue.freq_switch)/2.);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::clResValue(PMosfet &pmvalue)
+{
+    return pow(pmvalue.snubber_voltage_max, 2)/pmvalue.snubber_pwr_diss;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+void SwMosfet::setSnubVoltRipple(int16_t vrp)
+{
+    clVolRip = vrp;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+double SwMosfet::clCapValue(PMosfet &pmvalue, InputValue &ivalue)
+{
+    return pmvalue.snubber_voltage_max/(clVolRip * pmvalue.snubber_res_value * ivalue.freq_switch);
 }

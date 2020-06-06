@@ -22,14 +22,24 @@ public:
     void setSWValue(double rdson, double qg, double coss, double idrive, int16_t vdrive);
     double getCustomIdrv(InputValue &ivalue);
 
+    double clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, FBTransformer &fbtvalue);
+    double clPowerDiss(PMosfet &pmvalue, FBTransformer &fbtvalue,InputValue &ivalue);
+    double clResValue(PMosfet &pmvalue);
+    void setSnubVoltRipple(int16_t vrp);
+    double clCapValue(PMosfet &pmvalue, InputValue &ivalue);
+
+
 private:
     double RDSon;
     double Qg;
     double Coss;
     double Idrv;
     int16_t Vdrv;
+    double clCurTsPk;
+    int16_t clVolRip;
     double swMosfetCustomIdrv(InputValue &ivalue);
     double swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue);
+    void clCurrPeakTime(FBTransformer &fbtvalue, InputValue &ivalue, double &TurnRat, double &NOutVolt);
 
 };
 

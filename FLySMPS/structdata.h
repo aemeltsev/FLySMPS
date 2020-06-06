@@ -103,8 +103,11 @@ struct PMosfet
     double mosfet_drive_loss;
     double mosfet_switch_loss;
     double mosfet_capacit_loss;
-    //double volt_drain_sour_on;//Mosfet max. average drop on R_DS(on) in ON-stage
-    //double volt_drain_sour_max;//Maximum drain voltage in OFF-stage
+
+    double snubber_voltage_max;
+    double snubber_pwr_diss;
+    double snubber_res_value;
+    double snubber_cap_value;
 };
 
 #endif // STRUCTDATA_H
