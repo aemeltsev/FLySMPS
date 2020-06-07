@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    LoggingCategories.cpp \
         main.cpp \
         FLySMPS.cpp \
     diodebridge.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
 
 HEADERS += \
         FLySMPS.h \
+    LoggingCategories.h \
     diodebridge.h \
     bulkcap.h \
     flytransformer.h \
