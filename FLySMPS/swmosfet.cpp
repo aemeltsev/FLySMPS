@@ -125,90 +125,92 @@ double SwMosfet::getCustomIdrv(InputValue &ivalue)
     return swMosfetCustomIdrv(ivalue);
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief calculate leakage inductance percentage
+  * @param leakage perc && calculated induct primary size
+  * @retval leakage inductance
   */
 double SwMosfet::swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue)
 {
     return ivalue.leakage_induct * fbtvalue.primary_induct;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief calculate snubber capacitor voltage
+  * @param mosfet max voltage && rms voltage && reflected voltage
+  * @retval snubber voltage
   */
 double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, FBTransformer &fbtvalue)
 {
     return swMosfetVoltageMax(pmvalue, ivalue) - dbvalue.in_max_rms_voltage - fbtvalue.actual_volt_reflected;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the on-time (tSn) of the snubber diode
+  * @param leak ind && primary peak current
+  * @param TurnRat - ref. on the turns ratio value
+  * @param NOutVolt - ref. on the n-th output side with the max voltage values
+  * @retval none
   */
 void SwMosfet::clCurrPeakTime(FBTransformer &fbtvalue, InputValue &ivalue, double &TurnRat, double &NOutVolt)
 {
     clCurTsPk = (swLeakageInduct(fbtvalue, ivalue)/(TurnRat*NOutVolt))*fbtvalue.curr_primary_peak;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the power dissipated in the snubber circuit
+  * @param volt snub && peak curr && sw freq && on-time diode
+  * @retval power diss val
   */
 double SwMosfet::clPowerDiss(PMosfet &pmvalue, FBTransformer &fbtvalue, InputValue &ivalue)
 {
     return ((pmvalue.snubber_voltage_max * fbtvalue.curr_primary_peak * clCurTsPk * ivalue.freq_switch)/2.);
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the snubber resistor value
+  * @param snubb^2/pwr_diss
+  * @retval resistor value
   */
 double SwMosfet::clResValue(PMosfet &pmvalue)
 {
     return pow(pmvalue.snubber_voltage_max, 2)/pmvalue.snubber_pwr_diss;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the set maximum ripple of the snubber cap voltage
+  * @param vrp - 5~10% ripple is reasonable
+  * @retval none
   */
-void SwMosfet::setSnubVoltRipple(int16_t vrp)
+void SwMosfet::setSnubVoltRipple(double vrp)
 {
     clVolRip = vrp;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the snubber capacitance value
+  * @param voltage max && ripple vol && snubb res && freq sw
+  * @retval capacitance value
   */
 double SwMosfet::clCapValue(PMosfet &pmvalue, InputValue &ivalue)
 {
     return pmvalue.snubber_voltage_max/(clVolRip * pmvalue.snubber_res_value * ivalue.freq_switch);
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief set the maximum amplitude of the isense pin
+  * @param csv - the typical valuesthe typical values current-sense voltage
+  * @retval none
   */
 void SwMosfet::setVoltCurrSens(double csv)
 {
     csVoltCs = csv;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the value of current resistor
+  * @param current peak prim side && cs voltage
+  * @retval the res value
   */
 double SwMosfet::csCurrRes(FBTransformer &fbtvalue)
 {
     return csVoltCs/fbtvalue.curr_primary_peak;
 }
 /**
-  * @brief
-  * @param
-  * @retval
+  * @brief the current sense resistor loss
+  * @param rms primary curr && resistor value
+  * @retval the sense resistor loss
   */
 double SwMosfet::csCurrResLoss(FBTransformer &fbtvalue, PMosfet &pmvalue)
 {

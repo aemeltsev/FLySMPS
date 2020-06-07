@@ -25,8 +25,9 @@ public:
     double clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, FBTransformer &fbtvalue);
     double clPowerDiss(PMosfet &pmvalue, FBTransformer &fbtvalue,InputValue &ivalue);
     double clResValue(PMosfet &pmvalue);
-    void setSnubVoltRipple(int16_t vrp);
+    void setSnubVoltRipple(double vrp);
     double clCapValue(PMosfet &pmvalue, InputValue &ivalue);
+
 
     double csCurrRes(FBTransformer &fbtvalue);
     void setVoltCurrSens(double csv);
@@ -38,7 +39,7 @@ private:
     double Idrv;
     int16_t Vdrv;
     double clCurTsPk;
-    int16_t clVolRip;
+    double clVolRip;
     double csVoltCs;
     double swMosfetCustomIdrv(InputValue &ivalue);
     double swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue);
