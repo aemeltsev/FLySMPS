@@ -28,7 +28,6 @@ public:
     void setSnubVoltRipple(double vrp);
     double clCapValue(PMosfet &pmvalue, InputValue &ivalue);
 
-
     double csCurrRes(FBTransformer &fbtvalue);
     void setVoltCurrSens(double csv);
     double csCurrResLoss(FBTransformer &fbtvalue, PMosfet &pmvalue);
