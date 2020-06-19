@@ -7,6 +7,13 @@
 class DiodeOut
 {
 public:
+    /**
+      * @brief set pre- calculation value
+      * @param ps secondary output power
+      * @param vo output voltage
+      * @param tr turns ratio
+      * @return
+      */
     DiodeOut(double ps, double vo, double tr): power_sec(ps), volt_out(vo), turn_ratio(tr){}
     double doDiodeRevVolt(const DBridge& dbvalue);
     double doDiodePowLoss(const InputValue& ivalue);
