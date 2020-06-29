@@ -30,9 +30,8 @@ double BulkCap::DeltaT(InputValue &ivalue)
 }
 /**
   * @brief The total charging time
-  * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param FLine - frequency in power line
+  * @param DeltaT - time value from Vmin to Vpeak
+  * @param freq_line - frequency in power line
   * @retval ChargTime - total charging time value
   */
 double BulkCap::ChargTime(InputValue &ivalue)
@@ -42,10 +41,10 @@ double BulkCap::ChargTime(InputValue &ivalue)
 /**
   * @brief Calculate the bulk capacitor value
   * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param FLine - frequency in power line
-  * @param POut - summary output power of the converter
-  * @param Eff - efficiency
+  * @param DeltaT - time value from Vmin to Vpeak
+  * @param freq_line - frequency in power line
+  * @param power_out_max - summary output power of the converter
+  * @param eff - efficiency
   * @retval CapValue - bulk capacitor value
   */
 double BulkCap::CapValue(InputValue &ivalue)
@@ -54,9 +53,9 @@ double BulkCap::CapValue(InputValue &ivalue)
 }
 /**
   * @brief Load peak current value
-  * @param POut - summary output power of the converter
-  * @param Eff - efficiency
-  * @param VInMinRMS - Minimum RMS value line voltage
+  * @param power_out_max - summary output power of the converter
+  * @param eff - efficiency
+  * @param in_min_rms_voltage - minimum RMS value line voltage
   * @retval ILoadMax - peak current value
   */
 double BulkCap::ILoadMax(InputValue &ivalue, DBridge &dbvalue)
@@ -113,7 +112,7 @@ double BulkCap::VMinInp(BCap &bcvalue, InputValue &ivalue)
 /**
   * @brief VDCMin simply the average value of MinIng and VRectMinPeak
   * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param VMinInp - recalculation after input capacitor selection
+  * @param VMinInp - input_min_voltage - recalculation after input capacitor selection
   * @retval VDCMin - simply the average value of MinIng and VRectMinPeak
   */
 double BulkCap::VDCMin(BCap &bcvalue, InputValue &ivalue)

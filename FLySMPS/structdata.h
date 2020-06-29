@@ -62,11 +62,21 @@ struct BCap
     double input_dc_min_voltage;
 };
 //
-struct FBTransformer
+struct FBPT
 {
     double max_duty_cycle;//Max duty cycle
     double inp_power;//Input power
     double primary_induct;//Primary inductance
+
+    double curr_primary_aver;//Primary average current during turn-on
+    double curr_primary_peak_peak;//Primary peak-to-peak current
+    double curr_primary_peak;//Primary peak current
+    double curr_primary_valley;//Primary valley current
+    double curr_primary_rms;//Primary RMS current
+};
+
+struct FBTransformer
+{
 
     double curr_primary_aver;//Primary average current during turn-on
     double curr_primary_peak_peak;//Primary peak-to-peak current
