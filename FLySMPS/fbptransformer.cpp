@@ -1,9 +1,5 @@
 #include "fbptransformer.h"
 
-FBPTransformer::FBPTransformer()
-{
-
-}
 /*Inductance of primary side*/
 /**
   * @brief Maximum duty cycle
@@ -33,7 +29,7 @@ double FBPTransformer::InputPower(const InputValue &ivalue)
   */
 double FBPTransformer::PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
 {
-    return pow((bcvalue.input_dc_min_voltage * fbptval.max_duty_cycle), 2)/(2. * fbptval.inp_power*ivalue.freq_switch * KRF);
+    return pow((bcvalue.input_dc_min_voltage * fbptval.max_duty_cycle), 2)/(2. * fbptval.inp_power*ivalue.freq_switch * ripple_factor);
 }
 /*Inductance of primary side*/
 
