@@ -10,9 +10,9 @@ class FBPTransformer
 public:
     FBPTransformer();
 
-    double DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue);//Maximum duty cycle
-    double InputPower(const InputValue &ivalue);//Maximum input power
-    double PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue);//Output primary inductance
+    double DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue);
+    double InputPower(const InputValue &ivalue);
+    double PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue);
 
     /*All current primary side*/
     double CurrPriAver(const BCap &bcvalue, const FBPT &fbptval);
