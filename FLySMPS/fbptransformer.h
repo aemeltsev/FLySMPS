@@ -41,11 +41,51 @@ public:
     double AreaWindTotal(const FBPT &fbptval, InputValue &ivalue);//Cross-sectional area of the winding bare wire
     double CurrentDens(const FBPT &fbptval);
     /*Core Geometry Factor and Core Selection*/
+
+    double numPimaryAL(const FBPT &fbptval);//Primary turns using inductance factor
+    double numPimaryBA(const FBPT &fbptval);//Primary turns using core area
+    double numPrimaryWireArea(const FBPT &fbptval);//
+
+    /*Air-Gap Length Considered with Fringing Effect*/
+    double agLength(const FBPT &fbptval, double &varNumPrim);//The air-gap length(lg)
+    void setMechanDimension(double f, double c, double e, double d);
+    double agFringArea(const FBPT &fbptval);
+    double agFringFluxFact(const FBPT &fbptval);//Correction factor F. - the edge coefficient(FFC)
+    /*Air-Gap Length Considered with Fringing Effect*/
+
+    /*Recalc Np, Bm, RefVoltage, DutyCycle*/
+    double actNumPrimary(const FBPT &fbptval);
+    double actFluxDensPeak(const FBPT &fbptval);//Actual flux density(BmAct)
+    double actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec);//Post-calculated reflected voltage(VRPost)
+    double actMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
+    /*Recalc Np, Bm, RefVoltage, DutyCycle*/
 private:
     double curr_dens;//Jm - the maximum current density
     double core_win_util_fact;//Ku - window utilization factor
     double flux_dens_max;//Bm - saturation magnetic field density
     double EnergyStoredChoke(const FBPT &fbptval);//
+
+    /* Core selection */
+    double core_area_product;//Ap
+    double core_permeal;//mu_rc(mu_r - relative permeability TDK)
+    double core_cross_sect_area;//Ac(Ae - effective magnetic cross section TDK)
+    double core_wind_area;//Wa(An - winding cross section TDK)
+    double core_vol;//Vc(Ve - effective magnetic volume TDK)
+    double mean_leng_per_turn;//l_t(l_n - average length of turn TDK)
+    double mean_mag_path_leng;//l_c(l_e - effective magnetic path length TDK)
+    double core_win_height;//height of the window
+    double ind_fact;//Al(inductance factor TDK)
+    /* Core selection */
+
+    /* Mechanical dimensions */
+    /* Rectangular Air Gap */
+    double F;
+    double C;
+    double E;
+    double D;
+    /* Round Air Gap */
+    double Diam;
+    /* Mechanical dimensions */
 };
 
 class FBPTWinding
@@ -69,6 +109,11 @@ public:
     double wSecondCurrPeak(FBTransformer &fbtvalue, double &TurnRatio, double &CoeffPwr);//Peak current(IAMax)
     double wSecondCurrRMS(FBTransformer &fbtvalue, double &CoeffPwr, double &TurnRatio);//RMS current(ISRMS)
     /*Winding*/
-
+private:
+    double M;
+    double FCu;
+    double AWGp;
+    double Np;
+    double INS;
 };
 #endif // FBPTRANSFORMER_H
