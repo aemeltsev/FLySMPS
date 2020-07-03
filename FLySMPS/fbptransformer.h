@@ -40,7 +40,6 @@ public:
         flux_dens_max(fluxdens)
     {}
 private:
-
     double curr_dens;//Jm - the maximum current density
     double core_win_util_fact;//Ku - window utilization factor
     double flux_dens_max;//Bm - saturation magnetic field density
@@ -70,10 +69,7 @@ public:
     double CurrentDens(const FBPT &fbptval);
     /*Core Geometry Factor and Core Selection*/
 
-    double numPrimary(const FBPT &fbptval, CoreSelection &cs, const FBPT_NUM_SETTING fns);
-    double numPimaryAL(const FBPT &fbptval);//Primary turns using inductance factor
-    double numPimaryBA(const FBPT &fbptval);//Primary turns using core area
-    double numPrimaryWireArea(const FBPT &fbptval);//
+    double numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns);
 
     /*Air-Gap Length Considered with Fringing Effect*/
     void setMechanDimension(double f, double c, double e, double d);

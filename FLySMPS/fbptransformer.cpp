@@ -172,7 +172,7 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
   * @param
   * @return
   */
-double FBPTCore::numPrimary(const FBPT &fbptval, CoreSelection &cs, const FBPT_NUM_SETTING fns)
+double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns)
 {
     if(fns == FBPT_INDUCT_FACTOR)
     {
