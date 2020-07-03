@@ -165,3 +165,27 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
  al = cs.ind_fact;
 }
 /*Area product calculation*/
+
+/*Primary turns*/
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::numPrimary(const FBPT &fbptval, CoreSelection &cs, const FBPT_NUM_SETTING fns)
+{
+    if(fns == FBPT_INDUCT_FACTOR)
+    {
+        return sqrt((fbptval.primary_induct)/cs.ind_fact);
+    }
+    else if(fns == FBPT_FLUX_PEAK)
+    {
+        return ((fbptval.primary_induct)*(fbptval.curr_primary_peak_peak))/(cs.core_cross_sect_area * flux_dens_max);
+    }
+    else if(fns == FBPT_CORE_AREA)
+    {
+        return (core_win_util_fact * cs.core_wind_area)/fbptval.area_wind_tot;
+    }
+
+}
+/*Primary turns*/

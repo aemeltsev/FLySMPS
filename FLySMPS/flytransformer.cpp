@@ -8,35 +8,7 @@ FlyTransformer::FlyTransformer()
 
 }
 
-/*Primary turns*/
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numPimaryAL(FBTransformer &fbtvalue)
-{
-    return sqrt((fbtvalue.primary_induct)/ind_fact);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numPimaryBA(FBTransformer &fbtvalue)
-{
-    return ((fbtvalue.primary_induct)*(fbtvalue.curr_primary_peak_peak))/(flux_dens_max*core_cross_sect_area);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numPrimaryWireArea(FBTransformer &fbtvalue)
-{
-    return (core_win_util_fact*core_wind_area)/fbtvalue.area_wind_tot;
-}
-/*Primary turns*/
+
 /*Air gap methods*/
 /**
   * @brief

@@ -4,11 +4,12 @@
 #include <cstdint>
 #include <structdata.h>
 
-#define NUM_OUT_POW
-#define NUM_COEFF_POW
-
-
-
+enum FBPT_NUM_SETTING
+{
+    FBPT_INDUCT_FACTOR,
+    FBPT_FLUX_PEAK,
+    FBPT_CORE_AREA,
+};
 
 class FBPTransformer
 {
@@ -69,6 +70,7 @@ public:
     double CurrentDens(const FBPT &fbptval);
     /*Core Geometry Factor and Core Selection*/
 
+    double numPrimary(const FBPT &fbptval, CoreSelection &cs, const FBPT_NUM_SETTING fns);
     double numPimaryAL(const FBPT &fbptval);//Primary turns using inductance factor
     double numPimaryBA(const FBPT &fbptval);//Primary turns using core area
     double numPrimaryWireArea(const FBPT &fbptval);//
