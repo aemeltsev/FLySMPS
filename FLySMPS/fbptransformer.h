@@ -73,7 +73,7 @@ public:
 
     /*Air-Gap Length Considered with Fringing Effect*/
     void setMechanDimension(double f, double c, double e, double d);
-    double agLength(const FBPT &fbptval, double &varNumPrim);//The air-gap length(lg)
+    double agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim);//The air-gap length(lg)
     double agFringArea(const FBPT &fbptval);
     double agFringFluxFact(const FBPT &fbptval);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/

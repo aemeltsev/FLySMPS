@@ -189,3 +189,25 @@ double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const 
 
 }
 /*Primary turns*/
+
+/*Air gap methods*/
+/**
+  * @brief
+  * @param
+  * @return
+  */
+void FBPTCore::setMechanDimension(double f, double c,
+                                  double e, double d)
+{
+
+}
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim)
+{
+    return ((S_MU_Z * cs.core_cross_sect_area * pow(varNumPrim, 2))/(fbptval.primary_induct))-
+            (cs.mean_mag_path_leng / cs.core_permeal);
+}

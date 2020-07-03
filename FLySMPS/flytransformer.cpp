@@ -9,21 +9,6 @@ FlyTransformer::FlyTransformer()
 }
 
 
-/*Air gap methods*/
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::agLength(FBTransformer &fbtvalue, double &varNumPrim)
-{
-    return ((S_MU_Z*core_cross_sect_area*pow(varNumPrim, 2))/(fbtvalue.primary_induct))-(mean_mag_path_leng/core_permeal);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
 void FlyTransformer::setMechanDimension(double c, double f, double e, double d)
 {
     C = c;
