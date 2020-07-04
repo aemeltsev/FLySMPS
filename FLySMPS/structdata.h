@@ -73,21 +73,18 @@ struct FBPT
     double curr_primary_peak;//Primary peak current
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
+
+    double area_wind_tot;//
+    double length_air_gap;//
 };
 
 struct FBTransformer
 {
 
-    double curr_primary_aver;//Primary average current during turn-on
-    double curr_primary_peak_peak;//Primary peak-to-peak current
-    double curr_primary_peak;//Primary peak current
-    double curr_primary_valley;//Primary valley current
-    double curr_primary_rms;//Primary RMS current
 
     double core_area_product;//Core area product Ap
     double core_win_core_sect;////Product of areas factor W_a*A_e
     double delta_flux_max;//
-    double area_wind_tot;//
     double curr_dens;//
 
     double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)

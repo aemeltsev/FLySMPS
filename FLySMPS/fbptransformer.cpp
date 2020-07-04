@@ -194,13 +194,20 @@ double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const 
 /*Air gap methods*/
 /**
   * @brief
-  * @param
-  * @return
+  * @param c - width of core, TDK dimension nomenclature
+  * @param e - window width, TDK dimension nomenclature
+  * @param f - window half height, TDK dimension nomenclature
+  * @param d - size of rectangular central kern, TDK dimension nomenclature
+  * @param diam - size of round central kern, TDK dimension nomenclature
   */
-void FBPTCore::setMechanDimension(double f, double c,
-                                  double e, double d)
+void FBPTCore::setMechanDimension(double c, double e,
+                                  double f, double d, MechDimension &mchdm, double diam=0.0)
 {
-
+    mchdm.C = c;
+    mchdm.E = e;
+    mchdm.F = f;
+    mchdm.D = d;
+    mchdm.Diam = diam;
 }
 /**
   * @brief
@@ -212,3 +219,57 @@ double FBPTCore::agLength(const FBPT &fbptval, const CoreSelection &cs, double v
     return ((S_MU_Z * cs.core_cross_sect_area * pow(varNumPrim, 2))/(fbptval.primary_induct))-
             (cs.mean_mag_path_leng / cs.core_permeal);
 }
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff, FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k)
+{
+    double csa, af, temp = 0.0;
+    double u = ewff/fbptval.length_air_gap;
+    if(fsag == RECT_AIR_GAP)
+    {
+        csa = mchdm.C*mchdm.D;
+        af = 2. * u * fbptval.length_air_gap * (mchdm.C + mchdm.D + 2. * u * fbptval.length_air_gap);
+        temp = 1 + (af/(csa*k));
+    }
+    else if(fsag == ROUND_AIR_GAP)
+    {
+        csa = (S_PI*pow(mchdm.Diam, 2))/4.;
+        af = S_PI * u * fbptval.length_air_gap * (mchdm.C + mchdm.D + 2. * u * fbptval.length_air_gap);
+        temp = 1 + (af/(csa*k));
+    }
+    return temp;
+}
+/*Air gap methods*/
+
+/*Recalc Np, Bm, RefVoltage, DutyCycle*/
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::actNumPrimary(const FBPT &fbptval)
+{
+
+}
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::actFluxDensPeak(const FBPT &fbptval)
+{
+
+}
+/**
+  * @brief
+  * @param
+  * @return
+  */
+double FBPTCore::actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec)
+{
+
+}
+/*Recalc Np, Bm, RefVoltage, DutyCycle*/

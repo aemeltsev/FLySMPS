@@ -69,13 +69,13 @@ private:
     struct MechDimension
     {
         /* Rectangular Air Gap */
-        double F;
         double C;
         double E;
-        double D;
+        double F;
+        double D; //size of rectangulared, central kern
         /* Round Air Gap */
         double Diam;
-    }
+    };
 
 public:
     /*Core Geometry Factor and Core Selection*/
@@ -90,10 +90,9 @@ public:
     double numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns);
 
     /*Air-Gap Length Considered with Fringing Effect*/
-    void setMechanDimension(double f, double c, double e, double d);
+    void setMechanDimension(double f, double c, double e, double d, MechDimension &mch, double diam);
     double agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim);//The air-gap length(lg)
-    double agFringArea(const FBPT &fbptval);
-    double agFringFluxFact(const FBPT &fbptval);//Correction factor F. - the edge coefficient(FFC)
+    double agFringFluxFact(const FBPT &fbptval, double ewff, FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k=1.0);//Correction factor F. - the edge coefficient(FFC)
     /*Air-Gap Length Considered with Fringing Effect*/
 
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/

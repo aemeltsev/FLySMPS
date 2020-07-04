@@ -8,37 +8,6 @@ FlyTransformer::FlyTransformer()
 
 }
 
-
-void FlyTransformer::setMechanDimension(double c, double f, double e, double d)
-{
-    C = c;
-    F = f;
-    E = e;
-    D = d;
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::agFringArea(FBTransformer &fbtvalue)
-{
-    return (2.*1.*(fbtvalue.length_air_gap))*(C + F +(2.*1.*(fbtvalue.length_air_gap)));
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::agFringFluxFact(FBTransformer &fbtvalue)
-{
-    return 1. + (fbtvalue.fring_area/core_cross_sect_area);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
 double FlyTransformer::actNumPrimary(FBTransformer &fbtvalue)
 {
     return sqrt(((fbtvalue.primary_induct)/S_MU_Z*core_cross_sect_area)*(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)));
