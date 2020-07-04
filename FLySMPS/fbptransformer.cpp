@@ -154,15 +154,15 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
                                 double lc, double hw, double al,
                                 CoreSelection &cs)
 {
- ap = cs.core_area_product;
- mu_rc = cs.core_permeal;
- ac = cs.core_cross_sect_area;
- wa = cs.core_wind_area;
- vc = cs.core_vol;
- lt = cs.mean_leng_per_turn;
- lc = cs.mean_mag_path_leng;
- hw = cs.core_win_height;
- al = cs.ind_fact;
+ cs.core_area_product = ap;
+ cs.core_permeal = mu_rc;
+ cs.core_cross_sect_area = ac;
+ cs.core_wind_area = wa;
+ cs.core_vol = vc;
+ cs.mean_leng_per_turn = lt;
+ cs.mean_mag_path_leng = lc;
+ cs.core_win_height = hw;
+ cs.ind_fact = al;
 }
 /*Area product calculation*/
 
@@ -174,19 +174,20 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
   */
 double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns)
 {
+    double temp = 0.0;
     if(fns == FBPT_INDUCT_FACTOR)
     {
-        return sqrt((fbptval.primary_induct)/cs.ind_fact);
+        temp = sqrt((fbptval.primary_induct)/cs.ind_fact);
     }
     else if(fns == FBPT_FLUX_PEAK)
     {
-        return ((fbptval.primary_induct)*(fbptval.curr_primary_peak_peak))/(cs.core_cross_sect_area * flux_dens_max);
+        temp = ((fbptval.primary_induct)*(fbptval.curr_primary_peak_peak))/(cs.core_cross_sect_area * flux_dens_max);
     }
     else if(fns == FBPT_CORE_AREA)
     {
-        return (core_win_util_fact * cs.core_wind_area)/fbptval.area_wind_tot;
+        temp = (core_win_util_fact * cs.core_wind_area)/fbptval.area_wind_tot;
     }
-
+    return temp;
 }
 /*Primary turns*/
 

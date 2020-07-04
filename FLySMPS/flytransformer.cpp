@@ -53,6 +53,7 @@ double FlyTransformer::actFluxDensPeak(FBTransformer &fbtvalue)
     return ((S_MU_Z*fbtvalue.actual_num_primary)/(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue.curr_primary_peak + (fbtvalue.curr_primary_peak_peak/2.));
 }
 /*Air gap methods*/
+
 /**/
 /**
   * @brief
@@ -91,6 +92,7 @@ double FlyTransformer::numTurnsRatio(FBTransformer &fbtvalue, double &NumTurns)
     return fbtvalue.actual_num_primary/(NumTurns);
 }
 /**/
+
 /*Recalc actual methods vreflected and duty*/
 /**
   * @brief

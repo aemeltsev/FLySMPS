@@ -11,6 +11,12 @@ enum FBPT_NUM_SETTING
     FBPT_CORE_AREA,
 };
 
+enum FBPT_SHAPE_AIR_GAP
+{
+    RECT_AIR_GAP,
+    ROUND_AIR_GAP,
+};
+
 class FBPTransformer
 {
 public:
@@ -59,6 +65,18 @@ private:
         double ind_fact;//Al(inductance factor TDK)
     };
     /* Core selection */
+
+    struct MechDimension
+    {
+        /* Rectangular Air Gap */
+        double F;
+        double C;
+        double E;
+        double D;
+        /* Round Air Gap */
+        double Diam;
+    }
+
 public:
     /*Core Geometry Factor and Core Selection*/
     void setCoreSelection(double ap, double mu_rc, double ac, double wa, double vc, double lt, double lc, double hw, double al, CoreSelection &cs);
@@ -84,16 +102,6 @@ public:
     double actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec);//Post-calculated reflected voltage(VRPost)
     double actMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
     /*Recalc Np, Bm, RefVoltage, DutyCycle*/
-private:
-    /* Mechanical dimensions */
-    /* Rectangular Air Gap */
-    double F;
-    double C;
-    double E;
-    double D;
-    /* Round Air Gap */
-    double Diam;
-    /* Mechanical dimensions */
 };
 
 class FBPTWinding
