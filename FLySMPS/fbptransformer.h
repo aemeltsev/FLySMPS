@@ -4,19 +4,6 @@
 #include <cstdint>
 #include <structdata.h>
 
-enum FBPT_NUM_SETTING
-{
-    FBPT_INDUCT_FACTOR,
-    FBPT_FLUX_PEAK,
-    FBPT_CORE_AREA,
-};
-
-enum FBPT_SHAPE_AIR_GAP
-{
-    RECT_AIR_GAP,
-    ROUND_AIR_GAP,
-};
-
 class FBPTransformer
 {
 public:
@@ -50,6 +37,19 @@ private:
     double core_win_util_fact;//Ku - window utilization factor
     double flux_dens_max;//Bm - saturation magnetic field density
     double EnergyStoredChoke(const FBPT &fbptval);//
+
+    enum FBPT_NUM_SETTING
+    {
+        FBPT_INDUCT_FACTOR,
+        FBPT_FLUX_PEAK,
+        FBPT_CORE_AREA,
+    };
+
+    enum FBPT_SHAPE_AIR_GAP
+    {
+        RECT_AIR_GAP,
+        ROUND_AIR_GAP,
+    };
 
     /* Core selection */
     struct CoreSelection
@@ -87,7 +87,7 @@ public:
     double CurrentDens(const FBPT &fbptval);
     /*Core Geometry Factor and Core Selection*/
 
-    double numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns);
+    double numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
 
     /*Air-Gap Length Considered with Fringing Effect*/
     void setMechanDimension(double f, double c, double e, double d, MechDimension &mch, double diam);

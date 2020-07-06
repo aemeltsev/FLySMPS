@@ -168,11 +168,13 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
 
 /*Primary turns*/
 /**
-  * @brief
-  * @param
-  * @return
+  * @brief Estimate turns of primary side
+  * @param from FBPT inductance and p-p current
+  * @param cs - core geometry values
+  * @param fns - select method for num primary turns calculate
+  * @return number of turns the primary side
   */
-double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING fns)
+double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING &fns)
 {
     double temp = 0.0;
     if(fns == FBPT_INDUCT_FACTOR)
