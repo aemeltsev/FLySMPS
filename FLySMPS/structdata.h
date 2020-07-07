@@ -74,26 +74,21 @@ struct FBPT
     double curr_primary_valley;//Primary valley current
     double curr_primary_rms;//Primary RMS current
 
+    double core_area_product;//Core area product Ap
+    double core_win_core_sect;////Product of areas factor W_a*A_e
     double area_wind_tot;//
-    double length_air_gap;//
+    double curr_dens;//
+
+    double number_primary_wa;//
+
+    double length_air_gap;//Air-gap length considered with fringing effect
+    double fring_flux_fact;//
+    double actual_num_primary;
+    double actual_b_peak;//Calc peak flux density
 };
 
 struct FBTransformer
 {
-
-
-    double core_area_product;//Core area product Ap
-    double core_win_core_sect;////Product of areas factor W_a*A_e
-    double delta_flux_max;//
-    double curr_dens;//
-
-    double number_primary_al;//Calculate primary number of turns use - AL value (inductance factor)
-    double number_primary_ba;//Calculate minimum primary number of turns use B_max(max. flux density)
-    double number_primary_wa;//
-
-    double length_air_gap;//Air-gap length considered with fringing effect
-    double fring_area;//
-    double fring_flux_fact;//
     double actual_num_primary;
     double actual_b_peak;//Calc peak flux density
     double actual_volt_reflected;//Recalc reflected voltage

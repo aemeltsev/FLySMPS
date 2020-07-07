@@ -8,21 +8,6 @@ FlyTransformer::FlyTransformer()
 
 }
 
-double FlyTransformer::actNumPrimary(FBTransformer &fbtvalue)
-{
-    return sqrt(((fbtvalue.primary_induct)/S_MU_Z*core_cross_sect_area)*(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)));
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::actFluxDensPeak(FBTransformer &fbtvalue)
-{
-    return ((S_MU_Z*fbtvalue.actual_num_primary)/(fbtvalue.length_air_gap + (mean_mag_path_leng/core_permeal)))*(fbtvalue.curr_primary_peak + (fbtvalue.curr_primary_peak_peak/2.));
-}
-/*Air gap methods*/
-
 /**/
 /**
   * @brief

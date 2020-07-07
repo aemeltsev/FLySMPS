@@ -195,7 +195,7 @@ double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const 
 
 /*Air gap methods*/
 /**
-  * @brief
+  * @brief Mechanical dimension
   * @param c - width of core, TDK dimension nomenclature
   * @param e - window width, TDK dimension nomenclature
   * @param f - window half height, TDK dimension nomenclature
@@ -212,9 +212,11 @@ void FBPTCore::setMechanDimension(double c, double e,
     mchdm.Diam = diam;
 }
 /**
-  * @brief
-  * @param
-  * @return
+  * @brief Air gap length
+  * @param from fbptval - primary inductance
+  * @param cs - core parameters
+  * @param varNumPrim - number of turns the primary side
+  * @return length ag in m
   */
 double FBPTCore::agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim)
 {
@@ -226,7 +228,8 @@ double FBPTCore::agLength(const FBPT &fbptval, const CoreSelection &cs, double v
   * @param
   * @return
   */
-double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff, FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k)
+double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff,
+                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k)
 {
     double csa, af, temp = 0.0;
     double u = ewff/fbptval.length_air_gap;
@@ -246,32 +249,37 @@ double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff, FBPT_SHAPE_AI
 }
 /*Air gap methods*/
 
-/*Recalc Np, Bm, RefVoltage, DutyCycle*/
+/*Recalc Np, Bm */
 /**
   * @brief
   * @param
   * @return
   */
-double FBPTCore::actNumPrimary(const FBPT &fbptval)
+int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
+                                double varNumPrim, double ewff,
+                                FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
+                                double k=1.0)
 {
-
+    int16_t act_num_prim_turns = 0;
+    double ag, ffg, flux_peak = 0.0;
+    do
+    {
+        ag = agLength(fbptval, cs, varNumPrim);
+        ffg = agFringFluxFact(fbptval, ewff, fsag, mchdm, k);
+        act_num_prim_turns = static_cast<int16_t>(sqrt((ag*fbptval.primary_induct)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
+        flux_peak = (S_MU_Z * act_num_prim_turns * ffg * (fbptval.curr_primary_peak/2))/(ag+(cs.mean_mag_path_leng/cs.core_permeal));
+    }
+    while(flux_peak > flux_dens_max);
+    return act_num_prim_turns;
 }
 /**
   * @brief
   * @param
   * @return
   */
-double FBPTCore::actFluxDensPeak(const FBPT &fbptval)
+
+double FBPTWinding::actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec)
 {
 
 }
-/**
-  * @brief
-  * @param
-  * @return
-  */
-double FBPTCore::actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec)
-{
-
-}
-/*Recalc Np, Bm, RefVoltage, DutyCycle*/
+/*Recalc Np, Bm */
