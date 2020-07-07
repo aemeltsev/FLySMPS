@@ -7,7 +7,7 @@
   * @param from Bulk Cap struct - dc average voltage
   * @return duty cycle ratio
   */
-double FBPTransformer::DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue)
+double FBPTPrimary::DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue)
 {
     return  ivalue.refl_volt_max/((ivalue.refl_volt_max)+(bcvalue.input_dc_min_voltage));
 }
@@ -16,7 +16,7 @@ double FBPTransformer::DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalu
   * @param from Input parameters - full output power and efficiency
   * @return in pwr in W
   */
-double FBPTransformer::InputPower(const InputValue &ivalue)
+double FBPTPrimary::InputPower(const InputValue &ivalue)
 {
     return (ivalue.power_out_max)/(ivalue.eff);
 }
@@ -27,7 +27,7 @@ double FBPTransformer::InputPower(const InputValue &ivalue)
   * @param from Input parameters - switching frequency
   * @return inductance in H
   */
-double FBPTransformer::PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
+double FBPTPrimary::PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
 {
     return pow((bcvalue.input_dc_min_voltage * fbptval.max_duty_cycle), 2)/(2. * fbptval.inp_power*ivalue.freq_switch * ripple_factor);
 }
@@ -40,7 +40,7 @@ double FBPTransformer::PriInduct(const BCap &bcvalue, const FBPT &fbptval, const
   * @param from Bulk Cap struct - minimum voltage after the input capacitor
   * @return average current
   */
-double FBPTransformer::CurrPriAver(const BCap &bcvalue, const FBPT &fbptval)
+double FBPTPrimary::CurrPriAver(const BCap &bcvalue, const FBPT &fbptval)
 {
     return fbptval.inp_power/((bcvalue.input_min_voltage)*(fbptval.max_duty_cycle));
 }
@@ -51,7 +51,7 @@ double FBPTransformer::CurrPriAver(const BCap &bcvalue, const FBPT &fbptval)
   * @param from Input parameters - switching frequency
   * @return primare delta current
   */
-double FBPTransformer::CurrPriPeakToPeak(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
+double FBPTPrimary::CurrPriPeakToPeak(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
 {
     return ((bcvalue.input_dc_min_voltage)*(fbptval.max_duty_cycle))/((fbptval.primary_induct)*(ivalue.freq_switch));
 }
@@ -60,7 +60,7 @@ double FBPTransformer::CurrPriPeakToPeak(const BCap &bcvalue, const FBPT &fbptva
   * @param from FBPT struct - average and delta current
   * @return peak value of primary current
   */
-double FBPTransformer::CurrPriMax(const FBPT &fbptval)
+double FBPTPrimary::CurrPriMax(const FBPT &fbptval)
 {
     return  (fbptval.curr_primary_aver)+((fbptval.curr_primary_peak_peak)/2);
 }
@@ -69,7 +69,7 @@ double FBPTransformer::CurrPriMax(const FBPT &fbptval)
   * @param from FBPT struct - peak current and delta current
   * @return the valley of the inductor current
   */
-double FBPTransformer::CurrPriValley(const FBPT &fbptval)
+double FBPTPrimary::CurrPriValley(const FBPT &fbptval)
 {
     return (fbptval.curr_primary_peak)-(fbptval.curr_primary_peak_peak);
 }
@@ -78,7 +78,7 @@ double FBPTransformer::CurrPriValley(const FBPT &fbptval)
   * @param from FBPT struct - average, delta current and duty cycle ratio
   * @return current rms value
   */
-double FBPTransformer::CurrPriRMS(const FBPT &fbptval)
+double FBPTPrimary::CurrPriRMS(const FBPT &fbptval)
 {
     return sqrt((3.*(fbptval.curr_primary_aver * fbptval.curr_primary_aver)+((fbptval.curr_primary_peak_peak/2.)*(fbptval.curr_primary_peak_peak/2.)))*(fbptval.max_duty_cycle/3.));
 }
@@ -247,8 +247,6 @@ double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff,
     }
     return temp;
 }
-/*Air gap methods*/
-
 /*Recalc Np, Bm */
 /**
   * @brief
@@ -272,6 +270,9 @@ int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
     while(flux_peak > flux_dens_max);
     return act_num_prim_turns;
 }
+/*Recalc Np, Bm */
+
+
 /**
   * @brief
   * @param
@@ -282,4 +283,4 @@ double FBPTWinding::actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval
 {
 
 }
-/*Recalc Np, Bm */
+

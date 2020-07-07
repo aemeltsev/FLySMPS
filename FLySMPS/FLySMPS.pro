@@ -26,19 +26,27 @@ CONFIG += c++11
 
 SOURCES += \
     LoggingCategories.cpp \
+    capout.cpp \
+    diodeout.cpp \
+    fbptransformer.cpp \
         main.cpp \
         FLySMPS.cpp \
     diodebridge.cpp \
     bulkcap.cpp \
     flytransformer.cpp \
+    outfilter.cpp \
     swmosfet.cpp
 
 HEADERS += \
         FLySMPS.h \
     LoggingCategories.h \
+    capout.h \
     diodebridge.h \
     bulkcap.h \
+    diodeout.h \
+    fbptransformer.h \
     flytransformer.h \
+    outfilter.h \
     structdata.h \
     swmosfet.h
 

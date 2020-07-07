@@ -4,10 +4,10 @@
 #include <cstdint>
 #include <structdata.h>
 
-class FBPTransformer
+class FBPTPrimary
 {
 public:
-    FBPTransformer(double krf): ripple_factor(krf){}
+    FBPTPrimary(double krf): ripple_factor(krf){}
 
     double DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue);
     double InputPower(const InputValue &ivalue);
@@ -75,9 +75,10 @@ private:
     };
 
     double EnergyStoredChoke(const FBPT &fbptval);//
+    //Correction factor F. - the edge coefficient(FFC)
     double agFringFluxFact(const FBPT &fbptval, double ewff,
                            FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=1.0);//Correction factor F. - the edge coefficient(FFC)
+                           double k=1.0);
 
 public:
     /*Core Geometry Factor and Core Selection*/
@@ -110,13 +111,27 @@ public:
     /*Recalc Np, Bm */
 };
 
+class FBPTSecond
+{
+public:
+    FBPTSecond(){}
+
+};
+
 class FBPTWinding
 {
 public:
-    FBPTWinding();
+    FBPTWinding(double currout, double voltout):
+        Curr(currout), Volt(voltout)
+    {
+
+    }
 
     double actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec);//Post-calculated reflected voltage(VRPost)
     double actMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
+
+    inline double outPWR(){return Curr*Volt;}
+    inline double outCoeffPWR(InputValue &ivalue){return outPWR()/ivalue.power_out_max;}
 
     /*Winding*/
     void setWindVal(double m, double fcu);
@@ -135,6 +150,8 @@ public:
     double wSecondCurrRMS(FBTransformer &fbtvalue, double &CoeffPwr, double &TurnRatio);//RMS current(ISRMS)
     /*Winding*/
 private:
+    double Curr;
+    double Volt;
     double M;
     double FCu;
     double AWGp;

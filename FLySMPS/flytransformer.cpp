@@ -1,4 +1,4 @@
-/**
+﻿/**
   * License text...
 */
 #include "flytransformer.h"
@@ -8,30 +8,6 @@ FlyTransformer::FlyTransformer()
 
 }
 
-/**/
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numOutPower(double &OutCurr, double &OutVolt)
-{
-    return (OutCurr)*(OutVolt);
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numCoeffPower(InputValue &ivalue, double &OutPower)
-{
-    return OutPower/ivalue.power_out_max;
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
 double FlyTransformer::numSecondary(FBTransformer &fbtvalue, InputValue &ivalue, double &OutVolt)
 {
     return (fbtvalue.actual_num_primary*(OutVolt)*(ivalue.volt_diode_drop_sec))/fbtvalue.actual_volt_reflected;
@@ -50,7 +26,7 @@ double FlyTransformer::numTurnsRatio(FBTransformer &fbtvalue, double &NumTurns)
 /*Recalc actual methods vreflected and duty*/
 /**
   * @brief
-  * @param
+  * @pa
   * @retval
   */
 double FlyTransformer::actVoltageRefl(InputValue &ivalue, FBTransformer &fbtvalue, double &varNumSec)
