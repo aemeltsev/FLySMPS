@@ -24,6 +24,19 @@ private:
     double ripple_factor;
 };
 
+struct CoreSelection
+{
+    double core_area_product;//Ap
+    double core_permeal;//mu_rc(mu_r - relative permeability TDK)
+    double core_cross_sect_area;//Ac(Ae - effective magnetic cross section TDK)
+    double core_wind_area;//Wa(An - winding cross section TDK)
+    double core_vol;//Vc(Ve - effective magnetic volume TDK)
+    double mean_leng_per_turn;//l_t(l_n - average length of turn TDK)
+    double mean_mag_path_leng;//l_c(l_e - effective magnetic path length TDK)
+    double core_win_height;//height of the window
+    double ind_fact;//Al(inductance factor TDK)
+};
+
 struct MechDimension
 {
     /* Rectangular Air Gap */
@@ -59,19 +72,6 @@ private:
     {
         RECT_AIR_GAP,
         ROUND_AIR_GAP,
-    };
-
-    struct CoreSelection
-    {
-        double core_area_product;//Ap
-        double core_permeal;//mu_rc(mu_r - relative permeability TDK)
-        double core_cross_sect_area;//Ac(Ae - effective magnetic cross section TDK)
-        double core_wind_area;//Wa(An - winding cross section TDK)
-        double core_vol;//Vc(Ve - effective magnetic volume TDK)
-        double mean_leng_per_turn;//l_t(l_n - average length of turn TDK)
-        double mean_mag_path_leng;//l_c(l_e - effective magnetic path length TDK)
-        double core_win_height;//height of the window
-        double ind_fact;//Al(inductance factor TDK)
     };
 
     double EnergyStoredChoke(const FBPT &fbptval);//
@@ -124,6 +124,10 @@ public:
     inline double outCoeffPWR(const InputValue &ivalue){return outPWR()/ivalue.power_out_max;}
     inline double outNumSecond(const FBPT &fbptval, const InputValue &ivalue);
     inline double outNumTurnRatio(const FBPT &fbptval, const InputValue &ivalue);
+
+    //Current for secondary layers
+    inline double outCurrPeakSecond(const FBPT &fbptval, const InputValue &ivalue);//Peak current(IAMax)
+    inline double outCurrRMSSecond(const FBPT &fbptval, const BCap &bcvalue, const InputValue &ivalue);//RMS current(ISRMS)
 private:
     double Curr;
     double Volt;
@@ -133,27 +137,26 @@ private:
 class FBPTWinding
 {
 public:
-    FBPTWinding(){}
+    FBPTWinding(int8_t m=4, double fcu=0.4, double ins=0.01):
+        M(m), FCu(fcu), INS(ins)
+    {
 
+    }
     /*Winding*/
-    void setWindVal(double m, double fcu);
-    double wEffBobbWidth();//Effective bobbin width(BWe)
-    double wEffWindCrossSect();//Effective winding cross-section(ANe)
-    double wCoperWireCrossSectArea(const FBPT &fbptval,  double &WindFact);//(AP) or (ANS)
-    double wMaxWireSizeAWG(double &WireCrossSect);//(AWGP) or (AWGNS)
-    void setWireDiam(double awgp, uint16_t np, double ins);
-    double wCoperWireDiam(double &WireSizeAWG);//(DP) or (DS)
-    double wCoperWireCrossSectAreaPost(double &WireDiam);//
-    double wCurrentDenst(const FBPT &fbptval, double &WireAreaPost);//(JP) or (JS)
-    double wNumTurnToLay(double &WireDiam);//Number of turns per layer(NL)
-    double wNumLay(const FBPT &fbptval, double &NumTurPerLay);//(LNp)
-    //Current for secondary layers
-    double wSecondCurrPeak(const FBPT &fbptval, double &TurnRatio, double &CoeffPwr);//Peak current(IAMax)
-    double wSecondCurrRMS(const FBPT &fbptval, double &CoeffPwr, double &TurnRatio);//RMS current(ISRMS)
+    inline double wEffBobbWidth(const MechDimension &mchdm);//Effective bobbin width(BWe)
+    inline double wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm);//Effective winding cross-section(ANe)
+    inline double wCoperWireCrossSectArea(const FBPT &fbptval, const CoreSelection &cs, const MechDimension &mchdm, double windfact);//(AP) or (ANS)
+    inline double wMaxWireSizeAWG(double wirecrosssect);//(AWGP) or (AWGNS)
+    inline double wSkinDepth(const InputValue &ivalue);
+    void setWireDiam(double awgp, uint16_t np);
+    inline double wCoperWireDiam();//(DP) or (DS)
+    inline double wCoperWireCrossSectAreaPost();//
+    inline double wCurrentDenst(const FBPT &fbptval);//(JP) or (JS)
+    inline double wNumTurnToLay(const MechDimension &mchdm);//Number of turns per layer(NL)
+    inline double wNumLay(const FBPT &fbptval, const MechDimension &mchdm);//(LNp)
     /*Winding*/
 private:
-
-    double M;
+    int8_t M;
     double FCu;
     double AWGp;
     double Np;

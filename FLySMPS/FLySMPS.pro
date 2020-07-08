@@ -33,7 +33,6 @@ SOURCES += \
         FLySMPS.cpp \
     diodebridge.cpp \
     bulkcap.cpp \
-    flytransformer.cpp \
     outfilter.cpp \
     swmosfet.cpp
 
@@ -45,7 +44,6 @@ HEADERS += \
     bulkcap.h \
     diodeout.h \
     fbptransformer.h \
-    flytransformer.h \
     outfilter.h \
     structdata.h \
     swmosfet.h

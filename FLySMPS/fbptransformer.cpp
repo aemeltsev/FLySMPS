@@ -276,14 +276,14 @@ int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
 /**
   * @brief
   */
-double postVoltageRefl(const FBPT &fbptval, float voltout, float voltdrop, float numsec)
+inline double postVoltageRefl(const FBPT &fbptval, float voltout, float voltdrop, float numsec)
 {
     return static_cast<double>((voltout + voltdrop))*(fbptval.actual_num_primary/static_cast<double>(numsec));
 }
 /**
   * @brief
   */
-double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue)
+inline double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue)
 {
     return (fbptval.actual_volt_reflected)/(fbptval.actual_volt_reflected + bcvalue.input_min_voltage);
 }
@@ -304,4 +304,116 @@ double FBPTSecondary::outNumTurnRatio(const FBPT &fbptval, const InputValue &iva
 {
     return fbptval.actual_num_primary/outNumSecond(fbptval, ivalue);
 }
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTSecondary::outCurrPeakSecond(const FBPT &fbptval, const InputValue &ivalue)
+{
+    return (fbptval.curr_primary_peak) * outNumTurnRatio(fbptval, ivalue) * outCoeffPWR(ivalue);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTSecondary::outCurrRMSSecond(const FBPT &fbptval, const BCap &bcvalue, const InputValue &ivalue)
+{
+    double tmp = ((1-postMaxDutyCycle(fbptval, bcvalue))/postMaxDutyCycle(fbptval, bcvalue));
+    return fbptval.curr_primary_rms * outCoeffPWR(ivalue) * outNumTurnRatio(fbptval, ivalue) *sqrt(tmp);
+}
 /*Second Side*/
+
+/*Winding*/
+/**
+  * @param
+  * @return
+  */
+inline double FBPTWinding::wEffBobbWidth(const MechDimension &mchdm){return mchdm.D-(2. * M);}
+/**
+  * @param
+  * @return
+  */
+inline double FBPTWinding::wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm){return (cs.core_wind_area*(wEffBobbWidth(mchdm)))/mchdm.D;}
+/**
+  * @param
+  * @return
+  */
+inline double FBPTWinding::wCoperWireCrossSectArea(const FBPT &fbptval, const CoreSelection &cs, const MechDimension &mchdm, double windfact)
+{
+    return (windfact * FCu *(wEffWindCrossSect(cs, mchdm)))/(fbptval.actual_num_primary);
+}
+/**
+  * @param
+  * @return
+  */
+inline double FBPTWinding::wMaxWireSizeAWG(double wirecrosssect)
+{
+    return (9.97*(1.8277 - (2*log10(2*sqrt((wirecrosssect)/S_PI)))));
+}
+/**
+  * @param
+  * @return
+  */
+inline double FBPTWinding::wSkinDepth(const InputValue &ivalue)
+{
+    return sqrt((S_RO_OM)/(2.*S_PI*ivalue.freq_switch*S_MU_Z));
+}
+/**
+  * @brief
+  * @param
+  */
+void FBPTWinding::setWireDiam(double awgp, uint16_t np)
+{
+    AWGp = awgp;
+    Np = np;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTWinding::wCoperWireDiam()
+{
+    double tmp = (AWGp)/(2.*9.97);
+    double out = ((1.8277/2.)-(tmp));
+    return pow(10., out);
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTWinding::wCoperWireCrossSectAreaPost()
+{
+    return (S_PI/4.)*pow(wCoperWireDiam(), 2.)*Np;
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTWinding::wCurrentDenst(const FBPT &fbptval)
+{
+    return fbptval.curr_primary_rms/wCoperWireCrossSectAreaPost();
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTWinding::wNumTurnToLay(const MechDimension &mchdm)
+{
+    return (wEffBobbWidth(mchdm))/(Np*(wCoperWireDiam()+(2*INS)));
+}
+/**
+  * @brief
+  * @param
+  * @retval
+  */
+inline double FBPTWinding::wNumLay(const FBPT &fbptval, const MechDimension &mchdm)
+{
+    return (fbptval.actual_num_primary)/(wNumTurnToLay(mchdm));
+}
+/*Winding*/
