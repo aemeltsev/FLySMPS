@@ -6,6 +6,8 @@ class OutFilter
 {
 public:
     OutFilter();
+private:
+
 };
 
 #endif // OUTFILTER_H

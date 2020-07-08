@@ -110,7 +110,7 @@ double BulkCap::VMinInp(BCap &bcvalue, InputValue &ivalue)
     return sqrt((VDOut(ivalue)*VDOut(ivalue))-((2.*(ivalue.power_out_max)*((1./(4.*ivalue.freq_line)-DeltaT(ivalue))))/(bcvalue.bcapacitor_value)));
 }
 /**
-  * @brief VDCMin simply the average value of MinIng and VRectMinPeak
+  * @brief VDCMin simply the average value of MinInp and VRectMinPeak
   * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
   * @param VMinInp - input_min_voltage - recalculation after input capacitor selection
   * @retval VDCMin - simply the average value of MinIng and VRectMinPeak

@@ -24,6 +24,17 @@ private:
     double ripple_factor;
 };
 
+struct MechDimension
+{
+    /* Rectangular Air Gap */
+    double C;
+    double E;
+    double F;
+    double D; //size of rectangulared, central kern
+    /* Round Air Gap */
+    double Diam;
+};
+
 class FBPTCore
 {
 public:
@@ -63,17 +74,6 @@ private:
         double ind_fact;//Al(inductance factor TDK)
     };
 
-    struct MechDimension
-    {
-        /* Rectangular Air Gap */
-        double C;
-        double E;
-        double F;
-        double D; //size of rectangulared, central kern
-        /* Round Air Gap */
-        double Diam;
-    };
-
     double EnergyStoredChoke(const FBPT &fbptval);//
     //Correction factor F. - the edge coefficient(FFC)
     double agFringFluxFact(const FBPT &fbptval, double ewff,
@@ -111,47 +111,48 @@ public:
     /*Recalc Np, Bm */
 };
 
-class FBPTSecond
+inline double postVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec);//Post-calculated reflected voltage(VRPost)
+inline double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
+
+class FBPTSecondary
 {
 public:
-    FBPTSecond(){}
-
+    FBPTSecondary(double currout, double voltout, double voltreflect):
+        Curr(currout), Volt(voltout), ReflVolt(voltreflect)
+    {}
+    inline double outPWR(){return Curr*Volt;}
+    inline double outCoeffPWR(const InputValue &ivalue){return outPWR()/ivalue.power_out_max;}
+    inline double outNumSecond(const FBPT &fbptval, const InputValue &ivalue);
+    inline double outNumTurnRatio(const FBPT &fbptval, const InputValue &ivalue);
+private:
+    double Curr;
+    double Volt;
+    double ReflVolt;
 };
 
 class FBPTWinding
 {
 public:
-    FBPTWinding(double currout, double voltout):
-        Curr(currout), Volt(voltout)
-    {
-
-    }
-
-    double actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec);//Post-calculated reflected voltage(VRPost)
-    double actMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
-
-    inline double outPWR(){return Curr*Volt;}
-    inline double outCoeffPWR(InputValue &ivalue){return outPWR()/ivalue.power_out_max;}
+    FBPTWinding(){}
 
     /*Winding*/
     void setWindVal(double m, double fcu);
     double wEffBobbWidth();//Effective bobbin width(BWe)
     double wEffWindCrossSect();//Effective winding cross-section(ANe)
-    double wCoperWireCrossSectArea(FBTransformer &fbtvalue,  double &WindFact);//(AP) or (ANS)
+    double wCoperWireCrossSectArea(const FBPT &fbptval,  double &WindFact);//(AP) or (ANS)
     double wMaxWireSizeAWG(double &WireCrossSect);//(AWGP) or (AWGNS)
     void setWireDiam(double awgp, uint16_t np, double ins);
     double wCoperWireDiam(double &WireSizeAWG);//(DP) or (DS)
     double wCoperWireCrossSectAreaPost(double &WireDiam);//
-    double wCurrentDenst(FBTransformer &fbtvalue, double &WireAreaPost);//(JP) or (JS)
+    double wCurrentDenst(const FBPT &fbptval, double &WireAreaPost);//(JP) or (JS)
     double wNumTurnToLay(double &WireDiam);//Number of turns per layer(NL)
-    double wNumLay(FBTransformer &fbtvalue, double &NumTurPerLay);//(LNp)
+    double wNumLay(const FBPT &fbptval, double &NumTurPerLay);//(LNp)
     //Current for secondary layers
-    double wSecondCurrPeak(FBTransformer &fbtvalue, double &TurnRatio, double &CoeffPwr);//Peak current(IAMax)
-    double wSecondCurrRMS(FBTransformer &fbtvalue, double &CoeffPwr, double &TurnRatio);//RMS current(ISRMS)
+    double wSecondCurrPeak(const FBPT &fbptval, double &TurnRatio, double &CoeffPwr);//Peak current(IAMax)
+    double wSecondCurrRMS(const FBPT &fbptval, double &CoeffPwr, double &TurnRatio);//RMS current(ISRMS)
     /*Winding*/
 private:
-    double Curr;
-    double Volt;
+
     double M;
     double FCu;
     double AWGp;

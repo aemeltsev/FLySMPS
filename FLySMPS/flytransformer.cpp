@@ -8,41 +8,6 @@ FlyTransformer::FlyTransformer()
 
 }
 
-double FlyTransformer::numSecondary(FBTransformer &fbtvalue, InputValue &ivalue, double &OutVolt)
-{
-    return (fbtvalue.actual_num_primary*(OutVolt)*(ivalue.volt_diode_drop_sec))/fbtvalue.actual_volt_reflected;
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::numTurnsRatio(FBTransformer &fbtvalue, double &NumTurns)
-{
-    return fbtvalue.actual_num_primary/(NumTurns);
-}
-/**/
-
-/*Recalc actual methods vreflected and duty*/
-/**
-  * @brief
-  * @pa
-  * @retval
-  */
-double FlyTransformer::actVoltageRefl(InputValue &ivalue, FBTransformer &fbtvalue, double &varNumSec)
-{
-    return (ivalue.volt_out_one + ivalue.volt_diode_drop_sec)*(fbtvalue.actual_num_primary/(varNumSec));
-}
-/**
-  * @brief
-  * @param
-  * @retval
-  */
-double FlyTransformer::actMaxDutyCycle(FBTransformer &fbtvalue, BCap &bcvalue)
-{
-    return (fbtvalue.actual_volt_reflected)/(fbtvalue.actual_volt_reflected + bcvalue.input_min_voltage);
-}
-/*Recalc actual methods vreflected and duty*/
 /*Winding*/
 /**
   * @brief

@@ -272,15 +272,36 @@ int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
 }
 /*Recalc Np, Bm */
 
-
+/*Recalc actual methods vreflected and duty*/
 /**
   * @brief
-  * @param
-  * @return
   */
-
-double FBPTWinding::actVoltageRefl(const InputValue &ivalue, const FBPT &fbptval, double &varNumSec)
+double postVoltageRefl(const FBPT &fbptval, float voltout, float voltdrop, float numsec)
 {
-
+    return static_cast<double>((voltout + voltdrop))*(fbptval.actual_num_primary/static_cast<double>(numsec));
 }
+/**
+  * @brief
+  */
+double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue)
+{
+    return (fbptval.actual_volt_reflected)/(fbptval.actual_volt_reflected + bcvalue.input_min_voltage);
+}
+/*Recalc actual methods vreflected and duty*/
 
+/*Second Side*/
+/**
+  * @brief
+  */
+double FBPTSecondary::outNumSecond(const FBPT &fbptval, const InputValue &ivalue)
+{
+    return (fbptval.actual_num_primary * (Volt + ivalue.volt_diode_drop_sec))/ReflVolt;
+}
+/**
+  * @brief
+  */
+double FBPTSecondary::outNumTurnRatio(const FBPT &fbptval, const InputValue &ivalue)
+{
+    return fbptval.actual_num_primary/outNumSecond(fbptval, ivalue);
+}
+/*Second Side*/

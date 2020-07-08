@@ -79,18 +79,13 @@ struct FBPT
     double area_wind_tot;//
     double curr_dens;//
 
-    double number_primary_wa;//
+    double number_primary;//
 
     double length_air_gap;//Air-gap length considered with fringing effect
     double fring_flux_fact;//
     double actual_num_primary;
     double actual_b_peak;//Calc peak flux density
-};
 
-struct FBTransformer
-{
-    double actual_num_primary;
-    double actual_b_peak;//Calc peak flux density
     double actual_volt_reflected;//Recalc reflected voltage
     double actual_max_duty_cycle;//Recalc maximum duty cycle
 };
