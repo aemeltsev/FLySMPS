@@ -12,9 +12,9 @@ SwMosfet::SwMosfet()
   * @param transf, bridge struct ref
   * @retval nom voltage value
   */
-double SwMosfet::swMosfetVoltageNom(DBridge &dbvalue, FBTransformer &fbtvalue)
+double SwMosfet::swMosfetVoltageNom(DBridge &dbvalue, const FBPT &fbptval)
 {
-    return dbvalue.in_max_rms_voltage + fbtvalue.actual_volt_reflected;
+    return dbvalue.in_max_rms_voltage + fbptval.actual_volt_reflected;
 }
 /**
   * @brief estimated voltage stress of switch
@@ -30,10 +30,10 @@ double SwMosfet::swMosfetVoltageMax(PMosfet &pmvalue, InputValue &ivalue)
   * @param input, transf, bridge struct ref
   * @retval switch current
   */
-double SwMosfet::swMosfetCurrent(FBTransformer &fbtvalue, InputValue &ivalue, DBridge &dbvalue)
+double SwMosfet::swMosfetCurrent(const FBPT &fbptval, InputValue &ivalue, DBridge &dbvalue)
 {
     double time_switch = (1/ivalue.freq_switch);
-    return (ivalue.power_out_max/(ivalue.eff * dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle)) + ((dbvalue.in_min_rms_voltage * fbtvalue.actual_max_duty_cycle * time_switch)/swLeakageInduct(fbtvalue, ivalue));
+    return (ivalue.power_out_max/(ivalue.eff * dbvalue.in_min_rms_voltage * fbptval.actual_max_duty_cycle)) + ((dbvalue.in_min_rms_voltage * fbptval.actual_max_duty_cycle * time_switch)/swLeakageInduct(fbptval, ivalue));
 }
 /**
   * @brief estimated fet vds rise and fall time
@@ -49,9 +49,9 @@ double SwMosfet::swMosfetRiseTime()
   * @param transf struct ptr
   * @retval conduction losses
   */
-double SwMosfet::swMosfetConductLoss(FBTransformer &fbtvalue)
+double SwMosfet::swMosfetConductLoss(const FBPT &fbptval)
 {
-    return pow(fbtvalue.curr_primary_rms, 2) * RDSon;
+    return pow(fbptval.curr_primary_rms, 2) * RDSon;
 }
 /**
   * @brief estimated fet power loss by driving the fet’s gate
@@ -67,9 +67,9 @@ double SwMosfet::swMosfetDriveLoss(InputValue &ivalue)
   * @param fet, input, transf struct ptr
   * @retval switching loss
   */
-double SwMosfet::swMosfetSwitchLoss(InputValue &ivalue, FBTransformer &fbtvalue, PMosfet &pmvalue)
+double SwMosfet::swMosfetSwitchLoss(InputValue &ivalue, const FBPT &fbptval, PMosfet &pmvalue)
 {
-    return ((Coss*pow(pmvalue.mosfet_voltage_max, 2)*ivalue.freq_switch)/2.) + (pmvalue.mosfet_voltage_max*fbtvalue.curr_primary_peak*pmvalue.mosfet_rise_time*ivalue.freq_switch);
+    return ((Coss*pow(pmvalue.mosfet_voltage_max, 2)*ivalue.freq_switch)/2.) + (pmvalue.mosfet_voltage_max*fbptval.curr_primary_peak*pmvalue.mosfet_rise_time*ivalue.freq_switch);
 }
 /**
   * @brief estimated fet coss power dissipation
@@ -129,18 +129,18 @@ double SwMosfet::getCustomIdrv(InputValue &ivalue)
   * @param leakage perc && calculated induct primary size
   * @retval leakage inductance
   */
-double SwMosfet::swLeakageInduct(FBTransformer &fbtvalue, InputValue &ivalue)
+double SwMosfet::swLeakageInduct(const FBPT &fbptval, InputValue &ivalue)
 {
-    return ivalue.leakage_induct * fbtvalue.primary_induct;
+    return ivalue.leakage_induct * fbptval.primary_induct;
 }
 /**
   * @brief calculate snubber capacitor voltage
   * @param mosfet max voltage && rms voltage && reflected voltage
   * @retval snubber voltage
   */
-double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, FBTransformer &fbtvalue)
+double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, const FBPT &fbptval)
 {
-    return swMosfetVoltageMax(pmvalue, ivalue) - dbvalue.in_max_rms_voltage - fbtvalue.actual_volt_reflected;
+    return swMosfetVoltageMax(pmvalue, ivalue) - dbvalue.in_max_rms_voltage - fbptval.actual_volt_reflected;
 }
 /**
   * @brief the on-time (tSn) of the snubber diode
@@ -149,18 +149,18 @@ double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbv
   * @param NOutVolt - ref. on the n-th output side with the max voltage values
   * @retval none
   */
-void SwMosfet::clCurrPeakTime(FBTransformer &fbtvalue, InputValue &ivalue, double &TurnRat, double &NOutVolt)
+void SwMosfet::clCurrPeakTime(const FBPT &fbptval, InputValue &ivalue, double &TurnRat, double &NOutVolt)
 {
-    clCurTsPk = (swLeakageInduct(fbtvalue, ivalue)/(TurnRat*NOutVolt))*fbtvalue.curr_primary_peak;
+    clCurTsPk = (swLeakageInduct(fbptval, ivalue)/(TurnRat*NOutVolt))*fbptval.curr_primary_peak;
 }
 /**
   * @brief the power dissipated in the snubber circuit
   * @param volt snub && peak curr && sw freq && on-time diode
   * @retval power diss val
   */
-double SwMosfet::clPowerDiss(PMosfet &pmvalue, FBTransformer &fbtvalue, InputValue &ivalue)
+double SwMosfet::clPowerDiss(PMosfet &pmvalue, const FBPT &fbptval, InputValue &ivalue)
 {
-    return ((pmvalue.snubber_voltage_max * fbtvalue.curr_primary_peak * clCurTsPk * ivalue.freq_switch)/2.);
+    return ((pmvalue.snubber_voltage_max * fbptval.curr_primary_peak * clCurTsPk * ivalue.freq_switch)/2.);
 }
 /**
   * @brief the snubber resistor value
@@ -203,16 +203,16 @@ void SwMosfet::setVoltCurrSens(double csv)
   * @param current peak prim side && cs voltage
   * @retval the res value
   */
-double SwMosfet::csCurrRes(FBTransformer &fbtvalue)
+double SwMosfet::csCurrRes(const FBPT &fbptval)
 {
-    return csVoltCs/fbtvalue.curr_primary_peak;
+    return csVoltCs/fbptval.curr_primary_peak;
 }
 /**
   * @brief the current sense resistor loss
   * @param rms primary curr && resistor value
   * @retval the sense resistor loss
   */
-double SwMosfet::csCurrResLoss(FBTransformer &fbtvalue, PMosfet &pmvalue)
+double SwMosfet::csCurrResLoss(const FBPT &fbptval, PMosfet &pmvalue)
 {
-    return pow(fbtvalue.curr_primary_rms, 2) * pmvalue.curr_sense_res;
+    return pow(fbptval.curr_primary_rms, 2) * pmvalue.curr_sense_res;
 }

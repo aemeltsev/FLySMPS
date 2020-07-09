@@ -42,16 +42,16 @@ double CapOut::ocCapOutValue(const InputValue& ivalue)
   * @param actual_max_duty_cycle actual switching duty cycle
   * @return rms current
   */
-double CapOut::ocCurrOurRMS(const FBTransformer& fbtvalue)
+double CapOut::ocCurrOurRMS(const FBPT &fbptval)
 {
-    return curr_peak_out*sqrt((fbtvalue.actual_max_duty_cycle/3))-curr_peak_out;
+    return curr_peak_out*sqrt((fbptval.actual_max_duty_cycle/3))-curr_peak_out;
 }
 /**
   * @brief estimate total output capacitor loss
   * @param actual_max_duty_cycle for rms current
   * @return losses
   */
-double CapOut::ocCapOutLoss(const FBTransformer& fbtvalue)
+double CapOut::ocCapOutLoss(const FBPT &fbptval)
 {
-    return pow(ocCurrOurRMS(fbtvalue), 2)*ocESRCapOut();
+    return pow(ocCurrOurRMS(fbptval), 2)*ocESRCapOut();
 }

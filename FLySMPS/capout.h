@@ -10,8 +10,8 @@ public:
     CapOut(double vr, double esr, double cpo, double vo, double crfq): volts_rippl(vr), esr_perc(esr), curr_peak_out(cpo), volts_out(vo), cros_frq_start_val(crfq){}
     double ocESRCapOut();
     double ocCapOutValue(const InputValue& ivalue);
-    double ocCurrOurRMS(const FBTransformer& fbtvalue);
-    double ocCapOutLoss(const FBTransformer &fbtvalue);
+    double ocCurrOurRMS(const FBPT &fbptval);
+    double ocCapOutLoss(const FBPT &fbptval);
 
 private:
     double volts_rippl;
