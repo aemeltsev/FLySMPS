@@ -2,6 +2,10 @@
 #define FLYSMPS_H
 
 #include <QMainWindow>
+#include <QDebug>
+
+#include "ui_FLySMPS.h"
+#include "LoggingCategories.h"
 #include "structdata.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
