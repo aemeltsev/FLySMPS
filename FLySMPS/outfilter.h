@@ -18,12 +18,51 @@ public:
     /**
       * @brief
       */
-    inline double ofInductance() const {return  1/pow((capacity * ofAngularCutFreq()),2);}
+    inline double ofInductance() const {return  1/(pow((ofAngularCutFreq()),2) * capacity);}
     /**
       * @brief
       */
-    inline double ofCapESR() const {return 1/(sqrt(2) * capacity * ofAngularCutFreq());}
-
+    inline double ofLoadResistance() const {return 1/(sqrt(2) * capacity * ofAngularCutFreq());}
+    /******************************************************************/
+    /**
+      * @brief
+      */
+    inline double ofQualityFactor(){return ofLoadResistance() * sqrt(capacity/ofInductance());}
+    /**
+      * @brief
+      */
+    inline double ofDampingRatio(){return ofInductance()/(2 * ofQualityFactor());}
+    /**
+      * @brief
+      */
+    inline double ofCuttOffFreq(){return 1./sqrt(capacity * ofInductance());}
+    /******************************************************************/
+    /**
+      * @brief
+      */
+    inline double ofAngularFreq(int16_t frq) const {return 2*S_PI*frq;}
+    /**
+      * @brief inductor impedances using Euler's formula
+      */
+    inline double ofIndImpedance(int16_t frq){return ofAngularFreq(frq) * ofInductance();}
+    /**
+      * @brief
+      */
+    inline double ofCapImpedance(int16_t frq){return 1/(ofAngularFreq(frq) * capacity);}
+    /**
+      * @brief
+      */
+    inline double ofCRParallResist(int16_t frq)
+    {
+        return (ofCapImpedance(frq)*ofLoadResistance())/(ofCapImpedance(frq)+ofLoadResistance());
+    }
+    /**
+      * @brief
+      */
+    inline double ofFilterGainDB(int16_t frq)
+    {
+        return 20*std::log(std::abs(ofCRParallResist(frq)/(ofCRParallResist(frq)+ofIndImpedance(frq))));
+    }
 private:
     int16_t freq;
     double capacity;
