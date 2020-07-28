@@ -63,6 +63,13 @@ public:
     {
         return 20*std::log(std::abs(ofCRParallResist(frq)/(ofCRParallResist(frq)+ofIndImpedance(frq))));
     }
+    /**
+      * @brief
+      */
+    inline double ofOutRipplVolt()
+    {
+        return (1./(ofAngularCutFreq()*capacity))/((1./(ofAngularCutFreq()*capacity))+(ofAngularCutFreq()*ofInductance()));
+    }
 private:
     int16_t freq;
     double capacity;
