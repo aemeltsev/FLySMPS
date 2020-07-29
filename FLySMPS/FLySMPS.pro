@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
     LoggingCategories.cpp \
     capout.cpp \
+    controlout.cpp \
     diodeout.cpp \
     fbptransformer.cpp \
         main.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
         FLySMPS.h \
     LoggingCategories.h \
     capout.h \
+    controlout.h \
     diodebridge.h \
     bulkcap.h \
     diodeout.h \
