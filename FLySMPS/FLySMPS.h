@@ -40,8 +40,8 @@ private:
     FBPT fbpt;
     PMosfet pmsf;
 
-public slots:
-    void PressCalcBTN();
+//public slots:
+    //void PressCalcBTN();
 };
 
 #endif // FLYSMPS_H
