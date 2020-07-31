@@ -22,6 +22,12 @@ public:
         voltout(vout), capout(cout),
         esrcap(esr)
     {}
+    inline void coVoltRatio() {voltrat = voltout/voltin;}
+    inline double coZeroRHPAngFreq() const
+    {
+        double tmp = std::pow(turnrat, 2)*static_cast<double>(resload);
+        return tmp/(priminduct*voltrat*(voltrat+1));
+    }
 private:
     float turnrat;
     double priminduct;
@@ -30,6 +36,7 @@ private:
     int16_t voltout;
     double capout;
     double esrcap;
+    double voltrat;
 
 };
 
