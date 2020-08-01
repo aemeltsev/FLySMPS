@@ -45,17 +45,17 @@ inline double CapOut::ocCurrOurRMS(const FBPT &fbptval)
     return curr_peak_out*sqrt((fbptval.actual_max_duty_cycle/3))-curr_peak_out;
 }
 /**
-  * @brief estimate total output capacitor loss
-  * @param actual_max_duty_cycle for rms current
-  * @return losses
-  */
+ * @brief CapOut::ocCapOutLoss - estimate total output capacitor loss
+ * @param fbptval - actual_max_duty_cycle for rms current
+ * @return losses
+ */
 inline double CapOut::ocCapOutLoss(const FBPT &fbptval)
 {
     return pow(ocCurrOurRMS(fbptval), 2)*ocESRCapOut();
 }
 /**
- * @brief
- * @param
+ * @brief CapOut::ocZeroFreqCapOut
+ * @param ivalue
  * @return
  */
 inline double CapOut::ocZeroFreqCapOut(const InputValue& ivalue)
@@ -63,8 +63,9 @@ inline double CapOut::ocZeroFreqCapOut(const InputValue& ivalue)
     return 1./(2.*S_PI*ocESRCapOut()*ocCapOutValue(ivalue));
 }
 /**
- * @brief
- * @param
+ * @brief CapOut::ocOutRippleVolt
+ * @param curout
+ * @param ncap
  * @return
  */
 inline double CapOut::ocOutRippleVolt(double curout, int16_t ncap)

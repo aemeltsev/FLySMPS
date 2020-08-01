@@ -13,6 +13,16 @@ enum PS_MODE
 class PCSSM
 {
 public:
+    /**
+     * @brief PCSSM
+     * @param tr
+     * @param lp
+     * @param lres
+     * @param vin
+     * @param vout
+     * @param cout
+     * @param esr
+     */
     PCSSM(float tr, double lp,
           float lres, int16_t vin,
           int16_t vout, double cout,
@@ -22,11 +32,42 @@ public:
         voltout(vout), capout(cout),
         esrcap(esr)
     {}
-    inline void coVoltRatio() {voltrat = voltout/voltin;}
-    inline double coZeroRHPAngFreq() const
+    /**
+     * @brief coZeroTwoAngFreq
+     * @return
+     */
+    inline double coZeroTwoAngFreq() const
     {
         double tmp = std::pow(turnrat, 2)*static_cast<double>(resload);
         return tmp/(priminduct*voltrat*(voltrat+1));
+    }
+    /**
+     * @brief coZeroOneAngFreq
+     * @return
+     */
+    inline double coZeroOneAngFreq() const
+    {
+        return 1/(capout*esrcap);
+    }
+    /**
+     * @brief coPoleTwoAngFreq
+     * @return
+     */
+    inline double coPoleTwoAngFreq() const
+    {
+        return (std::pow(turnrat,2)*static_cast<double>(resload))/(priminduct*std::pow((voltrat+1),2));
+    }
+    /**
+     * @brief coPoleOneAngFreq
+     * @return
+     */
+    inline double coPoleOneAngFreq() const
+    {
+        return 2/(static_cast<double>(resload)*capout);
+    }
+    inline double coGainZero(double duty, float fsw) const
+    {
+        //double tmp = duty/
     }
 private:
     float turnrat;
@@ -36,6 +77,7 @@ private:
     int16_t voltout;
     double capout;
     double esrcap;
+    inline void coVoltRatio() {voltrat = voltout/voltin;}
     double voltrat;
 
 };
