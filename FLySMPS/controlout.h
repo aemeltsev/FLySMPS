@@ -72,11 +72,44 @@ public:
      * @param vs
      * @return
      */
-    inline double coGainZero(double duty, float fsw, float vs = 2.) const
+    inline double coGainZero(double duty, float fsw, float vs = 2.0f) const
     {
         double tmp = duty/static_cast<double>(vs);
         double load = std::sqrt(static_cast<double>(resload)/(2.*priminduct*static_cast<double>(fsw)));
         return tmp*voltin*load;
+    }
+    /**
+     * @brief coGetExternAddVolt
+     * @param se
+     */
+    void coGetExternAddVolt(double se){sawvolt = se;}
+    /**
+     * @brief coCurrDetectSlopeVolt
+     * @param rsense
+     * @return
+     */
+    inline double coCurrDetectSlopeVolt(double rsense) const
+    {
+        return (voltin*rsense)/priminduct;
+    }
+    /**
+     * @brief coTimeConst
+     * @param fsw
+     * @return
+     */
+    inline double coTimeConst(float fsw) const
+    {
+        return (2*priminduct*static_cast<double>(fsw))/(std::pow(turnrat,2)*static_cast<double>(resload));
+    }
+    /**
+     * @brief coGainCurrModeContrModulator
+     * @param rsense
+     * @param fsw
+     * @return
+     */
+    inline double coGainCurrModeContrModulator(double rsense, float fsw) const
+    {
+        return 1/((coCurrDetectSlopeVolt(rsense)+sawvolt)*coTimeConst(fsw));
     }
 private:
     float turnrat;
@@ -88,6 +121,7 @@ private:
     double esrcap;
     inline void coVoltRatio() {voltrat = voltout/voltin;}
     double voltrat;
+    double sawvolt;
 
 };
 
