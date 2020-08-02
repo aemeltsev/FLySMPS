@@ -65,9 +65,18 @@ public:
     {
         return 2/(static_cast<double>(resload)*capout);
     }
-    inline double coGainZero(double duty, float fsw) const
+    /**
+     * @brief coGainZero
+     * @param duty
+     * @param fsw
+     * @param vs
+     * @return
+     */
+    inline double coGainZero(double duty, float fsw, float vs = 2.) const
     {
-        //double tmp = duty/
+        double tmp = duty/static_cast<double>(vs);
+        double load = std::sqrt(static_cast<double>(resload)/(2.*priminduct*static_cast<double>(fsw)));
+        return tmp*voltin*load;
     }
 private:
     float turnrat;
