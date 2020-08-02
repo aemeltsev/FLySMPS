@@ -111,6 +111,17 @@ public:
     {
         return 1/((coCurrDetectSlopeVolt(rsense)+sawvolt)*coTimeConst(fsw));
     }
+    /**
+     * @brief coDutyToOutTrasfFunct
+     * @param s
+     * @param rsense
+     * @param fsw
+     * @return
+     */
+    inline double coCntrlToOutTrasfFunct(double s, double rsense, float fsw)
+    {
+        return coGainCurrModeContrModulator(rsense, fsw)*(((1+(s/coZeroOneAngFreq()))*(1+(s/coZeroTwoAngFreq())))/(1+(s/coPoleOneAngFreq()))*(1+(s/coPoleTwoAngFreq())));
+    }
 private:
     float turnrat;
     double priminduct;
@@ -119,8 +130,7 @@ private:
     int16_t voltout;
     double capout;
     double esrcap;
-    inline void coVoltRatio() {voltrat = voltout/voltin;}
-    double voltrat;
+    double voltrat = voltout/voltin;
     double sawvolt;
 
 };
