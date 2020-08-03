@@ -42,7 +42,7 @@ public:
      * @brief coGetExternAddVolt
      * @param se
      */
-    void coGetExternAddVolt(double se){sawvolt = se;}
+    void coSetExternAddVolt(double se){sawvolt = se;}
     inline double coCurrDetectSlopeVolt(double rsense) const;
     inline double coTimeConst(float fsw) const;
     inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
@@ -61,8 +61,6 @@ private:
     double esrcap;
     double voltrat = voltout/voltin;
     double sawvolt; //S_e
-
-
 };
 
 class FCCD
