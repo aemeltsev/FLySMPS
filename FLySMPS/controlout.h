@@ -32,96 +32,21 @@ public:
         voltout(vout), capout(cout),
         esrcap(esr)
     {}
-    /**
-     * @brief coZeroTwoAngFreq
-     * @return
-     */
-    inline double coZeroTwoAngFreq() const
-    {
-        double tmp = std::pow(turnrat, 2)*static_cast<double>(resload);
-        return tmp/(priminduct*voltrat*(voltrat+1));
-    }
-    /**
-     * @brief coZeroOneAngFreq
-     * @return
-     */
-    inline double coZeroOneAngFreq() const
-    {
-        return 1/(capout*esrcap);
-    }
-    /**
-     * @brief coPoleTwoAngFreq
-     * @return
-     */
-    inline double coPoleTwoAngFreq() const
-    {
-        return (std::pow(turnrat,2)*static_cast<double>(resload))/(priminduct*std::pow((voltrat+1),2));
-    }
-    /**
-     * @brief coPoleOneAngFreq
-     * @return
-     */
-    inline double coPoleOneAngFreq() const
-    {
-        return 2/(static_cast<double>(resload)*capout);
-    }
-    /**
-     * @brief coGainZero
-     * @param duty
-     * @param fsw
-     * @param vs
-     * @return
-     */
-    inline double coGainZero(double duty, float fsw, float vs = 2.0f) const
-    {
-        double tmp = duty/static_cast<double>(vs);
-        double load = std::sqrt(static_cast<double>(resload)/(2.*priminduct*static_cast<double>(fsw)));
-        return tmp*voltin*load;
-    }
+    inline double coZeroTwoAngFreq() const;
+    inline double coZeroOneAngFreq() const;
+    inline double coPoleTwoAngFreq() const;
+    inline double coPoleOneAngFreq() const;
+    inline double coGainZero(double duty, float fsw, float vs = 2.0f) const;
     /**
      * @brief coGetExternAddVolt
      * @param se
      */
     void coGetExternAddVolt(double se){sawvolt = se;}
-    /**
-     * @brief coCurrDetectSlopeVolt
-     * @param rsense
-     * @return
-     */
-    inline double coCurrDetectSlopeVolt(double rsense) const
-    {
-        return (voltin*rsense)/priminduct;
-    }
-    /**
-     * @brief coTimeConst
-     * @param fsw
-     * @return
-     */
-    inline double coTimeConst(float fsw) const
-    {
-        return (2*priminduct*static_cast<double>(fsw))/(std::pow(turnrat,2)*static_cast<double>(resload));
-    }
-    /**
-     * @brief coGainCurrModeContrModulator
-     * @param rsense
-     * @param fsw
-     * @return
-     */
-    inline double coGainCurrModeContrModulator(double rsense, float fsw) const
-    {
-        return 1/((coCurrDetectSlopeVolt(rsense)+sawvolt)*coTimeConst(fsw));
-    }
-    /**
-     * @brief coDutyToOutTrasfFunct
-     * @param s
-     * @param rsense
-     * @param fsw
-     * @return
-     */
-    inline double coCntrlToOutTrasfFunct(double s, double rsense, float fsw)
-    {
-        return coGainCurrModeContrModulator(rsense, fsw)*(((1+(s/coZeroOneAngFreq()))*(1+(s/coZeroTwoAngFreq())))/(1+(s/coPoleOneAngFreq()))*(1+(s/coPoleTwoAngFreq())));
-    }
+    inline double coCurrDetectSlopeVolt(double rsense) const;
+    inline double coTimeConst(float fsw) const;
+    inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
+    inline double coCntrlToOutTrasfFunct(double s, double rsense, float fsw);
+
 private:
     float turnrat;
     double priminduct;
