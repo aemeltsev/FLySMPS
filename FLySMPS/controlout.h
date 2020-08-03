@@ -45,7 +45,8 @@ public:
     inline double coCurrDetectSlopeVolt(double rsense) const;
     inline double coTimeConst(float fsw) const;
     inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
-    inline double coCntrlToOutTrasfFunct(double s, double rsense, float fsw);
+    inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw);
+    inline double coControlToOutTransfFunct(double s, double rsense, float fsw);
 
 private:
     float turnrat;
