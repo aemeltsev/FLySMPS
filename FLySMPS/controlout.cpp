@@ -4,7 +4,7 @@
  * @brief coZeroTwoAngFreq
  * @return
  */
-inline double PCSSM::coZeroTwoAngFreq() const
+inline double PCSSM::coCCMZeroTwoAngFreq() const
 {
     double tmp = std::pow(turnrat, 2)*static_cast<double>(resload);
     return tmp/(priminduct*voltrat*(voltrat+1));
@@ -21,7 +21,7 @@ inline double PCSSM::coZeroOneAngFreq() const
  * @brief coPoleTwoAngFreq
  * @return
  */
-inline double PCSSM::coPoleTwoAngFreq() const
+inline double PCSSM::coCCMPoleTwoAngFreq() const
 {
     return (std::pow(turnrat,2)*static_cast<double>(resload))/(priminduct*std::pow((voltrat+1),2));
 }
@@ -40,15 +40,15 @@ inline double PCSSM::coPoleOneAngFreq() const
  * @param vs
  * @return
  */
-inline double PCSSM::coGainZero(double duty, float fsw, float vs) const
+inline double PCSSM::coCCMGainZero(double duty, float fsw, float vs) const
 {
     double tmp = duty/static_cast<double>(vs);
     double load = std::sqrt(static_cast<double>(resload)/(2.*priminduct*static_cast<double>(fsw)));
     return tmp*voltin*load;
 }
 /**
- * @brief coCurrDetectSlopeVolt
- * @param rsense
+ * @brief coCurrDetectSlopeVolt - S_n - the voltage slope when the primary-side current is detected on RS_s
+ * @param rsense - the value of current sense resistor
  * @return
  */
 inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
@@ -56,7 +56,7 @@ inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
     return (voltin*rsense)/priminduct;
 }
 /**
- * @brief coTimeConst
+ * @brief coTimeConst - \tau_L -
  * @param fsw
  * @return
  */
@@ -95,4 +95,26 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, double rsense, float fsw)
 inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fsw)
 {
     return coDutyToOutTrasfFunct(s, rsense, fsw)*coGainCurrModeContrModulator(rsense, fsw);
+}
+/**
+ * @brief coDCMZeroTwoAngFreq
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coDCMZeroTwoAngFreq(double duty) const
+{
+    double tmp = std::pow(turnrat,2)*std::pow((1-duty),2)*static_cast<double>(resload);
+    return tmp/(duty*priminduct);
+}
+/**
+ * @brief coDCMPoleTwoAngFreq
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coDCMPoleTwoAngFreq(double duty) const
+{
+    double tmp = static_cast<double>(turnrat)/(std::sqrt(capout*priminduct));
+    double num = std::pow((1-duty),2);
+    double ld = std::sqrt((num*static_cast<double>(resload))/(static_cast<double>(resload)+esrcap));
+    return tmp*ld;
 }

@@ -4,11 +4,11 @@
 #include <cstdint>
 #include <structdata.h>
 
-enum PS_MODE
-{
-    CCM_MODE,
-    DCM_MODE
-};
+//enum PS_MODE
+//{
+//    CCM_MODE,
+//    DCM_MODE
+//};
 
 class PCSSM
 {
@@ -32,11 +32,12 @@ public:
         voltout(vout), capout(cout),
         esrcap(esr)
     {}
-    inline double coZeroTwoAngFreq() const;
     inline double coZeroOneAngFreq() const;
-    inline double coPoleTwoAngFreq() const;
     inline double coPoleOneAngFreq() const;
-    inline double coGainZero(double duty, float fsw, float vs = 2.0f) const;
+    /************CCM***********/
+    inline double coCCMZeroTwoAngFreq() const;
+    inline double coCCMPoleTwoAngFreq() const;
+    inline double coCCMGainZero(double duty, float fsw, float vs = 2.0f) const;
     /**
      * @brief coGetExternAddVolt
      * @param se
@@ -47,7 +48,9 @@ public:
     inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
     inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw);
     inline double coControlToOutTransfFunct(double s, double rsense, float fsw);
-
+    /************DCM***********/
+    inline double coDCMZeroTwoAngFreq(double duty) const;
+    inline double coDCMPoleTwoAngFreq(double duty) const;
 private:
     float turnrat;
     double priminduct;
@@ -57,7 +60,8 @@ private:
     double capout;
     double esrcap;
     double voltrat = voltout/voltin;
-    double sawvolt;
+    double sawvolt; //S_e
+
 
 };
 
@@ -65,6 +69,7 @@ class FCCD
 {
 public:
     FCCD();
+
 };
 
 #endif // CONTROLOUT_H
