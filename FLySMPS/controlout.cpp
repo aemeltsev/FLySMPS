@@ -56,7 +56,7 @@ inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
     return (voltin*rsense)/priminduct;
 }
 /**
- * @brief coTimeConst - \tau_L -
+ * @brief coTimeConst - \tau_L - switching period
  * @param fsw
  * @return
  */
@@ -117,4 +117,25 @@ inline double PCSSM::coDCMPoleTwoAngFreq(double duty) const
     double num = std::pow((1-duty),2);
     double ld = std::sqrt((num*static_cast<double>(resload))/(static_cast<double>(resload)+esrcap));
     return tmp*ld;
+}
+/**
+ * @brief coDCMVoltGainCoeff
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coDCMVoltGainCoeff(double duty) const
+{
+    return static_cast<double>(voltin)/(static_cast<double>(turnrat)*(std::pow((1-duty),2)));
+}
+/**
+ * @brief coDCMCurrGainCoeff
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coDCMCurrGainCoeff(double duty) const
+{
+    double tmp = 1+(2*duty/(1-duty));
+    double dnm = std::pow((1-duty),2);
+    double mult = voltin/(static_cast<double>(turnrat)*dnm*static_cast<double>(resload));
+    return tmp*mult;
 }

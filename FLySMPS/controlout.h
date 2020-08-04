@@ -51,6 +51,8 @@ public:
     /************DCM***********/
     inline double coDCMZeroTwoAngFreq(double duty) const;
     inline double coDCMPoleTwoAngFreq(double duty) const;
+    inline double coDCMVoltGainCoeff(double duty) const;
+    inline double coDCMCurrGainCoeff(double duty) const;
 private:
     float turnrat;
     double priminduct;
