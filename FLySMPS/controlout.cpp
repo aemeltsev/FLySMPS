@@ -4,7 +4,7 @@
  * @brief coZeroTwoAngFreq
  * @return
  */
-inline double PCSSM::coCCMZeroTwoAngFreq() const
+inline double PCSSM::coDCMZeroTwoAngFreq() const
 {
     double tmp = std::pow(turnrat, 2)*static_cast<double>(resload);
     return tmp/(priminduct*voltrat*(voltrat+1));
@@ -21,7 +21,7 @@ inline double PCSSM::coZeroOneAngFreq() const
  * @brief coPoleTwoAngFreq
  * @return
  */
-inline double PCSSM::coCCMPoleTwoAngFreq() const
+inline double PCSSM::coDCMPoleTwoAngFreq() const
 {
     return (std::pow(turnrat,2)*static_cast<double>(resload))/(priminduct*std::pow((voltrat+1),2));
 }
@@ -40,7 +40,7 @@ inline double PCSSM::coPoleOneAngFreq() const
  * @param vs
  * @return
  */
-inline double PCSSM::coCCMGainZero(double duty, float fsw, float vs) const
+inline double PCSSM::coDCMGainZero(double duty, float fsw, float vs) const
 {
     double tmp = duty/static_cast<double>(vs);
     double load = std::sqrt(static_cast<double>(resload)/(2.*priminduct*static_cast<double>(fsw)));
@@ -65,7 +65,7 @@ inline double PCSSM::coTimeConst(float fsw) const
     return (2*priminduct*static_cast<double>(fsw))/(std::pow(turnrat,2)*static_cast<double>(resload));
 }
 /**
- * @brief coGainCurrModeContrModulator - F_m - the modulator gain
+ * @brief coGainCurrModeContrModulator - F_m - the PWM modulator gain
  * @param rsense - the value of current sense resistor
  * @param fsw - the switch frequency
  * @return
@@ -75,7 +75,7 @@ inline double PCSSM::coGainCurrModeContrModulator(double rsense, float fsw) cons
     return 1/((coCurrDetectSlopeVolt(rsense)+sawvolt)*coTimeConst(fsw));
 }
 /**
- * @brief coDutyToOutTrasfFunct
+ * @brief coDutyToOutTrasfFunct - G_vd(s) -
  * @param s
  * @param rsense
  * @param fsw
@@ -83,10 +83,10 @@ inline double PCSSM::coGainCurrModeContrModulator(double rsense, float fsw) cons
  */
 inline double PCSSM::coDutyToOutTrasfFunct(double s, double rsense, float fsw)
 {
-    return coGainCurrModeContrModulator(rsense, fsw)*(((1+(s/coZeroOneAngFreq()))*(1+(s/coZeroTwoAngFreq())))/(1+(s/coPoleOneAngFreq()))*(1+(s/coPoleTwoAngFreq())));
+    return coGainCurrModeContrModulator(rsense, fsw)*(((1+(s/coZeroOneAngFreq()))*(1+(s/coDCMZeroTwoAngFreq())))/(1+(s/coPoleOneAngFreq()))*(1+(s/coDCMPoleTwoAngFreq())));
 }
 /**
- * @brief coControlToOutTransfFunct
+ * @brief coControlToOutTransfFunct - G_vc(s) -
  * @param s
  * @param rsense
  * @param fsw
@@ -97,21 +97,21 @@ inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fs
     return coDutyToOutTrasfFunct(s, rsense, fsw)*coGainCurrModeContrModulator(rsense, fsw);
 }
 /**
- * @brief coDCMZeroTwoAngFreq
+ * @brief coDCMZeroTwoAngFreq - \omega_zrhp -
  * @param duty
  * @return
  */
-inline double PCSSM::coDCMZeroTwoAngFreq(double duty) const
+inline double PCSSM::coCCMZeroTwoAngFreq(double duty) const
 {
     double tmp = std::pow(turnrat,2)*std::pow((1-duty),2)*static_cast<double>(resload);
     return tmp/(duty*priminduct);
 }
 /**
- * @brief coDCMPoleTwoAngFreq
+ * @brief coDCMPoleTwoAngFreq - \omega_o -
  * @param duty
  * @return
  */
-inline double PCSSM::coDCMPoleTwoAngFreq(double duty) const
+inline double PCSSM::coCCMPoleTwoAngFreq(double duty) const
 {
     double tmp = static_cast<double>(turnrat)/(std::sqrt(capout*priminduct));
     double num = std::pow((1-duty),2);
@@ -119,23 +119,46 @@ inline double PCSSM::coDCMPoleTwoAngFreq(double duty) const
     return tmp*ld;
 }
 /**
- * @brief coDCMVoltGainCoeff
+ * @brief coDCMVoltGainCoeff - K_vd -
  * @param duty
  * @return
  */
-inline double PCSSM::coDCMVoltGainCoeff(double duty) const
+inline double PCSSM::coCCMVoltGainCoeff(double duty) const
 {
     return static_cast<double>(voltin)/(static_cast<double>(turnrat)*(std::pow((1-duty),2)));
 }
 /**
- * @brief coDCMCurrGainCoeff
+ * @brief coDCMCurrGainCoeff - K_id -
  * @param duty
  * @return
  */
-inline double PCSSM::coDCMCurrGainCoeff(double duty) const
+inline double PCSSM::coCCMCurrGainCoeff(double duty) const
 {
     double tmp = 1+(2*duty/(1-duty));
     double dnm = std::pow((1-duty),2);
     double mult = voltin/(static_cast<double>(turnrat)*dnm*static_cast<double>(resload));
     return tmp*mult;
+}
+/**
+ * @brief coDCMQualityFact - Q -
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coCCMQualityFact(double duty) const
+{
+    double dnm1 = priminduct/(std::pow(static_cast<double>(turnrat),2)*std::pow((1-duty),2)*static_cast<double>(resload));
+    double dnm2 = esrcap*static_cast<double>(resload);
+    return 1/(coCCMPoleTwoAngFreq(duty)*(dnm1+dnm2));
+}
+/**
+ * @brief coDCMDutyToInductCurrTrasfFunct - G_id(s) -
+ * @param s
+ * @param duty
+ * @return
+ */
+inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
+{
+    double num = 1+(s/coPoleOneAngFreq());
+    double dnm = 1+(s/(coCCMQualityFact(duty)*coCCMPoleTwoAngFreq(duty)))+std::pow((s/coCCMPoleTwoAngFreq(duty)),2);
+    return coCCMCurrGainCoeff(duty)*(num/dnm);
 }

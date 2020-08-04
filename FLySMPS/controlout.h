@@ -35,9 +35,9 @@ public:
     inline double coZeroOneAngFreq() const;
     inline double coPoleOneAngFreq() const;
     /************CCM***********/
-    inline double coCCMZeroTwoAngFreq() const;
-    inline double coCCMPoleTwoAngFreq() const;
-    inline double coCCMGainZero(double duty, float fsw, float vs = 2.0f) const;
+    inline double coDCMZeroTwoAngFreq() const;
+    inline double coDCMPoleTwoAngFreq() const;
+    inline double coDCMGainZero(double duty, float fsw, float vs = 2.0f) const;
     /**
      * @brief coGetExternAddVolt
      * @param se
@@ -49,10 +49,13 @@ public:
     inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw);
     inline double coControlToOutTransfFunct(double s, double rsense, float fsw);
     /************DCM***********/
-    inline double coDCMZeroTwoAngFreq(double duty) const;
-    inline double coDCMPoleTwoAngFreq(double duty) const;
-    inline double coDCMVoltGainCoeff(double duty) const;
-    inline double coDCMCurrGainCoeff(double duty) const;
+    inline double coCCMZeroTwoAngFreq(double duty) const;
+    inline double coCCMPoleTwoAngFreq(double duty) const;
+    inline double coCCMVoltGainCoeff(double duty) const;
+    inline double coCCMCurrGainCoeff(double duty) const;
+    inline double coCCMQualityFact(double duty) const;
+    inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
+
 private:
     float turnrat;
     double priminduct;
