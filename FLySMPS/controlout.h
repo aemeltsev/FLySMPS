@@ -4,11 +4,11 @@
 #include <cstdint>
 #include <structdata.h>
 
-//enum PS_MODE
-//{
-//    CCM_MODE,
-//    DCM_MODE
-//};
+enum PS_MODE
+{
+    CCM_MODE,
+    DCM_MODE
+};
 
 class PCSSM
 {
@@ -46,8 +46,6 @@ public:
     inline double coCurrDetectSlopeVolt(double rsense) const;
     inline double coTimeConst(float fsw) const;
     inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
-    inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw);
-    inline double coControlToOutTransfFunct(double s, double rsense, float fsw);
     /************DCM***********/
     inline double coCCMZeroTwoAngFreq(double duty) const;
     inline double coCCMPoleTwoAngFreq(double duty) const;
@@ -56,6 +54,8 @@ public:
     inline double coCCMQualityFact(double duty) const;
     inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
 
+    inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
+    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, PS_MODE mode);
 private:
     float turnrat;
     double priminduct;
