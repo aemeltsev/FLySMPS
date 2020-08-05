@@ -55,7 +55,7 @@ public:
     inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
 
     inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
-    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, PS_MODE mode);
+    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
 private:
     float turnrat;
     double priminduct;

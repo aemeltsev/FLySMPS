@@ -118,9 +118,24 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, double rsense, float fsw, d
  * @param fsw
  * @return
  */
-inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fsw, PS_MODE mode)
+inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode)
 {
-    return coDutyToOutTrasfFunct(s, rsense, fsw)*coGainCurrModeContrModulator(rsense, fsw);
+    double result = 0.0;
+    double dnm = 0.0;
+    if(mode == DCM_MODE)
+    {
+        result = coDutyToOutTrasfFunct(s, rsense, fsw, duty, mode)*coGainCurrModeContrModulator(rsense, fsw);
+    }
+    else if(mode == CCM_MODE)
+    {
+        dnm = coGainCurrModeContrModulator(rsense, fsw)*rsense*coCCMDutyToInductCurrTrasfFunct(s, duty);
+        result = (coGainCurrModeContrModulator(rsense, fsw)*coDutyToOutTrasfFunct(s, rsense, fsw, duty, mode))/(1+dnm);
+    }
+    else
+    {
+        return -1;
+    }
+    return result;
 }
 /**
  * @brief coDCMZeroTwoAngFreq - \omega_zrhp -
