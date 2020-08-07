@@ -1,5 +1,6 @@
 #include "controlout.h"
 
+/********************COM*************************/
 /**
  * @brief coZeroOneAngFreq - $\omega_{zc}$ - esr zero, lhp
  * @return
@@ -10,7 +11,7 @@ inline double PCSSM::coZeroOneAngFreq() const
 }
 
 /**
- * @brief coPoleOneAngFreq - $\omega_{0}$ the dominant pole
+ * @brief coPoleOneAngFreq - $\omega_{rc}$ the dominant pole
  * @return
  */
 inline double PCSSM::coPoleOneAngFreq() const
@@ -19,7 +20,7 @@ inline double PCSSM::coPoleOneAngFreq() const
 }
 /**********************DCM************************/
 /**
- * @brief coZeroTwoAngFreq - right half plane-zero
+ * @brief coZeroTwoAngFreq - $\omega_{zrhp}$ - rhp zero
  * @return
  */
 inline double PCSSM::coDCMZeroTwoAngFreq() const
@@ -29,7 +30,7 @@ inline double PCSSM::coDCMZeroTwoAngFreq() const
 }
 
 /**
- * @brief coPoleTwoAngFreq - right half plane-pole
+ * @brief coPoleTwoAngFreq - $\omega_{p2}$ - pole
  * @return
  */
 inline double PCSSM::coDCMPoleTwoAngFreq() const
@@ -38,7 +39,7 @@ inline double PCSSM::coDCMPoleTwoAngFreq() const
 }
 
 /**
- * @brief coDCMCriticValue - K_vd -
+ * @brief coDCMCriticValue - $K_{vd}$ -
  * @param fsw
  * @return
  */
@@ -49,7 +50,7 @@ inline double PCSSM::coDCMCriticValue(float fsw) const
 }
 /***********************F_m************************/
 /**
- * @brief coCurrDetectSlopeVolt - S_n - the voltage slope when the primary-side current is detected on RS_s
+ * @brief coCurrDetectSlopeVolt - $S_{n}$ - the voltage slope when the primary-side current is detected on RS_s
  * @param rsense - the value of current sense resistor
  * @return
  */
@@ -59,7 +60,7 @@ inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
 }
 
 /**
- * @brief coTimeConst - \tau_L - switching period
+ * @brief coTimeConst - $\tau_{L}$ - switching period
  * @param fsw
  * @return
  */
@@ -69,7 +70,7 @@ inline double PCSSM::coTimeConst(float fsw) const
 }
 
 /**
- * @brief coGainCurrModeContrModulator - F_m - the PWM modulator gain
+ * @brief coGainCurrModeContrModulator - $F_{m}$ - the PWM modulator gain
  * @param rsense - the value of current sense resistor
  * @param fsw - the switch frequency
  * @return
@@ -80,7 +81,7 @@ inline double PCSSM::coGainCurrModeContrModulator(double rsense, float fsw) cons
 }
 /**********************OUT*************************/
 /**
- * @brief coDutyToOutTrasfFunct - G_vd(s) -
+ * @brief coDutyToOutTrasfFunct - $G_{vd}(s)$ -
  * @param s
  * @param rsense
  * @param fsw
@@ -118,7 +119,7 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_
 }
 
 /**
- * @brief coControlToOutTransfFunct - G_vc(s) - The control-to-output transfer function
+ * @brief coControlToOutTransfFunct - $G_{vc}(s)$ - The control-to-output transfer function
  * @param s
  * @param rsense
  * @param fsw
@@ -145,7 +146,7 @@ inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fs
 }
 /**********************CCM****************************/
 /**
- * @brief coDCMZeroTwoAngFreq - \omega_zrhp -
+ * @brief coDCMZeroTwoAngFreq - $\omega_{zrhp}$ -
  * @param duty
  * @return
  */
@@ -156,7 +157,7 @@ inline double PCSSM::coCCMZeroTwoAngFreq(double duty) const
 }
 
 /**
- * @brief coDCMPoleTwoAngFreq - \omega_o -
+ * @brief coDCMPoleTwoAngFreq - $\omega_{o}$ -
  * @param duty
  * @return
  */
@@ -169,7 +170,7 @@ inline double PCSSM::coCCMPoleTwoAngFreq(double duty) const
 }
 
 /**
- * @brief coDCMVoltGainCoeff - K_vd -
+ * @brief coDCMVoltGainCoeff - $K_{vd}$ -
  * @param duty
  * @return
  */
@@ -179,7 +180,7 @@ inline double PCSSM::coCCMVoltGainCoeff(double duty) const
 }
 
 /**
- * @brief coDCMCurrGainCoeff - K_id -
+ * @brief coDCMCurrGainCoeff - $K_{id}$ -
  * @param duty
  * @return
  */
@@ -192,7 +193,7 @@ inline double PCSSM::coCCMCurrGainCoeff(double duty) const
 }
 
 /**
- * @brief coDCMQualityFact - Q -
+ * @brief coDCMQualityFact - $Q$ -
  * @param duty
  * @return
  */
@@ -204,7 +205,7 @@ inline double PCSSM::coCCMQualityFact(double duty) const
 }
 
 /**
- * @brief coDCMDutyToInductCurrTrasfFunct - G_id(s) -
+ * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s)$ -
  * @param s
  * @param duty
  * @return
