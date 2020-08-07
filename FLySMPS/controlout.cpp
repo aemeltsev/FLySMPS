@@ -216,3 +216,5 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
     double dnm = 1+(s/(coCCMQualityFact(duty)*coCCMPoleTwoAngFreq(duty)))+std::pow((s/coCCMPoleTwoAngFreq(duty)),2);
     return coCCMCurrGainCoeff(duty)*(num/dnm);
 }
+
+

@@ -71,7 +71,19 @@ private:
 class FCCD
 {
 public:
-    FCCD();
+    FCCD(double ctr, float rup,
+         float rdwn);
+
+    inline double coOptoTransfGain() const; //K_c
+    inline double coTransfZero() const; //omega_z
+    inline double coTransfPoleOne() const; //omega_p1
+    inline double coCCMTransfPoleZero() const; //omega_p0
+    inline double coDCMTransfPoleZero() const; //omega_p0
+    inline double coTransfPoleTwo() const; //omega_p2
+    inline double coOptoFeedbTransfFunc(double s, PS_MODE mode); //G_c(s)
+
+private:
+    double optoctr;
 
 };
 
