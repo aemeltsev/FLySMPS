@@ -37,15 +37,7 @@ public:
     /************CCM***********/
     inline double coDCMZeroTwoAngFreq() const;
     inline double coDCMPoleTwoAngFreq() const;
-    inline double coDCMGainZero(double duty, float fsw, float vs = 2.0f) const;
-    /**
-     * @brief coGetExternAddVolt
-     * @param se
-     */
-    void coSetExternAddVolt(double se){sawvolt = se;}
-    inline double coCurrDetectSlopeVolt(double rsense) const;
-    inline double coTimeConst(float fsw) const;
-    inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
+    inline double coDCMCriticValue(float fsw) const;
     /************DCM***********/
     inline double coCCMZeroTwoAngFreq(double duty) const;
     inline double coCCMPoleTwoAngFreq(double duty) const;
@@ -54,7 +46,15 @@ public:
     inline double coCCMQualityFact(double duty) const;
     inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
 
-    inline double coDutyToOutTrasfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
+    /**
+     * @brief coGetExternAddVolt
+     * @param se
+     */
+    void coSetExternAddVolt(double se){sawvolt = se;}
+    inline double coCurrDetectSlopeVolt(double rsense) const;
+    inline double coTimeConst(float fsw) const;
+    inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
+    inline double coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode);
     inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
 private:
     float turnrat;
