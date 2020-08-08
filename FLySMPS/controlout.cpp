@@ -113,7 +113,7 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_
     }
     else
     {
-        return -1; //it's very bad way, i will rewrite this after
+        result = -1; //it's very bad way, i will rewrite this after
     }
     return result;
 }
@@ -140,7 +140,7 @@ inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fs
     }
     else
     {
-        return -1;
+        result = -1;
     }
     return result;
 }
@@ -217,4 +217,81 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
     return coCCMCurrGainCoeff(duty)*(num/dnm);
 }
 
+/**************************FCCD*************************/
+/**************************CCM**************************/
+/**
+ * @brief coOptoTransfGain - $K_{c}$ -
+ * @return
+ */
+inline double FCCD::coOptoTransfGain() const
+{
+    double kd = static_cast<double>(resdown)/static_cast<double>((resup+resdown));
+    return (optoctr*kd*refres)/resoptdiode;
+}
 
+/**
+ * @brief coTransfZero - $\omega_{z}$
+ * @return
+ */
+inline double FCCD::coTransfZero() const
+{
+    return 1/(rcap1*rcap2);
+}
+
+/**
+ * @brief coTransfPoleOne - $\omega_{p1}$
+ * @return
+ */
+inline double FCCD::coTransfPoleOne() const
+{
+    return 1/(refcap*refres);
+}
+
+/**
+ * @brief coCCMTransfPoleZero - $\omega_{p0}$
+ * @return
+ */
+inline double FCCD::coCCMTransfPoleZero() const
+{
+    return 1/((cap1+cap2)*rcap1);
+}
+
+/**
+ * @brief coTransfPoleTwo - $\omega_{p2}$
+ * @return
+ */
+inline double FCCD::coTransfPoleTwo() const
+{
+    return (cap1+cap2)/(cap1*cap2*rcap2);
+}
+
+inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
+{
+    double result = 0.0;
+    double num = 1+(s/coTransfZero());
+    double dnm = 0.0;
+    if(mode == CCM_MODE)
+    {
+        dnm = (s/coCCMTransfPoleZero())*(1+(s/coTransfPoleOne()))*(1+(s/coTransfPoleTwo()));
+        result = num/dnm;
+    }
+    else if(mode == DCM_MODE)
+    {
+        dnm = (s/coDCMTransfPoleZero())*(1+(s/coTransfPoleOne()));
+        result = num/dnm;
+    }
+    else
+    {
+        result = -1;
+    }
+    return result;
+}
+
+/**
+ * @brief coDCMTransfPoleZero - $\omega_{p2}$
+ * @return
+ */
+inline double FCCD::coDCMTransfPoleZero() const
+{
+    return 1/(cap1*rcap1);
+}

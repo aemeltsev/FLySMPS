@@ -31,7 +31,9 @@ public:
         resload(lres), voltin(vin),
         voltout(vout), capout(cout),
         esrcap(esr)
-    {}
+    {
+
+    }
     inline double coZeroOneAngFreq() const;
     inline double coPoleOneAngFreq() const;
     /************CCM***********/
@@ -71,8 +73,32 @@ private:
 class FCCD
 {
 public:
-    FCCD(double ctr, float rup,
-         float rdwn);
+    /**
+     * @brief FCCD
+     * @param ctr
+     * @param rup
+     * @param rdwn
+     * @param rdiode
+     * @param rrf
+     * @param crf
+     * @param rc1
+     * @param c1
+     * @param rc2
+     * @param c2
+     */
+    FCCD(double ctr, int16_t rup,
+         int16_t rdwn, int16_t rdiode,
+         int16_t rrf, double crf,
+         int16_t rc1, double c1,
+         int16_t rc2, double c2):
+        optoctr(ctr), resup(rup),
+        resdown(rdwn), resoptdiode(rdiode),
+        refres(rrf), refcap(crf),
+        rcap1(rc1), cap1(c1),
+        rcap2(rc2), cap2(c2)
+    {
+
+    }
 
     inline double coOptoTransfGain() const; //K_c
     inline double coTransfZero() const; //omega_z
@@ -84,7 +110,15 @@ public:
 
 private:
     double optoctr;
-
+    int16_t resup;
+    int16_t resdown;
+    int16_t resoptdiode;
+    int16_t refres;
+    double refcap;
+    int16_t rcap1;
+    double cap1;
+    int16_t rcap2;
+    double cap2;
 };
 
 #endif // CONTROLOUT_H
