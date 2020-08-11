@@ -3,98 +3,84 @@
 */
 #include "diodebridge.h"
 
-DiodeBridge::DiodeBridge()
+/**
+ * @brief IDiodePeak - Calculate the diode peak current
+ * @return diode peak current
+ */
+double DiodeBridge::IDiodePeak() const
 {
+    return static_cast<double>(bcappc)+curmaxl;
+}
 
-}
 /**
-  * @brief  Calculate the diode peak current
-  * @param  bcapacitor_peak_curr - bulk capacitor peak current
-  * @param  load_curr_max - load maximum current
-  * @retval IDiodePeak - diode peak current
-  */
-double DiodeBridge::IDiodePeak(BCap &bcvalue)
+ * @brief DiodeCurrentSlope - Diode current down slope from the peak value to total charging time
+ * @return Diode current down slope, in A/s
+ */
+double DiodeBridge::DiodeCurrentSlope() const
 {
-    return (bcvalue.bcapacitor_peak_curr)+(bcvalue.load_curr_max);
+    return (IDiodePeak()-curminl)/chrgtm;
 }
+
 /**
-  * @brief  Root mean square value of current diode
-  * @param  load_avg_curr - diode average current
-  * @param  freq_line - frequency in power line
-  * @param  diode_cond_time - diode total conduction time
-  * @retval IDiodeRMS - rms current diode
-  */
-double DiodeBridge::IDiodeRMS(InputValue &ivalue, DBridge &dbvalue)
+ * @brief DiodeConductTime - The diode total conduction time
+ * @return total conduction time for diode
+ */
+double DiodeBridge::DiodeConductTime() const
 {
-    return (dbvalue.load_avg_curr)/(sqrt(3.*(ivalue.freq_line)*(dbvalue.diode_cond_time)));
+    return IDiodePeak()/DiodeCurrentSlope();
 }
+
 /**
-  * @brief  Calculate diode average current
-  * @param  load_avg_curr - average dc current
-  * @retval IDiodeAVG - average current value
-  */
-double DiodeBridge::IDiodeAVG(DBridge &dbvalue)
+ * @brief ILoadAVG - Calculate the average dc current
+ * @param  frline - frequency in power line
+ * @return average dc current
+ */
+double DiodeBridge::ILoadAVG() const
 {
-    return (dbvalue.load_avg_curr)/2.;
+    return IDiodePeak()*static_cast<double>(frline)*DiodeConductTime();
 }
+
 /**
-  * @brief  Total root mean square value of current diode
-  * @param  load_avg_curr - diode average current
-  * @param  freq_line - frequency in power line
-  * @param  diode_cond_time - diode total conduction time
-  * @retval IDiodeRMSTot - total rms current diode
-  */
-double DiodeBridge::IDiodeRMSTot(DBridge &dbvalue, InputValue &ivalue)
+ * @brief IDiodeAVG - Calculate diode average current
+ * @return average current value
+ */
+double DiodeBridge::IDiodeAVG() const
 {
-    return ((dbvalue.load_avg_curr)*sqrt(2.))/(sqrt(3.*(ivalue.freq_line)*(dbvalue.diode_cond_time)));
+    return ILoadAVG()/2.;
 }
+
 /**
-  * @brief  Calculate the average dc current
-  * @param  diode_peak_curr - diode peak current
-  * @param  freq_line - frequency in power line
-  * @param  diode_cond_time - diode total conduction time
-  * @retval ILoadAVG - average dc current
-  */
-double DiodeBridge::ILoadAVG(DBridge &dbvalue, InputValue &ivalue)
+ * @brief IDiodeRMS - Root mean square value of current diode
+ * @return rms current diode
+ */
+double DiodeBridge::IDiodeRMS() const
 {
-    return (dbvalue.diode_peak_curr)*(ivalue.freq_line)*(dbvalue.diode_cond_time);
+    return ILoadAVG()/(sqrt(3.* static_cast<double>(frline)*DiodeConductTime()));
 }
+
 /**
-  * @brief  The diode total conduction time
-  * @param  diode_peak_curr - diode peak current
-  * @param  diode_curr_slope - diode current down slope
-  * @retval DiodeConductTime - total conduction time for diode
-  */
-double DiodeBridge::DiodeConductTime(DBridge &dbvalue)
+ * @brief IDiodeRMSTot - Total root mean square value of current diode
+ * @return total rms current diode
+ */
+double DiodeBridge::IDiodeRMSTot() const
 {
-    return (dbvalue.diode_peak_curr)/(dbvalue.diode_curr_slope);
+    return (ILoadAVG()*sqrt(2.))/(sqrt(3.*static_cast<double>(frline)*DiodeConductTime()));
 }
+
 /**
-  * @brief  Diode current down slope from the peak value to total charging time
-  * @param  diode_peak_curr - diode peak current
-  * @param  load_curr_min - load peak current value
-  * @param  charg_time - total charging time
-  * @retval DiodeCurrentSlope - Diode current down slope, in A/s
-  */
-double DiodeBridge::DiodeCurrentSlope(DBridge &dbvalue, BCap &bcvalue)
+ * @brief MinPeakInVoltage - Solve minimum peak value
+ * @return minimum peak value
+ */
+double DiodeBridge::MinPeakInVoltage() const
 {
-    return ((dbvalue.diode_peak_curr)-(bcvalue.load_curr_min))/(bcvalue.charg_time);
+    return acinvmin*sqrt(2.);
 }
+
 /**
-  * @brief  Solve minimum peak value
-  * @param  input_volt_ac_min - minimum ac line amplitude value
-  * @retval MinPeakInVoltage - minimum peak value
-  */
-double DiodeBridge::MinPeakInVoltage(InputValue &ivalue)
+ * @brief MaxPeakInVoltage - Solve maximum peak value
+ * @return maximum peak value
+ */
+double DiodeBridge::MaxPeakInVoltage() const
 {
-    return (ivalue.input_volt_ac_min)*sqrt(2.);
-}
-/**
-  * @brief  Solve maximum peak value
-  * @param  input_volt_ac_max - maximum ac line amplitude value
-  * @retval MaxPeakInVoltage - maximum peak value
-  */
-double DiodeBridge::MaxPeakInVoltage(InputValue &ivalue)
-{
-    return  (ivalue.input_volt_ac_max)*sqrt(2.);
+    return  acinvmax*sqrt(2.);
 }

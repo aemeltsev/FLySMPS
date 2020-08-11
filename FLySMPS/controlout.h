@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <structdata.h>
 
+#define S_VREF       2.5      //V
+#define S_CURR_CATH  1.5*1E-3 //A
 enum PS_MODE
 {
     CCM_MODE,
@@ -86,21 +88,19 @@ public:
      * @param rc2
      * @param c2
      */
-    FCCD(double ctr, int16_t rup,
-         int16_t rdwn, int16_t rdiode,
+    FCCD(double ctr, int16_t vout, int16_t rdwn,
          int16_t rrf, double crf,
          int16_t rc1, double c1,
          int16_t rc2, double c2):
-        optoctr(ctr), resup(rup),
-        resdown(rdwn), resoptdiode(rdiode),
-        refres(rrf), refcap(crf),
+        optoctr(ctr), voltout(vout),
+        resdown(rdwn), refres(rrf), refcap(crf),
         rcap1(rc1), cap1(c1),
         rcap2(rc2), cap2(c2)
     {
 
     }
 
-    inline double coOptoTransfGain() const; //K_c
+    inline double coOptoTransfGain(double fdrp) const; //K_c
     inline double coTransfZero() const; //omega_z
     inline double coTransfPoleOne() const; //omega_p1
     inline double coCCMTransfPoleZero() const; //omega_p0
@@ -110,9 +110,11 @@ public:
 
 private:
     double optoctr;
-    int16_t resup;
+    int16_t voltout;
     int16_t resdown;
-    int16_t resoptdiode;
+
+    int16_t resup = static_cast<int16_t>(((voltout - S_VREF)/S_VREF));
+    inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
     int16_t refres;
     double refcap;
     int16_t rcap1;

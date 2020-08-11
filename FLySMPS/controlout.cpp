@@ -223,10 +223,10 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
  * @brief coOptoTransfGain - $K_{c}$ -
  * @return
  */
-inline double FCCD::coOptoTransfGain() const
+inline double FCCD::coOptoTransfGain(double fdrp) const
 {
     double kd = static_cast<double>(resdown)/static_cast<double>((resup+resdown));
-    return (optoctr*kd*refres)/resoptdiode;
+    return (optoctr*kd*refres)/resoptdiode(fdrp);
 }
 
 /**
@@ -286,7 +286,7 @@ inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
     }
     return result;
 }
-
+/**************************DCM**************************/
 /**
  * @brief coDCMTransfPoleZero - $\omega_{p2}$
  * @return

@@ -10,21 +10,47 @@
 class DiodeBridge
 {
 public:
-    DiodeBridge();
+    DiodeBridge(int16_t invmax, int16_t invmin,
+                float ef, float pout,
+                float fl = 50.0f):
+        acinvmax(invmax), acinvmin(invmin),
+        eff(ef), pmaxout(pout),
+        frline(fl)
+    {}
 
-    double IDiodePeak(BCap &bcvalue);
-    double IDiodeRMS(InputValue &ivalue, DBridge &dbvalue);
-    double IDiodeAVG(DBridge &dbvalue);
+    /**
+     * @brief setBcapParam
+     * @param bcpc - bulk capacitor peak current
+     * @param ct - the capacitor total charging time
+     */
+    void setBcapParam(float bcpc, double ct)
+    {
+        bcappc = bcpc;
+        chrgtm = ct;}
+    inline double IDiodePeak() const;
+    inline double DiodeCurrentSlope() const;
+    inline double DiodeConductTime() const;
+    inline double ILoadAVG() const;
+    inline double IDiodeAVG() const;
+    inline double IDiodeRMS() const;
+    inline double IDiodeRMSTot() const;
+    inline double MinPeakInVoltage() const;
 
-    double IDiodeRMSTot(DBridge &dbvalue, InputValue &ivalue);
+    inline double MaxPeakInVoltage() const;
 
-    double ILoadAVG(DBridge &dbvalue, InputValue &ivalue);
-    
-    double DiodeCurrentSlope(DBridge &dbvalue, BCap &bcvalue);
-    double DiodeConductTime(DBridge &dbvalue);
+private:
+    int16_t acinvmax;
+    int16_t acinvmin;
+    float eff;
+    float pmaxout;
+    float frline;
 
-    double MinPeakInVoltage(InputValue &ivalue);
-    double MaxPeakInVoltage(InputValue &ivalue);
+    double chrgtm; // the capacitor total charging time
+    float bcappc; // bulk capacitor peak current
+
+    double curmaxl = static_cast<double>(pmaxout)/static_cast<double>((eff*acinvmin)); // load maximum current
+    double curminl = static_cast<double>(pmaxout)/static_cast<double>((eff*acinvmax)); // load minimum current
+
 };
 
 #endif // DIODEBRIDGE_H
