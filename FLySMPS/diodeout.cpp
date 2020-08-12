@@ -1,19 +1,21 @@
 #include "diodeout.h"
+
 /**
-  * @brief calc diode reverse voltage
-  * @param dbvalue input max rms voltage
-  * @return max reverse voltage
-  */
-double DiodeOut::doDiodeRevVolt(const DBridge& dbvalue)
+ * @brief doDiodeRevVolt
+ * @param ac_inp_volt_max - input max AC line voltage
+ * @return max reverse voltage
+ */
+double DiodeOut::doDiodeRevVolt(int16_t ac_inp_volt_max) const
 {
-    return (volt_out+dbvalue.in_max_rms_voltage)/turn_ratio;
+    return (volt_out+(ac_inp_volt_max/(std::sqrt(2))))/turn_ratio;
 }
+
 /**
-  * @brief losses on the diode
-  * @param ivalue volt drop on schottky diode
-  * @return losses value
-  */
-double DiodeOut::doDiodePowLoss(const InputValue& ivalue)
+ * @brief doDiodePowLoss - losses on the diode
+ * @param dio_drop - volt drop on schottky diode
+ * @return losses value
+ */
+double DiodeOut::doDiodePowLoss(float dio_drop) const
 {
-    return (power_sec*ivalue.volt_diode_drop_sec)/volt_out;
+    return (power_sec* static_cast<double>(dio_drop))/volt_out;
 }
