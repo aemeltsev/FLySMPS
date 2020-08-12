@@ -3,119 +3,103 @@
 */
 #include "bulkcap.h"
 
-BulkCap::BulkCap()
-{
-
-}
-
-double BulkCap::VRRMS(InputValue &ivalue)
-{
-    return ((ivalue.input_volt_ac_min)*(1./(sqrt(2))))-((ivalue.input_volt_ac_min)*(2./S_PI));
-}
-
-double BulkCap::VDOut(InputValue &ivalue)
-{
-    return ((ivalue.input_volt_ac_min)*sqrt(2.))-VRRMS(ivalue);
-}
 /**
-  * @brief The total refueling time from Vmin to Vpeak
-  * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param FLine - frequency in power line
-  * @retval DeltaT - Calculating time value from Vmin to Vpeak
-  */
-double BulkCap::DeltaT(InputValue &ivalue)
+ * @brief DeltaT - The total refueling time from Vmin to Vpeak
+ * @return Calculating time value from Vmin to Vpeak
+ */
+double BulkCap::DeltaT() const
 {
-    return (asin(VDOut(ivalue)/(ivalue.input_volt_ac_min*sqrt(2))))/(2.*S_PI*(ivalue.freq_line));
+    return (std::asin(VDOut()/(acinvmin*std::sqrt(2))))/(2.*S_PI*(static_cast<double>(frline)));
 }
+
 /**
-  * @brief The total charging time
-  * @param DeltaT - time value from Vmin to Vpeak
-  * @param freq_line - frequency in power line
-  * @retval ChargTime - total charging time value
-  */
-double BulkCap::ChargTime(InputValue &ivalue)
+ * @brief ChargTime - The total charging time
+ * @return total charging time value
+ */
+double BulkCap::ChargTime() const
 { 
-    return ((1./(4.*(ivalue.freq_line)))-(DeltaT(ivalue)));
+    return ((1./(4.*static_cast<double>(frline)))-(DeltaT()));
 }
+
 /**
-  * @brief Calculate the bulk capacitor value
-  * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param DeltaT - time value from Vmin to Vpeak
-  * @param freq_line - frequency in power line
-  * @param power_out_max - summary output power of the converter
-  * @param eff - efficiency
-  * @retval CapValue - bulk capacitor value
-  */
-double BulkCap::CapValue(InputValue &ivalue)
+ * @brief CapValue - Calculate the bulk capacitor value
+ * @return bulk capacitor value
+ */
+double BulkCap::CapValue() const
 {
-    return ((2.*(ivalue.power_out_max))*(1./(4.*ivalue.freq_line))+(DeltaT(ivalue)))/((ivalue.eff)*((VRRMS(ivalue)*VRRMS(ivalue))-(VDOut(ivalue)*VDOut(ivalue))));
+    return ((2.*static_cast<double>(pmaxout))*(1./(4.*static_cast<double>(frline)))+DeltaT())/(static_cast<double>(eff)*(std::pow(VRRMS(),2))-(std::pow(VDOut(),2)));
 }
+
 /**
-  * @brief Load peak current value
-  * @param power_out_max - summary output power of the converter
-  * @param eff - efficiency
-  * @param in_min_rms_voltage - minimum RMS value line voltage
-  * @retval ILoadMax - peak current value
-  */
-double BulkCap::ILoadMax(InputValue &ivalue, DBridge &dbvalue)
+ * @brief ILoadMax - Load peak current value
+ * @return peak current value
+ */
+double BulkCap::ILoadMax() const
 {
-    return (ivalue.power_out_max)/((ivalue.eff)*(dbvalue.in_min_rms_voltage));
+    return (static_cast<double>(pmaxout))/(static_cast<double>(eff)*(acinvmin/std::sqrt(2)));
 }
+
 /**
-  * @brief Load minimum current value
-  * @param POut - summary output power of the converter
-  * @param Eff - efficiency
-  * @param VInMaxRMS - Maximum RMS value line voltage
-  * @retval ILoadMin - minimum current value
-  */
-double BulkCap::ILoadMin(InputValue &ivalue, DBridge &dbvalue)
+ * @brief ILoadMin - Load minimum current value
+ * @return minimum current value
+ */
+double BulkCap::ILoadMin() const
 {
-    return (ivalue.power_out_max)/((ivalue.eff)*(dbvalue.in_max_rms_voltage));
+    return (static_cast<double>(pmaxout))/(static_cast<double>(eff)*(acinvmax/std::sqrt(2)));
 }
+
 /**
-  * @brief The bulk capacitor peak current
-  * @param CapVal - bulk capacitor value
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param FLine - frequency in power line
-  * @retval IBulkCapPeak - bulk capacitor peak current
-  */
-double BulkCap::IBulkCapPeak(BCap &bcvalue, InputValue &ivalue)
+ * @brief IBulkCapPeak - The bulk capacitor peak current
+ * @return bulk capacitor peak current A
+ */
+double BulkCap::IBulkCapPeak() const
 {
-    return (2.*S_PI*(ivalue.freq_line)*(bcvalue.bcapacitor_value)*(VDOut(ivalue))*(cos(2.*S_PI*(ivalue.freq_line)*DeltaT(ivalue))));
+    return 2. * S_PI * static_cast<double>(frline) * CapValue() * VDOut() * (std::cos(2. * S_PI * static_cast<double>(frline) * DeltaT()));
 }
+
 /**
-  * @brief Calculate bulk capacitor RMS current value
-  * @param ILoadAVG - diode average current
-  * @param DiodeConductTime - total conduction time for diode
-  * @param FLine - frequency in power line
-  * @retval IBulkCapRMS - bulk capacitor RMS current
-  */
-double BulkCap::IBulkCapRMS(DBridge &dbvalue, InputValue &ivalue)
+ * @brief IBulkCapRMS - Calculate bulk capacitor RMS current value
+ * @param lavgc - diode average current
+ * @param dct - total conduction time for diode
+ * @return bulk capacitor RMS current
+ */
+double BulkCap::IBulkCapRMS(double lavgc, double dct) const
 {
-    return dbvalue.load_avg_curr*(sqrt((2./(3.*(ivalue.freq_line)*(dbvalue.diode_cond_time)))-1));
+    return lavgc*(std::sqrt((2./(3.*static_cast<double>(frline)*dct))-1));
 }
+
 /**
-  * @brief Recalculation after input capacitor selection
-  * @param VInMin - minimum voltage value after diode blidge and capacitor
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param POut - summary output power of the converter
-  * @param CapVal - bulk capacitor value
-  * @param FLine - frequency in power line
-  * @retval VMinInp - recalculation after input capacitor selection
-  */
-double BulkCap::VMinInp(BCap &bcvalue, InputValue &ivalue)
+ * @brief VMinInp - Recalculation after input capacitor selection
+ * @return recalculation after input capacitor selection
+ */
+double BulkCap::VMinInp() const
 {
-    return sqrt((VDOut(ivalue)*VDOut(ivalue))-((2.*(ivalue.power_out_max)*((1./(4.*ivalue.freq_line)-DeltaT(ivalue))))/(bcvalue.bcapacitor_value)));
+    return std::sqrt(std::pow(VDOut(),2)-((2.*static_cast<double>(pmaxout)*((1./(4.*static_cast<double>(frline))-DeltaT())))/CapValue()));
 }
+
 /**
-  * @brief VDCMin simply the average value of MinInp and VRectMinPeak
-  * @param VRectMinPeak - peak voltage value after diode blidge and capacitor
-  * @param VMinInp - input_min_voltage - recalculation after input capacitor selection
-  * @retval VDCMin - simply the average value of MinIng and VRectMinPeak
-  */
-double BulkCap::VDCMin(BCap &bcvalue, InputValue &ivalue)
+ * @brief VDCMin - simply the average value of MinInp and VRectMinPeak
+ * @return simply the average value of MinIng and VRectMinPeak
+ */
+double BulkCap::VDCMin() const
 {
-    return (VDOut(ivalue)+(bcvalue.input_min_voltage))/2.;
+    return (VDOut()+CapValue())/2.;
+}
+
+/**
+ * @brief VRRMS
+ * @return
+ */
+double BulkCap::VRRMS() const
+{
+    return (acinvmin*(1./(std::sqrt(2))))-(acinvmin*(2./S_PI));
+}
+
+/**
+ * @brief VDOut
+ * @return
+ */
+double BulkCap::VDOut() const
+{
+    return (acinvmin*std::sqrt(2.))-VRRMS();
 }
