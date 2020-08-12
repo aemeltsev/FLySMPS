@@ -33,8 +33,8 @@ public:
      */
     void setBcapParam(float bcpc, double ct)
     {
-        bcappc = bcpc;
-        chrgtm = ct;}
+        cap_peak_curr = bcpc;
+        cap_char_time = ct;}
     inline double IDiodePeak() const;
     inline double DiodeCurrentSlope() const;
     inline double DiodeConductTime() const;
