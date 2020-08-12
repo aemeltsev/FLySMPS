@@ -9,7 +9,7 @@
  */
 double DiodeBridge::IDiodePeak() const
 {
-    return static_cast<double>(bcappc)+curmaxl;
+    return static_cast<double>(cap_peak_curr)+cur_max_load;
 }
 
 /**
@@ -18,7 +18,7 @@ double DiodeBridge::IDiodePeak() const
  */
 double DiodeBridge::DiodeCurrentSlope() const
 {
-    return (IDiodePeak()-curminl)/chrgtm;
+    return (IDiodePeak()-cur_min_load)/cap_char_time;
 }
 
 /**
@@ -37,7 +37,7 @@ double DiodeBridge::DiodeConductTime() const
  */
 double DiodeBridge::ILoadAVG() const
 {
-    return IDiodePeak()*static_cast<double>(frline)*DiodeConductTime();
+    return IDiodePeak()*static_cast<double>(freq_line)*DiodeConductTime();
 }
 
 /**
@@ -55,7 +55,7 @@ double DiodeBridge::IDiodeAVG() const
  */
 double DiodeBridge::IDiodeRMS() const
 {
-    return ILoadAVG()/(std::sqrt(3.* static_cast<double>(frline)*DiodeConductTime()));
+    return ILoadAVG()/(std::sqrt(3.* static_cast<double>(freq_line)*DiodeConductTime()));
 }
 
 /**
@@ -64,7 +64,7 @@ double DiodeBridge::IDiodeRMS() const
  */
 double DiodeBridge::IDiodeRMSTot() const
 {
-    return (ILoadAVG()*std::sqrt(2.))/(std::sqrt(3.*static_cast<double>(frline)*DiodeConductTime()));
+    return (ILoadAVG()*std::sqrt(2.))/(std::sqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
 }
 
 /**
@@ -73,7 +73,7 @@ double DiodeBridge::IDiodeRMSTot() const
  */
 double DiodeBridge::MinPeakInVoltage() const
 {
-    return acinvmin*std::sqrt(2.);
+    return ac_inp_volt_min*std::sqrt(2.);
 }
 
 /**
@@ -82,5 +82,5 @@ double DiodeBridge::MinPeakInVoltage() const
  */
 double DiodeBridge::MaxPeakInVoltage() const
 {
-    return  acinvmax*std::sqrt(2.);
+    return  ac_inp_volt_max*std::sqrt(2.);
 }

@@ -18,12 +18,12 @@ public:
      * @param pout - Total max power output W
      * @param fl - Line frequency default 50Hz
      */
-    DiodeBridge(int16_t invmax, int16_t invmin,
-                float ef, float pout,
+    DiodeBridge(int16_t max_volt, int16_t min_volt,
+                float eff, float pout,
                 float fl = 50.0f):
-        acinvmax(invmax), acinvmin(invmin),
-        eff(ef), pmaxout(pout),
-        frline(fl)
+        ac_inp_volt_max(max_volt), ac_inp_volt_min(min_volt),
+        efficiency(eff), pow_max_out(pout),
+        freq_line(fl)
     {}
 
     /**
@@ -46,17 +46,17 @@ public:
     inline double MaxPeakInVoltage() const;
 
 private:
-    int16_t acinvmax;
-    int16_t acinvmin;
-    float eff;
-    float pmaxout;
-    float frline;
+    int16_t ac_inp_volt_max;
+    int16_t ac_inp_volt_min;
+    float efficiency;
+    float pow_max_out;
+    float freq_line;
 
-    double chrgtm; // the capacitor total charging time
-    float bcappc; // bulk capacitor peak current
+    double cap_char_time; // the capacitor total charging time
+    float cap_peak_curr; // bulk capacitor peak current
 
-    double curmaxl = static_cast<double>(pmaxout)/static_cast<double>((eff*acinvmin)); // load maximum current
-    double curminl = static_cast<double>(pmaxout)/static_cast<double>((eff*acinvmax)); // load minimum current
+    double cur_max_load = static_cast<double>(pow_max_out)/static_cast<double>((efficiency*ac_inp_volt_min)); // load maximum current
+    double cur_min_load = static_cast<double>(pow_max_out)/static_cast<double>((efficiency*ac_inp_volt_max)); // load minimum current
 
 };
 
