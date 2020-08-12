@@ -12,9 +12,9 @@ class DiodeBridge
 public:
     /**
      * @brief DiodeBridge -
-     * @param invmax - Max input AC line voltage V
-     * @param invmin - Min input AC line voltage V
-     * @param ef - Efficiency ratio
+     * @param max_volt - Max input AC line voltage V
+     * @param min_volt - Min input AC line voltage V
+     * @param eff - Efficiency ratio
      * @param pout - Total max power output W
      * @param fl - Line frequency default 50Hz
      */
