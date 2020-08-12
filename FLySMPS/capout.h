@@ -7,6 +7,14 @@
 class CapOut
 {
 public:
+    /**
+     * @brief CapOut
+     * @param vr
+     * @param esr
+     * @param cpo
+     * @param vo
+     * @param crfq
+     */
     CapOut(double vr, double esr,
            double cpo, double vo,
            double crfq):
@@ -14,12 +22,12 @@ public:
         curr_peak_out(cpo), volts_out(vo),
         cros_frq_start_val(crfq)
     {}
-    inline double ocESRCapOut();
-    inline double ocCapOutValue(const InputValue& ivalue);
-    inline double ocCurrOurRMS(const FBPT &fbptval);
-    inline double ocZeroFreqCapOut(const InputValue &ivalue);
-    inline double ocOutRippleVolt(double curout, int16_t ncap);
-    inline double ocCapOutLoss(const FBPT &fbptval);
+    inline double ocESRCapOut() const;
+    inline double ocCapOutValue(int16_t freq_switch) const;
+    inline double ocCurrOurRMS(float actual_max_duty_cycle) const;
+    inline double ocZeroFreqCapOut(int16_t freq_switch) const;
+    inline double ocOutRippleVolt(double curout, int16_t ncap) const;
+    inline double ocCapOutLoss(float actual_max_duty_cycle) const;
 
 private:
     double volts_rippl;
@@ -27,8 +35,8 @@ private:
     double curr_peak_out;
     double volts_out;
     double cros_frq_start_val;//good starting value for crossover frequency(1/20 to 1/10)
-    inline double ocTimeCapCharg(const InputValue& ivalue);
-    inline double ocCurrCap();
+    inline double ocTimeCapCharg(int16_t freq_switch) const;
+    inline double ocCurrCap() const;
 };
 
 #endif // CAPOUT_H

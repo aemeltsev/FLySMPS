@@ -4,71 +4,78 @@
   * @brief select output ESR based on the allowable output ripple voltage
   * @return return equivalent series resistance
   */
-inline double CapOut::ocESRCapOut()
+inline double CapOut::ocESRCapOut() const
 {
     return (volts_rippl*esr_perc)/curr_peak_out;
 }
+
 /**
-  * @brief time charging
-  * @param freq_switch - operatin switch frequency
-  * @return charg time
-  */
-inline double CapOut::ocTimeCapCharg(const InputValue &ivalue)
+ * @brief ocTimeCapCharg - time charging
+ * @param freq_switch - operating switch frequency
+ * @return charg time
+ */
+inline double CapOut::ocTimeCapCharg(int16_t freq_switch) const
 {
-    double cross_frq = cros_frq_start_val*ivalue.freq_switch;
-    return (1/(4*cross_frq))+(1/ivalue.freq_switch);
+    double cross_frq = cros_frq_start_val*freq_switch;
+    return (1/(4*cross_frq))+(1/freq_switch);
 }
+
 /**
-  * @brief peak-to-peak ripple current value
-  * @return current p-t-p
-  */
-inline double CapOut::ocCurrCap()
+ * @brief ocCurrCap - peak-to-peak ripple current value
+ * @return current p-t-p
+ */
+inline double CapOut::ocCurrCap() const
 {
     return curr_peak_out/2;
 }
+
 /**
-  * @brief design the minimun output capacitor value
-  * @param ivalue for time charging calculation
-  * @return output capacitor
-  */
-inline double CapOut::ocCapOutValue(const InputValue& ivalue)
-{
-    return (ocCurrCap()*ocTimeCapCharg(ivalue))/(2*(volts_out*volts_rippl));
-}
-/**
-  * @brief estimate total output capacitor RMS current
-  * @param actual_max_duty_cycle actual switching duty cycle
-  * @return rms current
-  */
-inline double CapOut::ocCurrOurRMS(const FBPT &fbptval)
-{
-    return curr_peak_out*sqrt((fbptval.actual_max_duty_cycle/3))-curr_peak_out;
-}
-/**
- * @brief CapOut::ocCapOutLoss - estimate total output capacitor loss
- * @param fbptval - actual_max_duty_cycle for rms current
- * @return losses
+ * @brief CapOut::ocCapOutValue - design the minimun output capacitor value
+ * @param freq_switch - operating switch frequency
+ * @return output capacitor
  */
-inline double CapOut::ocCapOutLoss(const FBPT &fbptval)
+inline double CapOut::ocCapOutValue(int16_t freq_switch) const
 {
-    return pow(ocCurrOurRMS(fbptval), 2)*ocESRCapOut();
+    return (ocCurrCap()*ocTimeCapCharg(freq_switch))/(2*(volts_out*volts_rippl));
 }
+
 /**
- * @brief CapOut::ocZeroFreqCapOut
- * @param ivalue
+ * @brief ocCurrOurRMS - estimate total output capacitor RMS current
+ * @param actual_max_duty_cycle - actual switching duty cycle
+ * @return rms current in A
+ */
+inline double CapOut::ocCurrOurRMS(float actual_max_duty_cycle) const
+{
+    return curr_peak_out*std::sqrt((static_cast<double>(actual_max_duty_cycle)/3.))-curr_peak_out;
+}
+
+/**
+ * @brief ocCapOutLoss - estimate total output capacitor loss
+ * @param actual_max_duty_cycle  - actual_max_duty_cycle for rms current
+ * @return losses in W
+ */
+inline double CapOut::ocCapOutLoss(float actual_max_duty_cycle) const
+{
+    return std::pow(ocCurrOurRMS(actual_max_duty_cycle), 2)*ocESRCapOut();
+}
+
+/**
+ * @brief ocZeroFreqCapOut
+ * @param freq_switch - operating switch frequency
  * @return
  */
-inline double CapOut::ocZeroFreqCapOut(const InputValue& ivalue)
+inline double CapOut::ocZeroFreqCapOut(int16_t freq_switch) const
 {
-    return 1./(2.*S_PI*ocESRCapOut()*ocCapOutValue(ivalue));
+    return 1./(2.*S_PI*ocESRCapOut()*ocCapOutValue(freq_switch));
 }
+
 /**
- * @brief CapOut::ocOutRippleVolt
+ * @brief ocOutRippleVolt
  * @param curout
  * @param ncap
  * @return
  */
-inline double CapOut::ocOutRippleVolt(double curout, int16_t ncap)
+inline double CapOut::ocOutRippleVolt(double curout, int16_t ncap) const
 {
     return (curout*ocESRCapOut())/ncap;
 }
