@@ -9,7 +9,7 @@
  */
 double BulkCap::DeltaT() const
 {
-    return (std::asin(VDOut()/(acinvmin*std::sqrt(2))))/(2.*S_PI*(static_cast<double>(frline)));
+    return (std::asin(VDOut()/(ac_inp_volt_min*std::sqrt(2))))/(2.*S_PI*(static_cast<double>(freq_line)));
 }
 
 /**
@@ -18,7 +18,7 @@ double BulkCap::DeltaT() const
  */
 double BulkCap::ChargTime() const
 { 
-    return ((1./(4.*static_cast<double>(frline)))-(DeltaT()));
+    return ((1./(4.*static_cast<double>(freq_line)))-(DeltaT()));
 }
 
 /**
@@ -27,7 +27,7 @@ double BulkCap::ChargTime() const
  */
 double BulkCap::CapValue() const
 {
-    return ((2.*static_cast<double>(pmaxout))*(1./(4.*static_cast<double>(frline)))+DeltaT())/(static_cast<double>(eff)*(std::pow(VRRMS(),2))-(std::pow(VDOut(),2)));
+    return ((2.*static_cast<double>(pow_max_out))*(1./(4.*static_cast<double>(freq_line)))+DeltaT())/(static_cast<double>(efficiency)*(std::pow(VRRMS(),2))-(std::pow(VDOut(),2)));
 }
 
 /**
@@ -36,7 +36,7 @@ double BulkCap::CapValue() const
  */
 double BulkCap::ILoadMax() const
 {
-    return (static_cast<double>(pmaxout))/(static_cast<double>(eff)*(acinvmin/std::sqrt(2)));
+    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_min/std::sqrt(2)));
 }
 
 /**
@@ -45,7 +45,7 @@ double BulkCap::ILoadMax() const
  */
 double BulkCap::ILoadMin() const
 {
-    return (static_cast<double>(pmaxout))/(static_cast<double>(eff)*(acinvmax/std::sqrt(2)));
+    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_max/std::sqrt(2)));
 }
 
 /**
@@ -54,18 +54,18 @@ double BulkCap::ILoadMin() const
  */
 double BulkCap::IBulkCapPeak() const
 {
-    return 2. * S_PI * static_cast<double>(frline) * CapValue() * VDOut() * (std::cos(2. * S_PI * static_cast<double>(frline) * DeltaT()));
+    return 2. * S_PI * static_cast<double>(freq_line) * CapValue() * VDOut() * (std::cos(2. * S_PI * static_cast<double>(freq_line) * DeltaT()));
 }
 
 /**
  * @brief IBulkCapRMS - Calculate bulk capacitor RMS current value
- * @param lavgc - diode average current
- * @param dct - total conduction time for diode
+ * @param dio_av_curr - diode average current
+ * @param dio_cond_time - total conduction time for diode
  * @return bulk capacitor RMS current
  */
-double BulkCap::IBulkCapRMS(double lavgc, double dct) const
+double BulkCap::IBulkCapRMS(double dio_av_curr, double dio_cond_time) const
 {
-    return lavgc*(std::sqrt((2./(3.*static_cast<double>(frline)*dct))-1));
+    return dio_av_curr*(std::sqrt((2./(3.*static_cast<double>(freq_line)*dio_cond_time))-1));
 }
 
 /**
@@ -74,7 +74,7 @@ double BulkCap::IBulkCapRMS(double lavgc, double dct) const
  */
 double BulkCap::VMinInp() const
 {
-    return std::sqrt(std::pow(VDOut(),2)-((2.*static_cast<double>(pmaxout)*((1./(4.*static_cast<double>(frline))-DeltaT())))/CapValue()));
+    return std::sqrt(std::pow(VDOut(),2)-((2.*static_cast<double>(pow_max_out)*((1./(4.*static_cast<double>(freq_line))-DeltaT())))/CapValue()));
 }
 
 /**
@@ -92,7 +92,7 @@ double BulkCap::VDCMin() const
  */
 double BulkCap::VRRMS() const
 {
-    return (acinvmin*(1./(std::sqrt(2))))-(acinvmin*(2./S_PI));
+    return (ac_inp_volt_min*(1./(std::sqrt(2))))-(ac_inp_volt_min*(2./S_PI));
 }
 
 /**
@@ -101,5 +101,5 @@ double BulkCap::VRRMS() const
  */
 double BulkCap::VDOut() const
 {
-    return (acinvmin*std::sqrt(2.))-VRRMS();
+    return (ac_inp_volt_min*std::sqrt(2.))-VRRMS();
 }
