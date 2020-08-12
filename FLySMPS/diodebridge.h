@@ -10,6 +10,14 @@
 class DiodeBridge
 {
 public:
+    /**
+     * @brief DiodeBridge -
+     * @param invmax - Max input AC line voltage V
+     * @param invmin - Min input AC line voltage V
+     * @param ef - Efficiency ratio
+     * @param pout - Total max power output W
+     * @param fl - Line frequency default 50Hz
+     */
     DiodeBridge(int16_t invmax, int16_t invmin,
                 float ef, float pout,
                 float fl = 50.0f):
@@ -35,7 +43,6 @@ public:
     inline double IDiodeRMS() const;
     inline double IDiodeRMSTot() const;
     inline double MinPeakInVoltage() const;
-
     inline double MaxPeakInVoltage() const;
 
 private:
