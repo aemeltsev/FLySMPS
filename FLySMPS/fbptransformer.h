@@ -7,21 +7,48 @@
 class FBPTPrimary
 {
 public:
-    FBPTPrimary(double krf): ripple_factor(krf){}
+    /**
+     * @brief FBPTPrimary
+     * @param krf
+     * @param rv
+     * @param pout
+     * @param eff
+     * @param swfr
+     */
+    FBPTPrimary(double krf, int16_t rv,
+                int16_t pout, float eff,
+                float swfr):
+        ripple_factor(krf), refl_volt(rv),
+        pow_max_out(pout), efficiency(eff),
+        freq_switch(swfr)
+    {}
 
-    double DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue);
-    double InputPower(const InputValue &ivalue);
-    double PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue);
+    double DutyCycleDCM();
+    double InputPower();
+    double PriInduct();
 
+    /**
+     * @brief setInputVoltage
+     * @param idcmv
+     * @param imv
+     */
+    void setInputVoltage(int16_t idcmv, int16_t imv){input_dc_min_voltage = idcmv; input_min_voltage = imv;}
     /*All current primary side*/
-    double CurrPriAver(const BCap &bcvalue, const FBPT &fbptval);
-    double CurrPriPeakToPeak(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue);
-    double CurrPriMax(const FBPT &fbptval);
-    double CurrPriValley(const FBPT &fbptval);
-    double CurrPriRMS(const FBPT &fbptval);
+    double CurrPriAver();
+    double CurrPriPeakToPeak();
+    double CurrPriMax();
+    double CurrPriValley();
+    double CurrPriRMS();
     /*All current primary side*/
 private:
     double ripple_factor;
+    int16_t refl_volt;
+    int16_t pow_max_out;
+    float efficiency;
+    float freq_switch;
+
+    int16_t input_dc_min_voltage; // dc average, between min input and rectify min peak
+    int16_t input_min_voltage; // recalc after input capacitor selection
 };
 
 struct CoreSelection

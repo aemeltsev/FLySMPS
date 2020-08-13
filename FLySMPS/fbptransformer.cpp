@@ -2,86 +2,79 @@
 
 /*Inductance of primary side*/
 /**
-  * @brief Maximum duty cycle
-  * @param from Input parameters - reflected voltage
-  * @param from Bulk Cap struct - dc average voltage
-  * @return duty cycle ratio
-  */
-double FBPTPrimary::DutyCycleDCM(const InputValue &ivalue, const BCap &bcvalue)
+ * @brief DutyCycleDCM - Maximum duty cycle
+ * @return duty cycle ratio
+ */
+double FBPTPrimary::DutyCycleDCM()
 {
-    return  ivalue.refl_volt_max/((ivalue.refl_volt_max)+(bcvalue.input_dc_min_voltage));
+    return  refl_volt/(refl_volt+input_dc_min_voltage);
 }
+
 /**
-  * @brief Maximum input power
-  * @param from Input parameters - full output power and efficiency
-  * @return in pwr in W
-  */
-double FBPTPrimary::InputPower(const InputValue &ivalue)
+ * @brief InputPower - Maximum input power
+ * @return in pwr in W
+ */
+double FBPTPrimary::InputPower()
 {
-    return (ivalue.power_out_max)/(ivalue.eff);
+    return pow_max_out/static_cast<double>(efficiency);
 }
+
 /**
-  * @brief Primary inductance
-  * @param from FBPT struct - duty cycle and input power
-  * @param from Bulk Cap struct - dc average, between min input and rectify min peak
-  * @param from Input parameters - switching frequency
-  * @return inductance in H
-  */
-double FBPTPrimary::PriInduct(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
+ * @brief PriInduct - Primary inductance
+ * @return inductance in H
+ */
+double FBPTPrimary::PriInduct()
 {
-    return pow((bcvalue.input_dc_min_voltage * fbptval.max_duty_cycle), 2)/(2. * fbptval.inp_power*ivalue.freq_switch * ripple_factor);
+    return std::pow((input_dc_min_voltage * DutyCycleDCM()), 2)/(2. * InputPower()*static_cast<double>(freq_switch)*ripple_factor);
 }
 /*Inductance of primary side*/
 
 /** All current primary side*/
 /**
-  * @brief Primary average current during turn-on
-  * @param from FBPT struct - maximum input power and duty cycle value
-  * @param from Bulk Cap struct - minimum voltage after the input capacitor
-  * @return average current
-  */
-double FBPTPrimary::CurrPriAver(const BCap &bcvalue, const FBPT &fbptval)
+ * @brief CurrPriAver - Primary average current during turn-on
+ * @return average current
+ */
+double FBPTPrimary::CurrPriAver()
 {
-    return fbptval.inp_power/((bcvalue.input_min_voltage)*(fbptval.max_duty_cycle));
+    return InputPower()/(input_min_voltage*DutyCycleDCM());
 }
+
 /**
-  * @brief Primary peak-to-peak current
-  * @param from Bulk Cap struct - dc average voltage
-  * @param from FBPT struct - duty cycle and inductance
-  * @param from Input parameters - switching frequency
-  * @return primare delta current
-  */
-double FBPTPrimary::CurrPriPeakToPeak(const BCap &bcvalue, const FBPT &fbptval, const InputValue &ivalue)
+ * @brief CurrPriPeakToPeak - Primary peak-to-peak current
+ * @return primare delta current
+ */
+double FBPTPrimary::CurrPriPeakToPeak()
 {
-    return ((bcvalue.input_dc_min_voltage)*(fbptval.max_duty_cycle))/((fbptval.primary_induct)*(ivalue.freq_switch));
+    return (input_dc_min_voltage*DutyCycleDCM())/(PriInduct()*static_cast<double>(freq_switch));
 }
+
 /**
-  * @brief Primary peak current
-  * @param from FBPT struct - average and delta current
+  * @brief CurrPriMax - Primary peak current
   * @return peak value of primary current
   */
-double FBPTPrimary::CurrPriMax(const FBPT &fbptval)
+double FBPTPrimary::CurrPriMax()
 {
-    return  (fbptval.curr_primary_aver)+((fbptval.curr_primary_peak_peak)/2);
+    return  CurrPriAver()+(CurrPriPeakToPeak()/2);
 }
+
 /**
-  * @brief Primary valley current
-  * @param from FBPT struct - peak current and delta current
+  * @brief CurrPriValley - Primary valley current
   * @return the valley of the inductor current
   */
-double FBPTPrimary::CurrPriValley(const FBPT &fbptval)
+double FBPTPrimary::CurrPriValley()
 {
-    return (fbptval.curr_primary_peak)-(fbptval.curr_primary_peak_peak);
+    return CurrPriMax()-CurrPriPeakToPeak();
 }
+
 /**
-  * @brief Primary RMS current
-  * @param from FBPT struct - average, delta current and duty cycle ratio
+  * @brief CurrPriRMS - Primary RMS current
   * @return current rms value
   */
-double FBPTPrimary::CurrPriRMS(const FBPT &fbptval)
+double FBPTPrimary::CurrPriRMS()
 {
-    return sqrt((3.*(fbptval.curr_primary_aver * fbptval.curr_primary_aver)+((fbptval.curr_primary_peak_peak/2.)*(fbptval.curr_primary_peak_peak/2.)))*(fbptval.max_duty_cycle/3.));
+    return std::sqrt((3.*(std::pow(CurrPriAver(),2))+(std::pow((CurrPriPeakToPeak()/2.),2)))*(DutyCycleDCM()/3.));
 }
+
 /*All current primary side*/
 
 /*Area product calculation*/
