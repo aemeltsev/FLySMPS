@@ -29,8 +29,8 @@ public:
 
     /**
      * @brief setInputVoltage
-     * @param idcmv
-     * @param imv
+     * @param idcmv - dc average, between min input and rectify min peak
+     * @param imv - recalc after input capacitor selection
      */
     void setInputVoltage(int16_t idcmv, int16_t imv){input_dc_min_voltage = idcmv; input_min_voltage = imv;}
     /*All current primary side*/
@@ -83,10 +83,32 @@ public:
         core_win_util_fact(utilfact),
         flux_dens_max(fluxdens)
     {}
+
+    /**
+     * @brief setPreCalc
+     * @param prin
+     * @param pkprcr
+     * @param rmsprcr
+     */
+    void setPreCalc(double prin, double pkprcr,
+                    double rmsprcr, float pout,
+                    double ppprcr)
+    {
+        primary_induct = prin;
+        curr_primary_peak = pkprcr;
+        curr_primary_rms = rmsprcr;
+        power_out_max = pout;
+        curr_primary_peak_peak = ppprcr;
+    }
 private:
     double curr_dens;//Jm - the maximum current density
     double core_win_util_fact;//Ku - window utilization factor
     double flux_dens_max;//Bm - saturation magnetic field density
+    double primary_induct;//Lp
+    double curr_primary_peak;//Ippk
+    double curr_primary_rms;//Iprms
+    double curr_primary_peak_peak;//Ippkpk
+    float power_out_max;
 
     enum FBPT_NUM_SETTING
     {
@@ -94,16 +116,15 @@ private:
         FBPT_FLUX_PEAK,
         FBPT_CORE_AREA,
     };
-
     enum FBPT_SHAPE_AIR_GAP
     {
         RECT_AIR_GAP,
         ROUND_AIR_GAP,
     };
 
-    double EnergyStoredChoke(const FBPT &fbptval);//
+    inline double EnergyStoredChoke() const;//
     //Correction factor F. - the edge coefficient(FFC)
-    double agFringFluxFact(const FBPT &fbptval, double ewff,
+    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
                            FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
                            double k=1.0);
 
@@ -114,27 +135,27 @@ public:
                           double vc, double lt,
                           double lc, double hw,
                           double al, CoreSelection &cs);
-    double CoreAreaProd(const FBPT &fbptval);//Core geometry coefficient(Ap)
-    double CoreWinToCoreSect(const FBPT &fbptval);//Cross-sectional area to Window area core(WaAe)
-    double DeltaFluxMax(const FBPT &fbptval);
-    double AreaWindTotal(const FBPT &fbptval, const InputValue &ivalue, const CoreSelection &cs);//Cross-sectional area of the winding bare wire
-    double CurrentDens(const FBPT &fbptval);
+    inline double CoreAreaProd() const;//Core geometry coefficient(Ap)
+    inline double CoreWinToCoreSect() const;//Cross-sectional area to Window area core(WaAe)
+    //inline double DeltaFluxMax() const;
+    inline double AreaWindTotal(const CoreSelection &cs) const;//Cross-sectional area of the winding bare wire
+    inline double CurrentDens(const CoreSelection &cs) const;
     /*Core Geometry Factor and Core Selection*/
 
-    double numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
+    double numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
 
     /*Air-Gap Length Considered with Fringing Effect*/
     void setMechanDimension(double f, double c,
                             double e, double d,
                             MechDimension &mch, double diam);
-    double agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim);//The air-gap length(lg)
+    inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
     /*Air-Gap Length Considered with Fringing Effect*/
 
     /*Recalc Np, Bm */
-    int16_t actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
+    inline int16_t actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
                           double varNumPrim, double ewff,
                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                          double k);
+                          double k) const;
     /*Recalc Np, Bm */
 };
 

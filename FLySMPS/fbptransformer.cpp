@@ -79,63 +79,66 @@ double FBPTPrimary::CurrPriRMS()
 
 /*Area product calculation*/
 /**
-  * @brief
-  * @param
-  * @return
-  */
-double FBPTCore::EnergyStoredChoke(const FBPT &fbptval)
+ * @brief EnergyStoredChoke -
+ * @return in W
+ */
+double FBPTCore::EnergyStoredChoke() const
 {
-    return (fbptval.primary_induct * pow(fbptval.curr_primary_peak, 2))/2.;
+    return (primary_induct * std::pow(curr_primary_peak, 2))/2.;
 }
+
 /**
-  * @brief Estimate the core geometry coefficient
-  * @param
-  * @return
-  */
-double FBPTCore::CoreAreaProd(const FBPT &fbptval)
+ * @brief CoreAreaProd - Estimate the core geometry coefficient
+ * @return
+ */
+double FBPTCore::CoreAreaProd() const
 {
-    return (2. * EnergyStoredChoke(fbptval))/(curr_dens * core_win_util_fact * flux_dens_max);
+    return (2. * EnergyStoredChoke())/(curr_dens * core_win_util_fact * flux_dens_max);
 }
+
 /**
   * @brief
   * @param
   * @return
   */
 /*
-double FBPTCore::DeltaFluxMax(const FBPT &fbptval)
+double FBPTCore::DeltaFluxMax()
 {
-    return  flux_dens_max * (fbptval.curr_primary_peak_peak/(1.1*(fbptval.curr_primary_peak_peak)));
+    return  flux_dens_max * (curr_primary_peak_peak/(1.1*(curr_primary_peak_peak)));
 }
 */
+
 /**
-  * @brief Calculate windows area product AP
-  * @param use from FPBT struct - primary inductance, rms and peak current
-  * @return area product ratio
-  */
-double FBPTCore::CoreWinToCoreSect(const FBPT &fbptval)
+ * @brief CoreWinToCoreSect - Calculate windows area product AP
+ * @return area product ratio
+ */
+double FBPTCore::CoreWinToCoreSect() const
 {
-    double tmp = (fbptval.primary_induct * fbptval.curr_primary_rms * fbptval.curr_primary_peak)/(flux_dens_max * S_K_1);
-    return pow(tmp, (4./3.));
+    double tmp = (primary_induct * curr_primary_rms * curr_primary_peak)/(flux_dens_max * S_K_1);
+    return std::pow(tmp, (4./3.));
 }
+
 /**
-  * @brief
-  * @param
-  * @return
-  */
-double FBPTCore::AreaWindTotal(const FBPT &fbptval, const InputValue &ivalue, const CoreSelection &cs)
+ * @brief AreaWindTotal
+ * @param cs
+ * @return
+ */
+double FBPTCore::AreaWindTotal(const CoreSelection &cs) const
 {
     double tmp = core_win_util_fact * cs.core_wind_area * S_RO_OM * cs.mean_leng_per_turn;
-    return fbptval.curr_primary_peak * sqrt(tmp/ivalue.power_out_max);
+    return curr_primary_peak * std::sqrt(tmp/static_cast<double>(power_out_max));
 }
+
 /**
-  * @brief
-  * @param
-  * @return
-  */
-double FBPTCore::CurrentDens(const FBPT &fbptval)
+ * @brief FBPTCore::CurrentDens
+ * @param cs
+ * @return
+ */
+double FBPTCore::CurrentDens(const CoreSelection &cs) const
 {
-    return fbptval.curr_primary_peak/fbptval.area_wind_tot;
+    return curr_primary_peak/AreaWindTotal(cs);
 }
+
 /**
   * @brief
   * @param
@@ -161,26 +164,25 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
 
 /*Primary turns*/
 /**
-  * @brief Estimate turns of primary side
-  * @param from FBPT inductance and p-p current
+  * @brief numPrimary - Estimate turns of primary side
   * @param cs - core geometry values
   * @param fns - select method for num primary turns calculate
   * @return number of turns the primary side
   */
-double FBPTCore::numPrimary(const FBPT &fbptval, const CoreSelection &cs, const FBPT_NUM_SETTING &fns)
+double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns)
 {
     double temp = 0.0;
     if(fns == FBPT_INDUCT_FACTOR)
     {
-        temp = sqrt((fbptval.primary_induct)/cs.ind_fact);
+        temp = std::sqrt(primary_induct/cs.ind_fact);
     }
     else if(fns == FBPT_FLUX_PEAK)
     {
-        temp = ((fbptval.primary_induct)*(fbptval.curr_primary_peak_peak))/(cs.core_cross_sect_area * flux_dens_max);
+        temp = (primary_induct*curr_primary_peak_peak)/(cs.core_cross_sect_area * flux_dens_max);
     }
     else if(fns == FBPT_CORE_AREA)
     {
-        temp = (core_win_util_fact * cs.core_wind_area)/fbptval.area_wind_tot;
+        temp = (core_win_util_fact * cs.core_wind_area)/AreaWindTotal(cs);
     }
     return temp;
 }
@@ -205,37 +207,42 @@ void FBPTCore::setMechanDimension(double c, double e,
     mchdm.Diam = diam;
 }
 /**
-  * @brief Air gap length
-  * @param from fbptval - primary inductance
+  * @brief agLength - Air gap length
   * @param cs - core parameters
   * @param varNumPrim - number of turns the primary side
   * @return length ag in m
   */
-double FBPTCore::agLength(const FBPT &fbptval, const CoreSelection &cs, double varNumPrim)
+ double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
 {
-    return ((S_MU_Z * cs.core_cross_sect_area * pow(varNumPrim, 2))/(fbptval.primary_induct))-
+    return ((S_MU_Z * cs.core_cross_sect_area * std::pow(varNumPrim, 2))/(primary_induct))-
             (cs.mean_mag_path_leng / cs.core_permeal);
 }
-/**
-  * @brief
-  * @param
-  * @return
-  */
-double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff,
+
+ /**
+ * @brief agFringFluxFact -
+ * @param cs
+ * @param varNumPrim
+ * @param ewff
+ * @param fsag
+ * @param mchdm
+ * @param k
+ * @return
+ */
+double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
                                  FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k)
 {
     double csa, af, temp = 0.0;
-    double u = ewff/fbptval.length_air_gap;
+    double u = ewff/agLength(cs, varNumPrim);
     if(fsag == RECT_AIR_GAP)
     {
         csa = mchdm.C*mchdm.D;
-        af = 2. * u * fbptval.length_air_gap * (mchdm.C + mchdm.D + 2. * u * fbptval.length_air_gap);
+        af = 2. * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
         temp = 1 + (af/(csa*k));
     }
     else if(fsag == ROUND_AIR_GAP)
     {
         csa = (S_PI*pow(mchdm.Diam, 2))/4.;
-        af = S_PI * u * fbptval.length_air_gap * (mchdm.C + mchdm.D + 2. * u * fbptval.length_air_gap);
+        af = S_PI * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
         temp = 1 + (af/(csa*k));
     }
     return temp;
@@ -249,7 +256,7 @@ double FBPTCore::agFringFluxFact(const FBPT &fbptval, double ewff,
 int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
                                 double varNumPrim, double ewff,
                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                                double k=1.0)
+                                double k=1.0) const
 {
     int16_t act_num_prim_turns = 0;
     double ag, ffg, flux_peak = 0.0;
