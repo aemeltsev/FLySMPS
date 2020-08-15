@@ -300,37 +300,42 @@ inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_
 
 /*Second Side*/
 /**
-  * @brief
-  */
-double FBPTSecondary::outNumSecond(const FBPT &fbptval, const InputValue &ivalue)
+ * @brief outNumSecond -
+ * @return
+ */
+double FBPTSecondary::outNumSecond() const
 {
-    return (fbptval.actual_num_primary * (Volt + ivalue.volt_diode_drop_sec))/ReflVolt;
+    return static_cast<double>(actual_num_primary * (volt + diode_drop_sec))/static_cast<double>(refl_volt);
 }
+
 /**
-  * @brief
-  */
-double FBPTSecondary::outNumTurnRatio(const FBPT &fbptval, const InputValue &ivalue)
+ * @brief outNumTurnRatio -
+ * @return
+ */
+double FBPTSecondary::outNumTurnRatio() const
 {
-    return fbptval.actual_num_primary/outNumSecond(fbptval, ivalue);
+    return actual_num_primary/outNumSecond();
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTSecondary::outCurrPeakSecond(const FBPT &fbptval, const InputValue &ivalue)
+ * @brief outCurrPeakSecond -
+ * @return
+ */
+inline double FBPTSecondary::outCurrPeakSecond()
 {
-    return (fbptval.curr_primary_peak) * outNumTurnRatio(fbptval, ivalue) * outCoeffPWR(ivalue);
+    return (curr_primary_peak) * outNumTurnRatio() * outCoeffPWR();
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTSecondary::outCurrRMSSecond(const FBPT &fbptval, const BCap &bcvalue, const InputValue &ivalue)
+ * @brief outCurrRMSSecond -
+ * @param actual_volt_reflected - post calculated reflected voltage
+ * @param input_min_voltage - recalculation after input capacitor selection
+ * @return
+ */
+inline double FBPTSecondary::outCurrRMSSecond(int16_t actual_volt_reflected, int16_t input_min_voltage)
 {
-    double tmp = ((1-postMaxDutyCycle(fbptval, bcvalue))/postMaxDutyCycle(fbptval, bcvalue));
-    return fbptval.curr_primary_rms * outCoeffPWR(ivalue) * outNumTurnRatio(fbptval, ivalue) *sqrt(tmp);
+    double tmp = ((1-postMaxDutyCycle(actual_volt_reflected, input_min_voltage))/postMaxDutyCycle(actual_volt_reflected, input_min_voltage));
+    return curr_primary_rms * outCoeffPWR() * outNumTurnRatio() * std::sqrt(tmp);
 }
 /*Second Side*/
 

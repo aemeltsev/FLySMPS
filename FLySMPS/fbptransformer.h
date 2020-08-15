@@ -160,26 +160,38 @@ public:
 };
 
 inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
-inline double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue);//Post-calculated maximum duty cycle(DMaxPost)
+inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage);//Post-calculated maximum duty cycle(DMaxPost)
 
 class FBPTSecondary
 {
 public:
-    FBPTSecondary(double currout, double voltout, double voltreflect):
-        Curr(currout), Volt(voltout), ReflVolt(voltreflect)
+    FBPTSecondary(float currout, float voltout,
+                  float voltreflect, float powout,
+                  int16_t aprnm, float ddrp):
+        curr(currout), volt(voltout),
+        refl_volt(voltreflect), pow_out_max(powout),
+        actual_num_primary(aprnm), diode_drop_sec(ddrp)
     {}
-    inline double outPWR(){return Curr*Volt;}
-    inline double outCoeffPWR(const InputValue &ivalue){return outPWR()/ivalue.power_out_max;}
-    inline double outNumSecond(const FBPT &fbptval, const InputValue &ivalue);
-    inline double outNumTurnRatio(const FBPT &fbptval, const InputValue &ivalue);
 
+    inline double outPWR() const {return static_cast<double>(curr*volt);}
+    inline double outCoeffPWR() const {return outPWR()/ static_cast<double>(pow_out_max);}
+    inline double outNumSecond() const;
+    inline double outNumTurnRatio() const;
+
+    void setCurrentParam(double pkcpr, double rmscpr){curr_primary_peak = pkcpr; curr_primary_rms = rmscpr;}
     //Current for secondary layers
-    inline double outCurrPeakSecond(const FBPT &fbptval, const InputValue &ivalue);//Peak current(IAMax)
-    inline double outCurrRMSSecond(const FBPT &fbptval, const BCap &bcvalue, const InputValue &ivalue);//RMS current(ISRMS)
+    inline double outCurrPeakSecond();//Peak current(IAMax)
+    inline double outCurrRMSSecond(int16_t actual_volt_reflected, int16_t input_min_voltage);//RMS current(ISRMS)
 private:
-    double Curr;
-    double Volt;
-    double ReflVolt;
+    float curr;
+    float volt;
+    float refl_volt;
+    float pow_out_max;
+    int16_t actual_num_primary;
+    float diode_drop_sec;
+
+    double curr_primary_peak;
+    double curr_primary_rms;
 };
 
 class FBPTWinding
