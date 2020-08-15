@@ -212,7 +212,7 @@ void FBPTCore::setMechanDimension(double c, double e,
   * @param varNumPrim - number of turns the primary side
   * @return length ag in m
   */
- double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
+double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
 {
     return ((S_MU_Z * cs.core_cross_sect_area * std::pow(varNumPrim, 2))/(primary_induct))-
             (cs.mean_mag_path_leng / cs.core_permeal);
@@ -274,18 +274,27 @@ int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
 
 /*Recalc actual methods vreflected and duty*/
 /**
-  * @brief
-  */
-inline double postVoltageRefl(const FBPT &fbptval, float voltout, float voltdrop, float numsec)
+ * @brief postVoltageRefl - Post calculated reflected voltage
+ * @param actual_num_primary - num primary turns
+ * @param voltout - output voltage
+ * @param voltdrop - diode drop voltage
+ * @param numsec - secondary turns controlled side
+ * @return actual voltage reflected in V
+ */
+inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec)
 {
-    return static_cast<double>((voltout + voltdrop))*(fbptval.actual_num_primary/static_cast<double>(numsec));
+    return static_cast<double>((voltout + voltdrop))*(actual_num_primary/static_cast<double>(numsec));
 }
+
 /**
-  * @brief
-  */
-inline double postMaxDutyCycle(const FBPT &fbptval, const BCap &bcvalue)
+ * @brief postMaxDutyCycle - Post calculated max duty
+ * @param actual_volt_reflected - post calculated reflected voltage
+ * @param input_min_voltage - recalculation after input capacitor selection
+ * @return actual duty cucle ratio
+ */
+inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage)
 {
-    return (fbptval.actual_volt_reflected)/(fbptval.actual_volt_reflected + bcvalue.input_min_voltage);
+    return (actual_volt_reflected)/(actual_volt_reflected + input_min_voltage);
 }
 /*Recalc actual methods vreflected and duty*/
 
