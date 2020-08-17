@@ -3,47 +3,44 @@
 */
 #include "swmosfet.h"
 
-SwMosfet::SwMosfet()
+/**
+ * @brief swMosfetVoltageNom - estimated voltage of switch not considering spike
+ * @return nom voltage value
+ */
+double SwMosfet::swMosfetVoltageNom() const
 {
+    return in_max_rms_voltage + actual_volt_reflected;
+}
 
-}
 /**
-  * @brief estimated voltage of switch not considering spike
-  * @param transf, bridge struct ref
-  * @retval nom voltage value
-  */
-double SwMosfet::swMosfetVoltageNom(DBridge &dbvalue, const FBPT &fbptval)
+ * @brief swMosfetVoltageMax - estimated voltage stress of switch
+ * @return max voltage value
+ */
+double SwMosfet::swMosfetVoltageMax() const
 {
-    return dbvalue.in_max_rms_voltage + fbptval.actual_volt_reflected;
+    return swMosfetVoltageNom() + voltage_spike;
 }
-/**
-  * @brief estimated voltage stress of switch
-  * @param input, fet struct ref
-  * @retval max voltage value
-  */
-double SwMosfet::swMosfetVoltageMax(PMosfet &pmvalue, InputValue &ivalue)
-{
-    return pmvalue.mosfet_voltage_nom + ivalue.voltage_spike;
-}
+
 /**
   * @brief estimated current in switch
   * @param input, transf, bridge struct ref
   * @retval switch current
   */
-double SwMosfet::swMosfetCurrent(const FBPT &fbptval, InputValue &ivalue, DBridge &dbvalue)
+double SwMosfet::swMosfetCurrent(const FBPT &fbptval, InputValue &ivalue)
 {
-    double time_switch = (1/ivalue.freq_switch);
-    return (ivalue.power_out_max/(ivalue.eff * dbvalue.in_min_rms_voltage * fbptval.actual_max_duty_cycle)) + ((dbvalue.in_min_rms_voltage * fbptval.actual_max_duty_cycle * time_switch)/swLeakageInduct(fbptval, ivalue));
+    double time_switch = (1/freq_switch);
+    return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_rms_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_rms_voltage * actual_max_duty_cycle) * time_switch)/swLeakageInduct(fbptval, ivalue));
 }
+
 /**
-  * @brief estimated fet vds rise and fall time
-  * @param none
-  * @retval rise time
-  */
-double SwMosfet::swMosfetRiseTime()
+ * @brief swMosfetRiseTime - estimated fet vds rise and fall time
+ * @return rise time
+ */
+double SwMosfet::swMosfetRiseTime() const
 {
     return Qg * (2./Idrv);
 }
+
 /**
   * @brief estimated of conduction losses
   * @param transf struct ptr
@@ -106,24 +103,25 @@ void SwMosfet::setSWValue(double rdson, double qg, double coss, double idrive, i
     Idrv = idrive;
     Vdrv = vdrive;
 }
+
 /**
-  * @brief calculate custom gate current
-  * @param freq_switch - operating frequency
-  * @retval continuous gate current
-  */
-double SwMosfet::swMosfetCustomIdrv(InputValue &ivalue)
+ * @brief swMosfetCustomIdrv - calculate custom gate current
+ * @return continuous gate current
+ */
+double SwMosfet::swMosfetCustomIdrv() const
 {
-    return Qg*ivalue.freq_switch;
+    return Qg*freq_switch;
 }
+
 /**
-  * @brief get current value
-  * @param input struct ptr
-  * @retval continuous gate current
-  */
-double SwMosfet::getCustomIdrv(InputValue &ivalue)
+ * @brief getCustomIdrv - get current value
+ * @return continuous gate current
+ */
+double SwMosfet::getCustomIdrv() const
 {
-    return swMosfetCustomIdrv(ivalue);
+    return swMosfetCustomIdrv();
 }
+
 /**
   * @brief calculate leakage inductance percentage
   * @param leakage perc && calculated induct primary size
