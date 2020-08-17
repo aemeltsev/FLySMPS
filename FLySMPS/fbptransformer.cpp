@@ -341,93 +341,108 @@ inline double FBPTSecondary::outCurrRMSSecond(int16_t actual_volt_reflected, int
 
 /*Winding*/
 /**
-  * @param
-  * @return
-  */
-inline double FBPTWinding::wEffBobbWidth(const MechDimension &mchdm){return mchdm.D-(2. * M);}
+ * @brief wEffBobbWidth -
+ * @param mchdm -
+ * @return
+ */
+inline double FBPTWinding::wEffBobbWidth(const MechDimension &mchdm) const {return mchdm.D-(2. * M);}
+
 /**
-  * @param
-  * @return
-  */
-inline double FBPTWinding::wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm){return (cs.core_wind_area*(wEffBobbWidth(mchdm)))/mchdm.D;}
+ * @brief wEffWindCrossSect -
+ * @param cs
+ * @param mchdm
+ * @return
+ */
+inline double FBPTWinding::wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm) const {return (cs.core_wind_area*(wEffBobbWidth(mchdm)))/mchdm.D;}
+
 /**
-  * @param
-  * @return
-  */
-inline double FBPTWinding::wCoperWireCrossSectArea(const FBPT &fbptval, const CoreSelection &cs, const MechDimension &mchdm, double windfact)
+ * @brief wCoperWireCrossSectArea
+ * @param cs
+ * @param mchdm
+ * @param windfact
+ * @return
+ */
+inline double FBPTWinding::wCoperWireCrossSectArea(const CoreSelection &cs, const MechDimension &mchdm, double windfact) const
 {
-    return (windfact * FCu *(wEffWindCrossSect(cs, mchdm)))/(fbptval.actual_num_primary);
+    return (windfact * FCu *(wEffWindCrossSect(cs, mchdm)))/actual_num_primary;
 }
+
 /**
-  * @param
-  * @return
-  */
-inline double FBPTWinding::wMaxWireSizeAWG(double wirecrosssect)
+ * @brief wMaxWireSizeAWG -
+ * @param wirecrosssect
+ * @return
+ */
+inline double FBPTWinding::wMaxWireSizeAWG(double wirecrosssect) const
 {
-    return (9.97*(1.8277 - (2*log10(2*sqrt((wirecrosssect)/S_PI)))));
+    return (9.97*(1.8277 - (2*std::log10(2*std::sqrt((wirecrosssect)/S_PI)))));
 }
+
 /**
-  * @param
-  * @return
-  */
-inline double FBPTWinding::wSkinDepth(const InputValue &ivalue)
+ * @brief wSkinDepth -
+ * @return
+ */
+inline double FBPTWinding::wSkinDepth() const
 {
-    return sqrt((S_RO_OM)/(2.*S_PI*ivalue.freq_switch*S_MU_Z));
+    return std::sqrt((S_RO_OM)/(2.*S_PI*static_cast<double>(freq_switch)*S_MU_Z));
 }
+
 /**
-  * @brief
-  * @param
-  */
+ * @brief setWireDiam -
+ * @param awgp
+ * @param np
+ */
 void FBPTWinding::setWireDiam(double awgp, uint16_t np)
 {
     AWGp = awgp;
     Np = np;
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTWinding::wCoperWireDiam()
+ * @brief wCoperWireDiam -
+ * @return
+ */
+inline double FBPTWinding::wCoperWireDiam() const
 {
     double tmp = (AWGp)/(2.*9.97);
     double out = ((1.8277/2.)-(tmp));
-    return pow(10., out);
+    return std::pow(10., out);
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTWinding::wCoperWireCrossSectAreaPost()
+ * @brief wCoperWireCrossSectAreaPost -
+ * @return
+ */
+inline double FBPTWinding::wCoperWireCrossSectAreaPost() const
 {
-    return (S_PI/4.)*pow(wCoperWireDiam(), 2.)*Np;
+    return (S_PI/4.)*std::pow(wCoperWireDiam(), 2.)*Np;
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTWinding::wCurrentDenst(const FBPT &fbptval)
+ * @brief wCurrentDenst -
+ * @return
+ */
+inline double FBPTWinding::wCurrentDenst() const
 {
-    return fbptval.curr_primary_rms/wCoperWireCrossSectAreaPost();
+    return static_cast<double>(curr_primary_rms)/wCoperWireCrossSectAreaPost();
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTWinding::wNumTurnToLay(const MechDimension &mchdm)
+ * @brief wNumTurnToLay -
+ * @param mchdm
+ * @return
+ */
+inline double FBPTWinding::wNumTurnToLay(const MechDimension &mchdm) const
 {
     return (wEffBobbWidth(mchdm))/(Np*(wCoperWireDiam()+(2*INS)));
 }
+
 /**
-  * @brief
-  * @param
-  * @retval
-  */
-inline double FBPTWinding::wNumLay(const FBPT &fbptval, const MechDimension &mchdm)
+ * @brief wNumLay -
+ * @param mchdm
+ * @return
+ */
+inline double FBPTWinding::wNumLay(const MechDimension &mchdm) const
 {
-    return (fbptval.actual_num_primary)/(wNumTurnToLay(mchdm));
+    return (actual_num_primary)/(wNumTurnToLay(mchdm));
 }
 /*Winding*/

@@ -78,6 +78,12 @@ struct MechDimension
 class FBPTCore
 {
 public:
+    /**
+     * @brief FBPTCore
+     * @param currdens
+     * @param utilfact
+     * @param fluxdens
+     */
     FBPTCore(double currdens, double utilfact, double fluxdens):
         curr_dens(currdens),
         core_win_util_fact(utilfact),
@@ -165,6 +171,15 @@ inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_
 class FBPTSecondary
 {
 public:
+    /**
+     * @brief FBPTSecondary
+     * @param currout
+     * @param voltout
+     * @param voltreflect
+     * @param powout
+     * @param aprnm
+     * @param ddrp
+     */
     FBPTSecondary(float currout, float voltout,
                   float voltreflect, float powout,
                   int16_t aprnm, float ddrp):
@@ -197,25 +212,39 @@ private:
 class FBPTWinding
 {
 public:
-    FBPTWinding(int8_t m=4, double fcu=0.4, double ins=0.01):
+    /**
+     * @brief FBPTWinding
+     * @param aprnm
+     * @param frsw
+     * @param rmscp
+     * @param m
+     * @param fcu
+     * @param ins
+     */
+    FBPTWinding(int16_t aprnm, float frsw,
+                float rmscp, int8_t m=4,
+                double fcu=0.4, double ins=0.01):
+        actual_num_primary(aprnm), freq_switch(frsw),
+        curr_primary_rms(rmscp),
         M(m), FCu(fcu), INS(ins)
-    {
-
-    }
+    {}
     /*Winding*/
-    inline double wEffBobbWidth(const MechDimension &mchdm);//Effective bobbin width(BWe)
-    inline double wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm);//Effective winding cross-section(ANe)
-    inline double wCoperWireCrossSectArea(const FBPT &fbptval, const CoreSelection &cs, const MechDimension &mchdm, double windfact);//(AP) or (ANS)
-    inline double wMaxWireSizeAWG(double wirecrosssect);//(AWGP) or (AWGNS)
-    inline double wSkinDepth(const InputValue &ivalue);
+    inline double wEffBobbWidth(const MechDimension &mchdm) const;//Effective bobbin width(BWe)
+    inline double wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm) const;//Effective winding cross-section(ANe)
+    inline double wCoperWireCrossSectArea(const CoreSelection &cs, const MechDimension &mchdm, double windfact) const;//(AP) or (ANS)
+    inline double wMaxWireSizeAWG(double wirecrosssect) const;//(AWGP) or (AWGNS)
+    inline double wSkinDepth() const;
     void setWireDiam(double awgp, uint16_t np);
-    inline double wCoperWireDiam();//(DP) or (DS)
-    inline double wCoperWireCrossSectAreaPost();//
-    inline double wCurrentDenst(const FBPT &fbptval);//(JP) or (JS)
-    inline double wNumTurnToLay(const MechDimension &mchdm);//Number of turns per layer(NL)
-    inline double wNumLay(const FBPT &fbptval, const MechDimension &mchdm);//(LNp)
+    inline double wCoperWireDiam() const;//(DP) or (DS)
+    inline double wCoperWireCrossSectAreaPost() const;//
+    inline double wCurrentDenst() const;//(JP) or (JS)
+    inline double wNumTurnToLay(const MechDimension &mchdm) const;//Number of turns per layer(NL)
+    inline double wNumLay(const MechDimension &mchdm) const;//(LNp)
     /*Winding*/
 private:
+    int16_t actual_num_primary;
+    float freq_switch;
+    float curr_primary_rms;
     int8_t M;
     double FCu;
     double AWGp;
