@@ -20,27 +20,28 @@ public:
     {}
     inline double swMosfetVoltageMax() const;
     inline double swMosfetVoltageNom() const;
-    inline double swMosfetCurrent(const FBPT &fbptval, InputValue &ivalue);
+    inline double swMosfetCurrent(double leakage_induct, double primary_induct) const;
     inline double swMosfetRiseTime() const;
-    inline double swMosfetConductLoss(const FBPT &fbptval);
-    inline double swMosfetDriveLoss(InputValue &ivalue);
-    inline double swMosfetSwitchLoss(InputValue &ivalue, const FBPT &fbptval, PMosfet &pmvalue);
-    inline double swMosfetCapacitLoss(PMosfet &pmvalue, InputValue &ivalue);
-    inline double swMosfetTotalLoss(PMosfet &pmvalue);
+    inline double swMosfetConductLoss() const;
+    inline double swMosfetDriveLoss() const;
+    inline double swMosfetSwitchLoss() const;
+    inline double swMosfetCapacitLoss() const;
+    inline double swMosfetTotalLoss() const;
+    void setCurrValues(float rmscp, float pkcp);
     void setSWValue(double rdson, double qg,
                     double coss, double idrive,
                     int16_t vdrive);
     inline double getCustomIdrv() const;
 
-    inline double clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, const FBPT &fbptval);
-    inline double clPowerDiss(PMosfet &pmvalue, const FBPT &fbptval,InputValue &ivalue);
-    inline double clResValue(PMosfet &pmvalue);
+    inline double clVoltageMax() const;
+    inline double clPowerDiss() const;
+    inline double clResValue() const;
     void setSnubVoltRipple(double vrp);
-    inline double clCapValue(PMosfet &pmvalue, InputValue &ivalue);
+    inline double clCapValue() const;
 
-    inline double csCurrRes(const FBPT &fbptval);
+    inline double csCurrRes() const;
     void setVoltCurrSens(double csv);
-    inline double csCurrResLoss(const FBPT &fbptval, PMosfet &pmvalue);
+    inline double csCurrResLoss() const;
 private:
     int16_t in_max_rms_voltage;
     int16_t in_min_rms_voltage;
@@ -51,6 +52,9 @@ private:
     int16_t freq_switch;
     float actual_max_duty_cycle;
 
+    float curr_primary_rms;
+    float curr_primary_peak;
+
     double RDSon;
     double Qg;
     double Coss;
@@ -60,8 +64,8 @@ private:
     double clVolRip;
     double csVoltCs;
     inline double swMosfetCustomIdrv() const;
-    inline double swLeakageInduct(const FBPT &fbptval, InputValue &ivalue);
-    void clCurrPeakTime(const FBPT &fbptval, InputValue &ivalue, double &TurnRat, double &NOutVolt);
+    inline double swLeakageInduct(double leakage_induct, double primary_induct) const;
+    void clCurrPeakTime(double leakage_induct, double primary_induct, double turn_rat, double n_out_volt);
 };
 
 #endif // SWMOSFET_H

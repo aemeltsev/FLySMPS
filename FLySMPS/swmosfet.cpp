@@ -22,14 +22,15 @@ double SwMosfet::swMosfetVoltageMax() const
 }
 
 /**
-  * @brief estimated current in switch
-  * @param input, transf, bridge struct ref
-  * @retval switch current
-  */
-double SwMosfet::swMosfetCurrent(const FBPT &fbptval, InputValue &ivalue)
+ * @brief swMosfetCurrent - estimated current in switch
+ * @param leakage_induct - leakage perc
+ * @param primary_induct - calculated induct primary size
+ * @return switch current
+ */
+double SwMosfet::swMosfetCurrent(double leakage_induct, double primary_induct) const
 {
     double time_switch = (1/freq_switch);
-    return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_rms_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_rms_voltage * actual_max_duty_cycle) * time_switch)/swLeakageInduct(fbptval, ivalue));
+    return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_rms_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_rms_voltage * actual_max_duty_cycle) * time_switch)/swLeakageInduct(leakage_induct, primary_induct));
 }
 
 /**
@@ -42,59 +43,69 @@ double SwMosfet::swMosfetRiseTime() const
 }
 
 /**
-  * @brief estimated of conduction losses
-  * @param transf struct ptr
-  * @retval conduction losses
-  */
-double SwMosfet::swMosfetConductLoss(const FBPT &fbptval)
+ * @brief swMosfetConductLoss - estimated of conduction losses
+ * @retval conduction losses
+ */
+double SwMosfet::swMosfetConductLoss() const
 {
-    return pow(fbptval.curr_primary_rms, 2) * RDSon;
+    return std::pow(curr_primary_rms, 2) * RDSon;
 }
+
 /**
-  * @brief estimated fet power loss by driving the fet’s gate
-  * @param input struct ptr
-  * @retval loss by driving the gate
-  */
-double SwMosfet::swMosfetDriveLoss(InputValue &ivalue)
+ * @brief swMosfetDriveLoss - estimated fet power loss by driving the fet’s gate
+ * @return loss by driving the gate
+ */
+double SwMosfet::swMosfetDriveLoss() const
 {
-    return Vdrv * Qg * ivalue.freq_switch;
+    return Vdrv * Qg * freq_switch;
 }
+
 /**
-  * @brief estimated fet average switching loss
-  * @param fet, input, transf struct ptr
-  * @retval switching loss
-  */
-double SwMosfet::swMosfetSwitchLoss(InputValue &ivalue, const FBPT &fbptval, PMosfet &pmvalue)
+ * @brief swMosfetSwitchLoss - estimated fet average switching loss
+ * @return switching loss
+ */
+double SwMosfet::swMosfetSwitchLoss() const
 {
-    return ((Coss*pow(pmvalue.mosfet_voltage_max, 2)*ivalue.freq_switch)/2.) + (pmvalue.mosfet_voltage_max*fbptval.curr_primary_peak*pmvalue.mosfet_rise_time*ivalue.freq_switch);
+    return ((Coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.) + (swMosfetVoltageMax()*static_cast<double>(curr_primary_peak)*swMosfetRiseTime()*freq_switch);
 }
+
 /**
-  * @brief estimated fet coss power dissipation
-  * @param fet and input struct ptr
-  * @retval coss power dissipation
-  */
-double SwMosfet::swMosfetCapacitLoss(PMosfet &pmvalue, InputValue &ivalue)
+ * @brief swMosfetCapacitLoss - estimated fet coss power dissipation
+ * @return coss power dissipation
+ */
+double SwMosfet::swMosfetCapacitLoss() const
 {
-    return (Coss*pow(pmvalue.mosfet_voltage_max, 2)*ivalue.freq_switch)/2.;
+    return (Coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.;
 }
+
 /**
-  * @brief multiply of all losses values
-  * @param fet struct ptr
-  * @retval total losses
-  */
-double SwMosfet::swMosfetTotalLoss(PMosfet &pmvalue)
+ * @brief swMosfetTotalLoss - multiply of all losses values
+ * @return total losses
+ */
+double SwMosfet::swMosfetTotalLoss() const
 {
-    return (pmvalue.mosfet_conduct_loss)*(pmvalue.mosfet_drive_loss)*(pmvalue.mosfet_switch_loss)*(pmvalue.mosfet_capacit_loss);
+    return swMosfetConductLoss()*swMosfetDriveLoss()*swMosfetSwitchLoss()*swMosfetCapacitLoss();
 }
+
 /**
-  * @brief set property values for mosfet switch
-  * @param rdson - drain-source on-state resistance
-  * @param qg - total gate charge
-  * @param coss - output capacitance
-  * @param idrive - continuous gate current
-  * @param vdrive - gate-drive voltage
-  * @retval none
-  */
+ * @brief setCurrValues -
+ * @param rmscp
+ * @param pkcp
+ */
+void SwMosfet::setCurrValues(float rmscp, float pkcp)
+{
+    curr_primary_rms = rmscp;
+    curr_primary_peak = pkcp;
+}
+
+/**
+ * @brief setSWValue - set property values for mosfet switch
+ * @param rdson - drain-source on-state resistance
+ * @param qg - total gate charge
+ * @param coss - output capacitance
+ * @param idrive - continuous gate current
+ * @param vdrive - gate-drive voltage
+ */
 void SwMosfet::setSWValue(double rdson, double qg, double coss, double idrive, int16_t vdrive)
 {
     RDSon = rdson;
@@ -123,94 +134,96 @@ double SwMosfet::getCustomIdrv() const
 }
 
 /**
-  * @brief calculate leakage inductance percentage
-  * @param leakage perc && calculated induct primary size
-  * @retval leakage inductance
-  */
-double SwMosfet::swLeakageInduct(const FBPT &fbptval, InputValue &ivalue)
+ * @brief swLeakageInduct - calculate leakage inductance percentage
+ * @param leakage_induct - leakage perc
+ * @param primary_induct - calculated induct primary size
+ * @return leakage inductance
+ */
+double SwMosfet::swLeakageInduct(double leakage_induct, double primary_induct) const
 {
-    return ivalue.leakage_induct * fbptval.primary_induct;
+    return leakage_induct * primary_induct;
 }
+
 /**
-  * @brief calculate snubber capacitor voltage
-  * @param mosfet max voltage && rms voltage && reflected voltage
-  * @retval snubber voltage
-  */
-double SwMosfet::clVoltageMax(PMosfet &pmvalue, InputValue &ivalue, DBridge &dbvalue, const FBPT &fbptval)
+ * @brief clVoltageMax - calculate snubber capacitor voltage
+ * @return snubber voltage
+ */
+double SwMosfet::clVoltageMax() const
 {
-    return swMosfetVoltageMax(pmvalue, ivalue) - dbvalue.in_max_rms_voltage - fbptval.actual_volt_reflected;
+    return swMosfetVoltageMax() - in_max_rms_voltage - actual_volt_reflected;
 }
+
 /**
-  * @brief the on-time (tSn) of the snubber diode
-  * @param leak ind && primary peak current
-  * @param TurnRat - ref. on the turns ratio value
-  * @param NOutVolt - ref. on the n-th output side with the max voltage values
-  * @retval none
-  */
-void SwMosfet::clCurrPeakTime(const FBPT &fbptval, InputValue &ivalue, double &TurnRat, double &NOutVolt)
+ * @brief clCurrPeakTime - the on-time (tSn) of the snubber diode
+ * @param leakage_induct - leakage perc
+ * @param primary_induct - calculated induct primary size
+ * @param turn_rat - on the turns ratio value
+ * @param n_out_volt - the n-th output side with the max voltage values
+ */
+void SwMosfet::clCurrPeakTime(double leakage_induct, double primary_induct, double turn_rat, double n_out_volt)
 {
-    clCurTsPk = (swLeakageInduct(fbptval, ivalue)/(TurnRat*NOutVolt))*fbptval.curr_primary_peak;
+    clCurTsPk = (swLeakageInduct(leakage_induct, primary_induct)/(turn_rat*n_out_volt))*static_cast<double>(curr_primary_peak);
 }
+
 /**
-  * @brief the power dissipated in the snubber circuit
-  * @param volt snub && peak curr && sw freq && on-time diode
-  * @retval power diss val
-  */
-double SwMosfet::clPowerDiss(PMosfet &pmvalue, const FBPT &fbptval, InputValue &ivalue)
+ * @brief SwMosfet::clPowerDiss - the power dissipated in the snubber circuit
+ * @return power diss val
+ */
+double SwMosfet::clPowerDiss() const
 {
-    return ((pmvalue.snubber_voltage_max * fbptval.curr_primary_peak * clCurTsPk * ivalue.freq_switch)/2.);
+    return ((clVoltageMax() * static_cast<double>(curr_primary_peak) * clCurTsPk * freq_switch)/2.);
 }
+
 /**
-  * @brief the snubber resistor value
-  * @param snubb^2/pwr_diss
-  * @retval resistor value
-  */
-double SwMosfet::clResValue(PMosfet &pmvalue)
+ * @brief clResValue - the snubber resistor value
+ * @return resistor value
+ */
+double SwMosfet::clResValue() const
 {
-    return pow(pmvalue.snubber_voltage_max, 2)/pmvalue.snubber_pwr_diss;
+    return std::pow(clVoltageMax(), 2)/clPowerDiss();
 }
+
 /**
-  * @brief the set maximum ripple of the snubber cap voltage
+  * @brief setSnubVoltRipple - the set maximum ripple of the snubber cap voltage
   * @param vrp - 5~10% ripple is reasonable
-  * @retval none
   */
 void SwMosfet::setSnubVoltRipple(double vrp)
 {
     clVolRip = vrp;
 }
+
 /**
-  * @brief the snubber capacitance value
-  * @param voltage max && ripple vol && snubb res && freq sw
-  * @retval capacitance value
-  */
-double SwMosfet::clCapValue(PMosfet &pmvalue, InputValue &ivalue)
+ * @brief clCapValue - the snubber capacitance value
+ * @return capacitance value
+ */
+double SwMosfet::clCapValue() const
 {
-    return pmvalue.snubber_voltage_max/(clVolRip * pmvalue.snubber_res_value * ivalue.freq_switch);
+    return clVoltageMax()/(clVolRip * clResValue() * freq_switch);
 }
+
 /**
-  * @brief set the maximum amplitude of the isense pin
-  * @param csv - the typical valuesthe typical values current-sense voltage
-  * @retval none
+  * @brief setVoltCurrSens - set the maximum amplitude of the isense pin
+  * @param csv - the typical values current-sense voltage
   */
 void SwMosfet::setVoltCurrSens(double csv)
 {
     csVoltCs = csv;
 }
+
 /**
-  * @brief the value of current resistor
-  * @param current peak prim side && cs voltage
-  * @retval the res value
-  */
-double SwMosfet::csCurrRes(const FBPT &fbptval)
+ * @brief csCurrRes - the value of current resistor
+ * @return the res value
+ */
+double SwMosfet::csCurrRes() const
 {
-    return csVoltCs/fbptval.curr_primary_peak;
+    return csVoltCs/static_cast<double>(curr_primary_peak);
 }
+
 /**
-  * @brief the current sense resistor loss
-  * @param rms primary curr && resistor value
-  * @retval the sense resistor loss
-  */
-double SwMosfet::csCurrResLoss(const FBPT &fbptval, PMosfet &pmvalue)
+ * @brief SwMosfet::csCurrResLoss - the current sense resistor loss
+ * @return the sense resistor loss
+ */
+double SwMosfet::csCurrResLoss() const
 {
-    return pow(fbptval.curr_primary_rms, 2) * pmvalue.curr_sense_res;
+    return std::pow(curr_primary_rms, 2) * csCurrRes();
 }
