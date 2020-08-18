@@ -9,6 +9,17 @@
 class SwMosfet
 {
 public:
+    /**
+     * @brief SwMosfet - class for power switch
+     * @param vmaxrmsin - maximum rms input voltage
+     * @param vminrmsin - minimum rms input voltage
+     * @param vref - actual reflected voltage pr. side
+     * @param spv - max voltage spike value, for pow switch
+     * @param eff - efficiency
+     * @param pout - all power output
+     * @param fsw - power switching frequency
+     * @param mdc - max duty cucle
+     */
     SwMosfet(int16_t vmaxrmsin, int16_t vminrmsin,
              int16_t vref, int16_t spv,
              float eff, float pout,
