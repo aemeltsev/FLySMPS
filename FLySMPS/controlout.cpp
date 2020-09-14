@@ -51,6 +51,7 @@ inline double PCSSM::coDCMCriticValue(float fsw) const
 /***********************F_m************************/
 /**
  * @brief coCurrDetectSlopeVolt - $S_{n}$ - the voltage slope when the primary-side current is detected on RS_s
+ *        The inductor rising slope.
  * @param rsense - the value of current sense resistor
  * @return
  */
@@ -218,6 +219,9 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
 }
 
 /**************************FCCD*************************/
+
+
+
 /**************************CCM**************************/
 /**
  * @brief coOptoTransfGain - $K_{c}$ -

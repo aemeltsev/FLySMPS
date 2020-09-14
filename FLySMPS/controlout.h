@@ -16,14 +16,14 @@ class PCSSM
 {
 public:
     /**
-     * @brief PCSSM
-     * @param tr
-     * @param lp
-     * @param lres
-     * @param vin
-     * @param vout
-     * @param cout
-     * @param esr
+     * @brief PCSSM - Power circuit small-signal sodel
+     * @param tr - Turns ratio
+     * @param lp - Primary inductance
+     * @param lres - Load resistance
+     * @param vin - Input voltage
+     * @param vout - Output voltage
+     * @param cout - Output capacitance
+     * @param esr - Parasitic ESR of output capacitor
      */
     PCSSM(float tr, double lp,
           float lres, int16_t vin,
@@ -34,7 +34,7 @@ public:
         voltout(vout), capout(cout),
         esrcap(esr)
     {
-
+        voltrat = voltout/voltin;
     }
     inline double coZeroOneAngFreq() const;
     inline double coPoleOneAngFreq() const;
@@ -51,7 +51,7 @@ public:
     inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
 
     /**
-     * @brief coGetExternAddVolt
+     * @brief coGetExternAddVolt - The compensation slope.
      * @param se
      */
     void coSetExternAddVolt(double se){sawvolt = se;}
@@ -68,7 +68,7 @@ private:
     int16_t voltout;
     double capout;
     double esrcap;
-    double voltrat = voltout/voltin;
+    double voltrat;
     double sawvolt; //S_e
 };
 
@@ -76,7 +76,7 @@ class FCCD
 {
 public:
     /**
-     * @brief FCCD
+     * @brief FCCD - Feedback compensation circuit design
      * @param ctr
      * @param rup
      * @param rdwn
@@ -97,7 +97,7 @@ public:
         rcap1(rc1), cap1(c1),
         rcap2(rc2), cap2(c2)
     {
-
+        resup = rdwn * static_cast<int16_t>((vout/S_VREF)) - 1;
     }
 
     inline double coOptoTransfGain(double fdrp) const; //K_c
@@ -113,7 +113,7 @@ private:
     int16_t voltout;
     int16_t resdown;
 
-    int16_t resup = static_cast<int16_t>(((voltout - S_VREF)/S_VREF));
+    int16_t resup;
     inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
     int16_t refres;
     double refcap;
