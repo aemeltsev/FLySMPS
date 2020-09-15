@@ -77,10 +77,9 @@ class FCCD
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
-     * @param ctr
-     * @param rup
-     * @param rdwn
-     * @param rdiode
+     * @param ctr - The current transfer ratio
+     * @param vout - Output voltage
+     * @param rdwn - Down resistor in voltage divider K_{d}
      * @param rrf
      * @param crf
      * @param rc1
@@ -88,12 +87,13 @@ public:
      * @param rc2
      * @param c2
      */
-    FCCD(double ctr, int16_t vout, int16_t rdwn,
-         int16_t rrf, double crf,
+
+    FCCD(double ctr, int16_t vout,
+         int16_t rrf, int16_t rdwn,
          int16_t rc1, double c1,
          int16_t rc2, double c2):
         optoctr(ctr), voltout(vout),
-        resdown(rdwn), refres(rrf), refcap(crf),
+        resdown(rdwn), refres(rrf),
         rcap1(rc1), cap1(c1),
         rcap2(rc2), cap2(c2)
     {
@@ -112,10 +112,10 @@ private:
     double optoctr;
     int16_t voltout;
     int16_t resdown;
+    int16_t refres;
 
     int16_t resup;
     inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
-    int16_t refres;
     double refcap;
     int16_t rcap1;
     double cap1;
