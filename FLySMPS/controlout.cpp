@@ -224,12 +224,95 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
 
 /**************************CCM**************************/
 /**
+ * @brief coOptoTransfFunct - $G_{opto}(s)$ -
+ * @param s
+ * @param fdrp
+ * @return
+ */
+inline double FCCD::coOptoTransfFunct(double s, double fdrp) const
+{
+    double tmp = 1/(1+(s/(2*S_PI*S_OPTO_POLE)));
+    return (refres/resoptdiode(fdrp))*tmp;
+}
+
+/**
+ * @brief coContrToOutTransfFunct - $G_{co}(s)$ -
+ * @param s
+ * @param capout
+ * @param esrcout
+ * @param resload
+ * @return
+ */
+inline double FCCD::coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const
+{
+    return (1+s*(capout*resload))/(1+s*capout*(resload+esrcout));
+}
+
+/**
+ * @brief coTransfFunct - $T_{s}(s)$ -
+ * @param s
+ * @param fdrp
+ * @param capout
+ * @param esrcout
+ * @param resload
+ * @return
+ */
+inline double FCCD::coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const
+{
+    return todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp));
+}
+
+/**
+ * @brief coResCap2 -
+ * @param s
+ * @param fdrp
+ * @param capout
+ * @param esrcout
+ * @param resload
+ */
+void FCCD::coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload)
+{
+    double index = std::pow(10, (-1*(todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp)))));
+    rcap2 = static_cast<int16_t>(resup*index);
+}
+
+/**
+ * @brief coCap1 -
+ */
+void FCCD::coCap1()
+{
+    if(rcap2 != NULL)
+    {
+        cap1 = (capout*capoutesr)/rcap2;
+    }
+    else
+    {
+        //sorry this bad way;
+    }
+}
+
+/**
+ * @brief coCap2 -
+ */
+void FCCD::coCap2()
+{
+    if(rcap2 != NULL)
+    {
+        cap1 = (capout*voltout)/(rcap2*static_cast<double>(curroutmax));
+    }
+    else
+    {
+        //sorry this bad way;
+    }
+}
+
+/**
  * @brief coOptoTransfGain - $K_{c}$ -
  * @return
  */
 inline double FCCD::coOptoTransfGain(double fdrp) const
 {
-    double kd = static_cast<double>(resdown)/static_cast<double>((resup+resdown));
+    double kd = resdown/static_cast<double>((resup+resdown));
     return (optoctr*kd*refres)/resoptdiode(fdrp);
 }
 
@@ -239,7 +322,7 @@ inline double FCCD::coOptoTransfGain(double fdrp) const
  */
 inline double FCCD::coTransfZero() const
 {
-    return 1/(rcap1*rcap2);
+    return 1/(cap1*rcap2);
 }
 
 /**
@@ -258,6 +341,15 @@ inline double FCCD::coTransfPoleOne() const
 inline double FCCD::coCCMTransfPoleZero() const
 {
     return 1/((cap1+cap2)*rcap1);
+}
+
+/**
+ * @brief coDCMTransfPoleZero - $\omega_{p0}$
+ * @return
+ */
+inline double FCCD::coDCMTransfPoleZero() const
+{
+    return 1/(cap1*rcap1);
 }
 
 /**

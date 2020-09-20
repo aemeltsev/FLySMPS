@@ -1,6 +1,7 @@
 #ifndef FLYSMPS_H
 #define FLYSMPS_H
 
+#include <QtWidgets>
 #include <QMainWindow>
 #include <QDebug>
 
@@ -14,6 +15,7 @@
 #include "diodeout.h"
 #include "capout.h"
 #include "outfilter.h"
+#include "controlout.h"
 
 namespace Ui {
 class FLySMPS;

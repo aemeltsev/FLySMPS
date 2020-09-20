@@ -6,6 +6,7 @@
 
 #define S_VREF       2.5      //V
 #define S_CURR_CATH  1.5*1E-3 //A
+#define S_OPTO_POLE  1000     //Hz
 enum PS_MODE
 {
     CCM_MODE,
@@ -25,14 +26,14 @@ public:
      * @param cout - Output capacitance
      * @param esr - Parasitic ESR of output capacitor
      */
-    PCSSM(float tr, double lp,
-          float lres, int16_t vin,
-          int16_t vout, double cout,
+    PCSSM(int16_t vin, int16_t vout,
+          float tr, float lres,
+          double lp, double cout,
           double esr):
-        turnrat(tr), priminduct(lp),
-        resload(lres), voltin(vin),
-        voltout(vout), capout(cout),
-        esrcap(esr)
+        priminduct(lp), capout(cout),
+        esrcap(esr), resload(lres),
+        turnrat(tr), voltin(vin),
+        voltout(vout)
     {
         voltrat = voltout/voltin;
     }
@@ -61,15 +62,15 @@ public:
     inline double coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode);
     inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
 private:
-    float turnrat;
     double priminduct;
-    float resload;
-    int16_t voltin;
-    int16_t voltout;
     double capout;
     double esrcap;
     double voltrat;
     double sawvolt; //S_e
+    float resload;
+    float turnrat;
+    int16_t voltin;
+    int16_t voltout;
 };
 
 class FCCD
@@ -77,28 +78,34 @@ class FCCD
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
-     * @param ctr - The current transfer ratio
      * @param vout - Output voltage
+     * @param rrf - Reference resistor in pwm side controller
      * @param rdwn - Down resistor in voltage divider K_{d}
-     * @param rrf
-     * @param crf
-     * @param rc1
-     * @param c1
-     * @param rc2
-     * @param c2
+     * @param ctr - The current transfer ratio
+     * @param cout - Output capacitor
+     * @param coutesr - Output capacitor ESR
+     * @param outcurr - Output current
      */
 
-    FCCD(double ctr, int16_t vout,
-         int16_t rrf, int16_t rdwn,
-         int16_t rc1, double c1,
-         int16_t rc2, double c2):
-        optoctr(ctr), voltout(vout),
-        resdown(rdwn), refres(rrf),
-        rcap1(rc1), cap1(c1),
-        rcap2(rc2), cap2(c2)
+    FCCD(int16_t vout, int16_t rrf,
+         int16_t rdwn, double ctr,
+         double cout, double coutesr, float outcurr
+         ):
+        capout(cout), capoutesr(coutesr),
+        optoctr(ctr), curroutmax(outcurr),
+        voltout(vout), resdown(rdwn),
+        refres(rrf)
     {
         resup = rdwn * static_cast<int16_t>((vout/S_VREF)) - 1;
     }
+
+    inline double coOptoTransfFunct(double s, double fdrp) const; //G_opto(s)
+    inline double coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const; //G_co(s)
+    inline double coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const; //T_{s}(s)
+
+    void coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload);
+    void coCap1();
+    void coCap2();
 
     inline double coOptoTransfGain(double fdrp) const; //K_c
     inline double coTransfZero() const; //omega_z
@@ -109,17 +116,21 @@ public:
     inline double coOptoFeedbTransfFunc(double s, PS_MODE mode); //G_c(s)
 
 private:
+    double capout;
+    double capoutesr;
     double optoctr;
+    double refcap;
+    float curroutmax;
     int16_t voltout;
     int16_t resdown;
     int16_t refres;
 
     int16_t resup;
-    inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
-    double refcap;
     int16_t rcap1;
-    double cap1;
     int16_t rcap2;
+    inline double todB(double input) const {return 20*std::log10(input);}
+    inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
+    double cap1;
     double cap2;
 };
 
