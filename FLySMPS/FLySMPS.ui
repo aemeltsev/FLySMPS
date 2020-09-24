@@ -3568,12 +3568,760 @@
         <x>20</x>
         <y>10</y>
         <width>661</width>
-        <height>181</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>Diode Out</string>
       </property>
+      <widget class="QLineEdit" name="lineEdit_152">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_130">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Second Power Out [W]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_153">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_131">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Second Voltage Out [V]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_154">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_132">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>60</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Turns Ratio</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_155">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_133">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>30</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Diode Reverse Voltage [V]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_156">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_134">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>30</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Power Diss [W]</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>100</y>
+        <width>661</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Capacitor Out</string>
+      </property>
+      <widget class="QLineEdit" name="lineEdit_234">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_269">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Voltage Ripple [V]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_235">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_270">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>ESR Perc</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_236">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_271">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Current Peak Out [A]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_237">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>30</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_272">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>30</y>
+         <width>121</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Capacitor Out Value [F]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_238">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_273">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>30</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Zero Freq Cap Out [Hz]</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_557">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Voltage Out [A]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_456">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>120</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_457">
+       <property name="geometry">
+        <rect>
+         <x>340</x>
+         <y>60</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_558">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>60</y>
+         <width>111</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Capacitor Out ESR [R]</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_559">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>90</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Current Out RMS [A]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_458">
+       <property name="geometry">
+        <rect>
+         <x>370</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_560">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>60</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Out Ripple Voltage [V]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_459">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_561">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>90</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Capacitor Out Loss [W]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_460">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_567">
+       <property name="geometry">
+        <rect>
+         <x>430</x>
+         <y>120</y>
+         <width>141</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cross Freq Cap Value [Hz]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_466">
+       <property name="geometry">
+        <rect>
+         <x>580</x>
+         <y>120</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_10">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>250</y>
+        <width>661</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>LC Filter Out</string>
+      </property>
+      <widget class="QLineEdit" name="lineEdit_451">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_552">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Frq [Hz]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_452">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>60</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_553">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>61</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cap Val [F]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_453">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_554">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Quality Factor</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_454">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_555">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>30</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ang Cut Freq [Hz]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_455">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_556">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>30</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ang Freq [Hz]</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_562">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>120</y>
+         <width>81</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Damping Ratio</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_461">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>120</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_563">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>60</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Ind Impedance</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_462">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_564">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>90</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Cap Impedance</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_463">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_565">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>120</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>CR Parall Resist</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_464">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>120</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_566">
+       <property name="geometry">
+        <rect>
+         <x>490</x>
+         <y>150</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Out Ripple Voltage</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_465">
+       <property name="geometry">
+        <rect>
+         <x>590</x>
+         <y>150</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_467">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_568">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>60</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Inductance [H]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_468">
+       <property name="geometry">
+        <rect>
+         <x>260</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_569">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>90</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Resist [R]</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_470">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>30</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_571">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>30</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Out Quality</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_471">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>60</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_572">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>60</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Out Damp Ratio</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEdit_472">
+       <property name="geometry">
+        <rect>
+         <x>420</x>
+         <y>90</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_573">
+       <property name="geometry">
+        <rect>
+         <x>320</x>
+         <y>90</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Out Cut Freq [Hz]</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_7">

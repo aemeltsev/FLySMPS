@@ -7,8 +7,10 @@
 class OutFilter
 {
 public:
-    OutFilter(int16_t fr, double cap, double qf = 0.707, double dr = 1.):
-        freq(fr), capacity(cap), qualfact(qf), damprat(dr)
+    OutFilter(int16_t fr, double cap,
+              double qf = 0.707, double dr = 1.):
+        freq(fr), capacity(cap),
+        qualfact(qf), damprat(dr)
     {}
 
     /**

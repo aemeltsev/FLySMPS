@@ -344,15 +344,6 @@ inline double FCCD::coCCMTransfPoleZero() const
 }
 
 /**
- * @brief coDCMTransfPoleZero - $\omega_{p0}$
- * @return
- */
-inline double FCCD::coDCMTransfPoleZero() const
-{
-    return 1/(cap1*rcap1);
-}
-
-/**
  * @brief coTransfPoleTwo - $\omega_{p2}$
  * @return
  */

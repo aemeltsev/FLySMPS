@@ -132,7 +132,7 @@ private:
     //Correction factor F. - the edge coefficient(FFC)
     double agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
                            FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=1.0);
+                           double k=1.0) const;
 
 public:
     /*Core Geometry Factor and Core Selection*/
@@ -158,9 +158,9 @@ public:
     /*Air-Gap Length Considered with Fringing Effect*/
 
     /*Recalc Np, Bm */
-    inline int16_t actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
-                          double varNumPrim, double ewff,
-                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
+    inline int16_t actNumPrimary(const CoreSelection &cs,
+                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double ewff,
+                          double varNumPrim, double varIndPrim, double currPeakPrim,
                           double k) const;
     /*Recalc Np, Bm */
 };

@@ -229,7 +229,7 @@ double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
  * @return
  */
 double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
-                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k)
+                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k) const
 {
     double csa, af, temp = 0.0;
     double u = ewff/agLength(cs, varNumPrim);
@@ -253,19 +253,19 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, dou
   * @param
   * @return
   */
-int16_t FBPTCore::actNumPrimary(const FBPT &fbptval, const CoreSelection &cs,
-                                double varNumPrim, double ewff,
-                                FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                                double k=1.0) const
+int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsag,
+                                MechDimension &mchdm, double ewff,
+                                double varNumPrim, double varIndPrim,
+                                double currPeakPrim, double k=1.0) const
 {
     int16_t act_num_prim_turns = 0;
     double ag, ffg, flux_peak = 0.0;
     do
     {
-        ag = agLength(fbptval, cs, varNumPrim);
-        ffg = agFringFluxFact(fbptval, ewff, fsag, mchdm, k);
-        act_num_prim_turns = static_cast<int16_t>(sqrt((ag*fbptval.primary_induct)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
-        flux_peak = (S_MU_Z * act_num_prim_turns * ffg * (fbptval.curr_primary_peak/2))/(ag+(cs.mean_mag_path_leng/cs.core_permeal));
+        ag = agLength(cs, varNumPrim);
+        ffg = agFringFluxFact(cs, varNumPrim, ewff, fsag, mchdm, k);
+        act_num_prim_turns = static_cast<int16_t>(sqrt((ag*varIndPrim)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
+        flux_peak = (S_MU_Z * act_num_prim_turns * ffg * (currPeakPrim/2))/(ag+(cs.mean_mag_path_leng/cs.core_permeal));
     }
     while(flux_peak > flux_dens_max);
     return act_num_prim_turns;
