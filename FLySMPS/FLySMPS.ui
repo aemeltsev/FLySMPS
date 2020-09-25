@@ -1963,12 +1963,6 @@
        <item row="6" column="2">
         <widget class="QLineEdit" name="lineEdit_180"/>
        </item>
-       <item row="5" column="7" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_184"/>
-       </item>
-       <item row="7" column="7" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_211"/>
-       </item>
        <item row="4" column="3">
         <widget class="QLineEdit" name="lineEdit_152"/>
        </item>
@@ -1992,9 +1986,6 @@
        </item>
        <item row="5" column="9">
         <widget class="QLineEdit" name="lineEdit_207"/>
-       </item>
-       <item row="6" column="7" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_208"/>
        </item>
        <item row="5" column="0">
         <widget class="QLabel" name="label_150">
@@ -2097,9 +2088,6 @@
        <item row="7" column="6">
         <widget class="QLineEdit" name="lineEdit_192"/>
        </item>
-       <item row="4" column="7" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_160"/>
-       </item>
        <item row="5" column="6">
         <widget class="QLineEdit" name="lineEdit_173"/>
        </item>
@@ -2139,9 +2127,6 @@
        </item>
        <item row="5" column="2">
         <widget class="QLineEdit" name="lineEdit_172"/>
-       </item>
-       <item row="8" column="7" colspan="2">
-        <widget class="QLineEdit" name="lineEdit_209"/>
        </item>
        <item row="7" column="5">
         <widget class="QLineEdit" name="lineEdit_201"/>
@@ -2214,6 +2199,21 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="7">
+        <widget class="QLineEdit" name="lineEdit_160"/>
+       </item>
+       <item row="5" column="7">
+        <widget class="QLineEdit" name="lineEdit_184"/>
+       </item>
+       <item row="6" column="7">
+        <widget class="QLineEdit" name="lineEdit_208"/>
+       </item>
+       <item row="7" column="7">
+        <widget class="QLineEdit" name="lineEdit_211"/>
+       </item>
+       <item row="8" column="7">
+        <widget class="QLineEdit" name="lineEdit_209"/>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -2224,363 +2224,303 @@
      <widget class="QGroupBox" name="groupBox_31">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>10</y>
-        <width>751</width>
-        <height>191</height>
+        <x>10</x>
+        <y>30</y>
+        <width>771</width>
+        <height>167</height>
        </rect>
       </property>
       <property name="title">
        <string>LC Filter Out</string>
       </property>
-      <widget class="QLineEdit" name="lineEdit_618">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>30</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_763">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Frq [Hz]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_619">
-       <property name="geometry">
-        <rect>
-         <x>80</x>
-         <y>60</y>
-         <width>61</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_764">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>61</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap Val [F]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_620">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>90</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_765">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>90</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Quality Factor</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_621">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>30</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_766">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>30</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Ang Cut Freq [Hz]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_622">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>30</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_767">
-       <property name="geometry">
-        <rect>
-         <x>490</x>
-         <y>30</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Ang Freq [Hz]</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_768">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>120</y>
-         <width>81</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Damping Ratio</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_623">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>120</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_769">
-       <property name="geometry">
-        <rect>
-         <x>490</x>
-         <y>60</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Ind Impedance</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_624">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>60</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_770">
-       <property name="geometry">
-        <rect>
-         <x>490</x>
-         <y>90</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap Impedance</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_625">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>90</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_771">
-       <property name="geometry">
-        <rect>
-         <x>490</x>
-         <y>120</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>CR Parall Resist</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_626">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>120</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_772">
-       <property name="geometry">
-        <rect>
-         <x>490</x>
-         <y>150</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Out Ripple Voltage</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_627">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>150</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_628">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>60</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_773">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>60</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Inductance [H]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_629">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>90</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_774">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>90</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Load Resist [R]</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_630">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
-         <y>30</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_775">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>30</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Out Quality</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_631">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
-         <y>60</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_776">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>60</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Out Damp Ratio</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineEdit_632">
-       <property name="geometry">
-        <rect>
-         <x>420</x>
-         <y>90</y>
-         <width>41</width>
-         <height>20</height>
-        </rect>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_777">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>90</y>
-         <width>91</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Out Cut Freq [Hz]</string>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_16">
+       <item row="3" column="8" colspan="2">
+        <widget class="QLineEdit" name="lineEdit_666"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_158">
+         <property name="text">
+          <string>Out3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="8" colspan="2">
+        <widget class="QLineEdit" name="lineEdit_664"/>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_776">
+         <property name="text">
+          <string>Damp Rat.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="6">
+        <widget class="QLineEdit" name="lineEdit_660"/>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLineEdit" name="lineEdit_655"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="lineEdit_647"/>
+       </item>
+       <item row="4" column="7">
+        <widget class="QLineEdit" name="lineEdit_667"/>
+       </item>
+       <item row="3" column="5">
+        <widget class="QLineEdit" name="lineEdit_661"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEdit_629"/>
+       </item>
+       <item row="1" column="8" colspan="2">
+        <widget class="QLineEdit" name="lineEdit_670"/>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="lineEdit_654"/>
+       </item>
+       <item row="2" column="5">
+        <widget class="QLineEdit" name="lineEdit_657"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_773">
+         <property name="text">
+          <string>Ind [H]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="12">
+        <widget class="QLineEdit" name="lineEdit_625"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEdit_621"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_775">
+         <property name="text">
+          <string>Quality</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="lineEdit_651"/>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLineEdit" name="lineEdit_662"/>
+       </item>
+       <item row="2" column="12">
+        <widget class="QLineEdit" name="lineEdit_678"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_156">
+         <property name="text">
+          <string>Out1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="lineEdit_630"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_157">
+         <property name="text">
+          <string>Out2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QLineEdit" name="lineEdit_648"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="lineEdit_623"/>
+       </item>
+       <item row="2" column="8" colspan="2">
+        <widget class="QLineEdit" name="lineEdit_668"/>
+       </item>
+       <item row="1" column="11">
+        <widget class="QLineEdit" name="lineEdit_624"/>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="lineEdit_632"/>
+       </item>
+       <item row="0" column="12">
+        <widget class="QLabel" name="label_772">
+         <property name="text">
+          <string>RippVolt.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="7">
+        <widget class="QLineEdit" name="lineEdit_663"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_155">
+         <property name="text">
+          <string>Out4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="12">
+        <widget class="QLineEdit" name="lineEdit_680"/>
+       </item>
+       <item row="2" column="7">
+        <widget class="QLineEdit" name="lineEdit_665"/>
+       </item>
+       <item row="1" column="10">
+        <widget class="QLineEdit" name="lineEdit_622"/>
+       </item>
+       <item row="4" column="5">
+        <widget class="QLineEdit" name="lineEdit_659"/>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLineEdit" name="lineEdit_650"/>
+       </item>
+       <item row="3" column="10">
+        <widget class="QLineEdit" name="lineEdit_676"/>
+       </item>
+       <item row="4" column="10">
+        <widget class="QLineEdit" name="lineEdit_674"/>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="lineEdit_633"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_774">
+         <property name="text">
+          <string>ResLoad [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="6">
+        <widget class="QLineEdit" name="lineEdit_658"/>
+       </item>
+       <item row="2" column="11">
+        <widget class="QLineEdit" name="lineEdit_675"/>
+       </item>
+       <item row="3" column="7">
+        <widget class="QLineEdit" name="lineEdit_669"/>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_777">
+         <property name="text">
+          <string>CutFreq [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="11">
+        <widget class="QLabel" name="label_771">
+         <property name="text">
+          <string>CRParallRes.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="11">
+        <widget class="QLineEdit" name="lineEdit_673"/>
+       </item>
+       <item row="4" column="11">
+        <widget class="QLineEdit" name="lineEdit_671"/>
+       </item>
+       <item row="0" column="10">
+        <widget class="QLabel" name="label_770">
+         <property name="text">
+          <string>CapImp.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="6">
+        <widget class="QLineEdit" name="lineEdit_656"/>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="lineEdit_652"/>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="lineEdit_653"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEdit_628"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="lineEdit_649"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="lineEdit_631"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_766">
+         <property name="text">
+          <string>ACF [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="10">
+        <widget class="QLineEdit" name="lineEdit_672"/>
+       </item>
+       <item row="3" column="12">
+        <widget class="QLineEdit" name="lineEdit_682"/>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_767">
+         <property name="text">
+          <string>AngFreq [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QLabel" name="label_769">
+         <property name="text">
+          <string>IndImp.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_763">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>51</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Frq [Hz]</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_618">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>10</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_764">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>10</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cap Val [F]</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_619">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>10</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_7">
