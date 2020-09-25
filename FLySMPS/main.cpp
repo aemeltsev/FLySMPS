@@ -8,7 +8,7 @@
 #include <QLoggingCategory>
 
 //Pointer to log file
-QScopedPointer<QFile> fbsmps_log;
+static QScopedPointer<QFile> fbsmps_log;
 
 //Handler protopype
 void messageHandler(QtMsgType type, const QMessageLogContext &context,
