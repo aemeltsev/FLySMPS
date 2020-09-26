@@ -147,7 +147,7 @@ inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fs
 }
 /**********************CCM****************************/
 /**
- * @brief coDCMZeroTwoAngFreq - $\omega_{zrhp}$ -
+ * @brief coCCMZeroTwoAngFreq - $\omega_{zrhp}$ -
  * @param duty
  * @return
  */
@@ -158,7 +158,7 @@ inline double PCSSM::coCCMZeroTwoAngFreq(double duty) const
 }
 
 /**
- * @brief coDCMPoleTwoAngFreq - $\omega_{o}$ -
+ * @brief coCCMPoleTwoAngFreq - $\omega_{o}$ -
  * @param duty
  * @return
  */
@@ -219,9 +219,6 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
 }
 
 /**************************FCCD*************************/
-
-
-
 /**************************CCM**************************/
 /**
  * @brief coOptoTransfFunct - $G_{opto}(s)$ -
@@ -352,6 +349,12 @@ inline double FCCD::coTransfPoleTwo() const
     return (cap1+cap2)/(cap1*cap2*rcap2);
 }
 
+/**
+ * @brief coOptoFeedbTransfFunc -
+ * @param s
+ * @param mode
+ * @return
+ */
 inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
 {
     double result = 0.0;

@@ -91,20 +91,23 @@ private:
      */
     inline double ofCapImpedance(int16_t frq){return 1/(ofAngularFreq(frq) * capacity);}
     /**
-      * @brief
-      */
+     * @brief ofCRParallResist - parallel resistance C and R
+     * @param frq - frequency
+     * @return
+     */
     inline double ofCRParallResist(int16_t frq)
     {
         return (ofCapImpedance(frq)*ofLoadResistance())/(ofCapImpedance(frq)+ofLoadResistance());
     }
     /**
-      * @brief
-      */
+     * @brief ofFilterGainDB - Gain in decibels
+     * @param frq - frequency
+     * @return
+     */
     inline double ofFilterGainDB(int16_t frq)
     {
         return 20*std::log(std::abs(ofCRParallResist(frq)/(ofCRParallResist(frq)+ofIndImpedance(frq))));
     }
-
 
     int16_t freq;
     double capacity;

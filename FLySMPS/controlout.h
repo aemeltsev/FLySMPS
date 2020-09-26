@@ -17,7 +17,7 @@ class PCSSM
 {
 public:
     /**
-     * @brief PCSSM - Power circuit small-signal sodel
+     * @brief PCSSM - Power circuit small-signal model
      * @param tr - Turns ratio
      * @param lp - Primary inductance
      * @param lres - Load resistance
@@ -37,30 +37,30 @@ public:
     {
         voltrat = voltout/voltin;
     }
-    inline double coZeroOneAngFreq() const;
-    inline double coPoleOneAngFreq() const;
-    /************CCM***********/
-    inline double coDCMZeroTwoAngFreq() const;
-    inline double coDCMPoleTwoAngFreq() const;
-    inline double coDCMCriticValue(float fsw) const;
+    inline double coZeroOneAngFreq() const; //\omega_{zc}
+    inline double coPoleOneAngFreq() const; //\omega_{rc}
     /************DCM***********/
-    inline double coCCMZeroTwoAngFreq(double duty) const;
-    inline double coCCMPoleTwoAngFreq(double duty) const;
-    inline double coCCMVoltGainCoeff(double duty) const;
-    inline double coCCMCurrGainCoeff(double duty) const;
-    inline double coCCMQualityFact(double duty) const;
-    inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty);
+    inline double coDCMZeroTwoAngFreq() const; //\omega_{zrhp}
+    inline double coDCMPoleTwoAngFreq() const; //\omega_{p2}
+    inline double coDCMCriticValue(float fsw) const; //K_{vd}
+    /************CCM***********/
+    inline double coCCMZeroTwoAngFreq(double duty) const; //\omega_{zrhp}
+    inline double coCCMPoleTwoAngFreq(double duty) const; //\omega_{o}
+    inline double coCCMVoltGainCoeff(double duty) const; //K_{vd}
+    inline double coCCMCurrGainCoeff(double duty) const; //K_{id}
+    inline double coCCMQualityFact(double duty) const; //Q
+    inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty); //G_{id}(s)
 
     /**
      * @brief coGetExternAddVolt - The compensation slope.
      * @param se
      */
     void coSetExternAddVolt(double se){sawvolt = se;}
-    inline double coCurrDetectSlopeVolt(double rsense) const;
-    inline double coTimeConst(float fsw) const;
-    inline double coGainCurrModeContrModulator(double rsense, float fsw) const;
-    inline double coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode);
-    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode);
+    inline double coCurrDetectSlopeVolt(double rsense) const; //S_{n}
+    inline double coTimeConst(float fsw) const; //\tau_{L}
+    inline double coGainCurrModeContrModulator(double rsense, float fsw) const; //F_{m}
+    inline double coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode); //G_{vd}(s)
+    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode); //G_{vc}(s)
 private:
     double priminduct;
     double capout;
