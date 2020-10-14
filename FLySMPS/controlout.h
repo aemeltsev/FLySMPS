@@ -2,6 +2,7 @@
 #define CONTROLOUT_H
 #include <cmath>
 #include <cstdint>
+#include <map>
 #include <structdata.h>
 
 #define S_VREF       2.5      //V
@@ -63,11 +64,13 @@ public:
     PCSSM(int16_t vin, int16_t vout,
           float tr, float lres,
           double lp, double cout,
-          double esr):
+          double esr, double dt,
+          double rsn, float frqsw):
         priminduct(lp), capout(cout),
-        esrcap(esr), resload(lres),
-        turnrat(tr), voltin(vin),
-        voltout(vout)
+        esrcap(esr), duty(dt),
+        rsense(rsn), fsw(frqsw),
+        resload(lres),turnrat(tr),
+        voltin(vin),voltout(vout)
     {
         voltrat = voltout/voltin;
     }
@@ -78,29 +81,33 @@ public:
     inline double coDCMPoleTwoAngFreq() const; //\omega_{p2}
     inline double coDCMCriticValue(float fsw) const; //K_{vd}
     /************CCM***********/
-    inline double coCCMZeroTwoAngFreq(double duty) const; //\omega_{zrhp}
-    inline double coCCMPoleTwoAngFreq(double duty) const; //\omega_{o}
-    inline double coCCMVoltGainCoeff(double duty) const; //K_{vd}
-    inline double coCCMCurrGainCoeff(double duty) const; //K_{id}
-    inline double coCCMQualityFact(double duty) const; //Q
-    inline double coCCMDutyToInductCurrTrasfFunct(double s, double duty); //G_{id}(s)
+    inline double coCCMZeroTwoAngFreq() const; //\omega_{zrhp}
+    inline double coCCMPoleTwoAngFreq() const; //\omega_{o}
+    inline double coCCMVoltGainCoeff() const; //K_{vd}
+    inline double coCCMCurrGainCoeff() const; //K_{id}
+    inline double coCCMQualityFact() const; //Q
+    inline double coCCMDutyToInductCurrTrasfFunct(double s); //G_{id}(s)
 
     /**
      * @brief coGetExternAddVolt - The compensation slope.
      * @param se
      */
     void coSetExternAddVolt(double se){sawvolt = se;}
-    inline double coCurrDetectSlopeVolt(double rsense) const; //S_{n}
-    inline double coTimeConst(float fsw) const; //\tau_{L}
-    inline double coGainCurrModeContrModulator(double rsense, float fsw) const; //F_{m}
-    inline double coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode); //G_{vd}(s)
-    inline double coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode); //G_{vc}(s)
+    inline double coCurrDetectSlopeVolt() const; //S_{n}
+    inline double coTimeConst() const; //\tau_{L}
+    inline double coGainCurrModeContrModulator() const; //F_{m}
+    inline double coDutyToOutTrasfFunct(double s, PS_MODE mode); //G_{vd}(s)
+    inline double coControlToOutTransfFunct(double s, PS_MODE mode); //G_{vc}(s)
+    void coPlotArray(std::map<int16_t, double>* tabmap, PS_MODE mode, int16_t begin, int16_t end, int16_t step);
 private:
     double priminduct;
     double capout;
     double esrcap;
     double voltrat;
     double sawvolt; //S_e
+    double duty;
+    double rsense;
+    float fsw;
     float resload;
     float turnrat;
     int16_t voltin;

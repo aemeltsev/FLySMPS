@@ -55,7 +55,7 @@ inline double PCSSM::coDCMCriticValue(float fsw) const
  * @param rsense - the value of current sense resistor
  * @return
  */
-inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
+inline double PCSSM::coCurrDetectSlopeVolt() const
 {
     return (voltin*rsense)/priminduct;
 }
@@ -65,7 +65,7 @@ inline double PCSSM::coCurrDetectSlopeVolt(double rsense) const
  * @param fsw
  * @return
  */
-inline double PCSSM::coTimeConst(float fsw) const
+inline double PCSSM::coTimeConst() const
 {
     return (2*priminduct*static_cast<double>(fsw))/(std::pow(turnrat,2)*static_cast<double>(resload));
 }
@@ -76,9 +76,9 @@ inline double PCSSM::coTimeConst(float fsw) const
  * @param fsw - the switch frequency
  * @return
  */
-inline double PCSSM::coGainCurrModeContrModulator(double rsense, float fsw) const
+inline double PCSSM::coGainCurrModeContrModulator() const
 {
-    return 1/((coCurrDetectSlopeVolt(rsense)+sawvolt)*coTimeConst(fsw));
+    return 1/((coCurrDetectSlopeVolt()+sawvolt)*coTimeConst());
 }
 /**********************OUT*************************/
 /**
@@ -89,7 +89,7 @@ inline double PCSSM::coGainCurrModeContrModulator(double rsense, float fsw) cons
  * @param mode
  * @return
  */
-inline double PCSSM::coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_MODE mode)
+inline double PCSSM::coDutyToOutTrasfFunct(double s, PS_MODE mode)
 {
     double result = 0.0;
     double num1 = 0.0;
@@ -106,11 +106,11 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_
     }
     else if(mode == CCM_MODE)
     {
-        num1 = 1-(s/coCCMZeroTwoAngFreq(duty));
+        num1 = 1-(s/coCCMZeroTwoAngFreq());
         num2 = 1+(s/coZeroOneAngFreq());
-        dnm1 = s/(coCCMQualityFact(duty)*coCCMPoleTwoAngFreq(duty));
-        dnm2 = std::pow((s/coCCMPoleTwoAngFreq(duty)),2);
-        result = coCCMVoltGainCoeff(duty)*((num1*num2)/(1+dnm1+dnm2));
+        dnm1 = s/(coCCMQualityFact()*coCCMPoleTwoAngFreq());
+        dnm2 = std::pow((s/coCCMPoleTwoAngFreq()),2);
+        result = coCCMVoltGainCoeff()*((num1*num2)/(1+dnm1+dnm2));
     }
     else
     {
@@ -126,18 +126,18 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s, float fsw, double duty, PS_
  * @param fsw
  * @return
  */
-inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fsw, double duty, PS_MODE mode)
+inline double PCSSM::coControlToOutTransfFunct(double s, PS_MODE mode)
 {
     double result = 0.0;
     double dnm = 0.0;
     if(mode == DCM_MODE)
     {
-        result = coDutyToOutTrasfFunct(s, fsw, duty, mode)*coGainCurrModeContrModulator(rsense, fsw);
+        result = coDutyToOutTrasfFunct(s, mode)*coGainCurrModeContrModulator();
     }
     else if(mode == CCM_MODE)
     {
-        dnm = coGainCurrModeContrModulator(rsense, fsw)*rsense*coCCMDutyToInductCurrTrasfFunct(s, duty);
-        result = (coGainCurrModeContrModulator(rsense, fsw)*coDutyToOutTrasfFunct(s, fsw, duty, mode))/(1+dnm);
+        dnm = coGainCurrModeContrModulator()*rsense*coCCMDutyToInductCurrTrasfFunct(s);
+        result = (coGainCurrModeContrModulator()*coDutyToOutTrasfFunct(s, mode))/(1+dnm);
     }
     else
     {
@@ -151,7 +151,7 @@ inline double PCSSM::coControlToOutTransfFunct(double s, double rsense, float fs
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMZeroTwoAngFreq(double duty) const
+inline double PCSSM::coCCMZeroTwoAngFreq() const
 {
     double tmp = std::pow(turnrat,2)*std::pow((1-duty),2)*static_cast<double>(resload);
     return tmp/(duty*priminduct);
@@ -162,7 +162,7 @@ inline double PCSSM::coCCMZeroTwoAngFreq(double duty) const
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMPoleTwoAngFreq(double duty) const
+inline double PCSSM::coCCMPoleTwoAngFreq() const
 {
     double tmp = static_cast<double>(turnrat)/(std::sqrt(capout*priminduct));
     double num = std::pow((1-duty),2);
@@ -175,7 +175,7 @@ inline double PCSSM::coCCMPoleTwoAngFreq(double duty) const
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMVoltGainCoeff(double duty) const
+inline double PCSSM::coCCMVoltGainCoeff() const
 {
     return static_cast<double>(voltin)/(static_cast<double>(turnrat)*(std::pow((1-duty),2)));
 }
@@ -185,7 +185,7 @@ inline double PCSSM::coCCMVoltGainCoeff(double duty) const
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMCurrGainCoeff(double duty) const
+inline double PCSSM::coCCMCurrGainCoeff() const
 {
     double tmp = 1+(2*duty/(1-duty));
     double dnm = std::pow((1-duty),2);
@@ -198,7 +198,7 @@ inline double PCSSM::coCCMCurrGainCoeff(double duty) const
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMQualityFact(double duty) const
+inline double PCSSM::coCCMQualityFact() const
 {
     double dnm1 = priminduct/(std::pow(static_cast<double>(turnrat),2)*std::pow((1-duty),2)*static_cast<double>(resload));
     double dnm2 = esrcap*static_cast<double>(resload);
@@ -211,11 +211,19 @@ inline double PCSSM::coCCMQualityFact(double duty) const
  * @param duty
  * @return
  */
-inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s, double duty)
+inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s)
 {
     double num = 1+(s/coPoleOneAngFreq());
-    double dnm = 1+(s/(coCCMQualityFact(duty)*coCCMPoleTwoAngFreq(duty)))+std::pow((s/coCCMPoleTwoAngFreq(duty)),2);
-    return coCCMCurrGainCoeff(duty)*(num/dnm);
+    double dnm = 1+(s/(coCCMQualityFact()*coCCMPoleTwoAngFreq()))+std::pow((s/coCCMPoleTwoAngFreq()),2);
+    return coCCMCurrGainCoeff()*(num/dnm);
+}
+
+void PCSSM::coPlotArray(std::map<int16_t, double> *tabmap, PS_MODE mode, int16_t begin, int16_t end, int16_t step)
+{
+    for(ptrdiff_t ind=begin; ind<end; ind+=step)
+    {
+        tabmap->insert(std::pair<int16_t, double>(ind, coControlToOutTransfFunct(ind, mode)));
+    }
 }
 
 /**************************FCCD*************************/
