@@ -17,6 +17,40 @@ class PCSSM
 {
 public:
     /**
+     *                               ccm
+     *
+     *                (\omega_{rc})(\omega_{o})----
+     *                                   |          \
+     *                                   Q-----------> G_{id}(s)----------
+     *                                              /                      \
+     *                                   K_{id}-----                        \
+     *                                                                       \
+     * (\omega_{zc})(\omega_{zrhp})(\omega_{o})----                           \
+     *                                              \                          \
+     *                                   Q-----------> G_{vd}(s)----------------> G_{vc}(s)
+     *                                              /                          /
+     *                                   K_{vd}----                           /
+     *                                                                       /
+     *                                                  F_{m}---------------
+     *                                                                     /
+     *                                                  R_{s}-------------
+     *
+     *                               dcm
+     *
+     *                ---->(\omega_{zrhp})------\
+     *              |                            \
+     *              |                             \
+     *        M ---- ---->(\omega_{p2})----------- \
+     *                                              \
+     *                     (\omega_{zc})-------------> G_{vd}(s)----------------> G_{vc}(s)
+     *                                              /                          /
+     *                     (\omega_{rc})-----------/                          /
+     *                                            /                          /
+     *                                           /                          /
+     *        K-----------> K_{vd}--------------/                          /
+     *                                                                    /
+     *                                                 F_{m}-------------
+     *
      * @brief PCSSM - Power circuit small-signal model
      * @param tr - Turns ratio
      * @param lp - Primary inductance

@@ -11,6 +11,5 @@ FLySMPS::FLySMPS(QWidget *parent) :
 
 FLySMPS::~FLySMPS()
 {
-    delete ui;
 }
 

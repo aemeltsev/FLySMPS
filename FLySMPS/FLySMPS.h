@@ -34,7 +34,7 @@ public:
 
 
 private:
-    Ui::FLySMPS *ui;
+    QScopedPointer<Ui::FLySMPS> ui;
 
     InputValue ivl;
     DBridge dbr;
