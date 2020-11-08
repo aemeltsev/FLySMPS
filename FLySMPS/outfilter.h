@@ -1,9 +1,12 @@
 #ifndef OUTFILTER_H
 #define OUTFILTER_H
+#include <QtMath>
+#include <QVector>
 #include <cmath>
 #include <cstdint>
-#include <map>
-#include <structdata.h>
+
+#define M_J        -1
+#define M_PI_DEG    180
 
 class OutFilter
 {
@@ -13,26 +16,24 @@ public:
      * @param fr -
      * @param cap -
      */
-    OutFilter(int16_t fr, double cap
-              /*double qf = 0.707, double dr = 1.*/):
+    OutFilter(int16_t fr, double cap):
         freq(fr), capacity(cap)
-        /*qualfact(qf), damprat(dr)*/
     {}
     /**
      * @brief ofAngularCutFreq - Filter angular cut frequency
      * @return
      */
-    inline double ofAngularCutFreq() const {return 2*S_PI*freq;}
-    /**
-     * @brief ofInductance - Inductance in H
-     * @return
-     */
-    inline double ofInductance() const {return  1/(pow((ofAngularCutFreq()),2) * capacity);}
+    inline double ofAngularCutFreq() const {return 2*M_PI*freq;}
     /**
      * @brief ofLoadResistance - Resistance in Ohms
      * @return
      */
-    inline double ofLoadResistance() const {return 1/(sqrt(2) * capacity * ofAngularCutFreq());}
+    inline double ofLoadResistance() const {return 1./(M_SQRT2 * capacity * ofAngularCutFreq());}
+    /**
+     * @brief ofInductance - Inductance in H
+     * @return
+     */
+    inline double ofInductance() const {return  (ofLoadResistance() * M_SQRT2)/(ofAngularCutFreq());}
     /******************************************************************/
     /**
      * @brief ofQualityFactor - Q factor
@@ -48,7 +49,7 @@ public:
      * @brief ofCutOffFreq - Cutoff Frequency
      * @return
      */
-    inline double ofCutOffFreq(){return 1./sqrt(capacity * ofInductance());}
+    inline double ofCutOffFreq(){return 1./(2*M_PI*qSqrt(capacity * ofInductance()));}
     /**
      * @brief ofOutRipplVolt - Output ripple voltage
      * @return
@@ -64,55 +65,45 @@ public:
      * @param end - end frequency point
      * @param step - frequency step
      */
-    void ofPlotArray(std::map<int16_t, double>* tabmap, int16_t begin, int16_t end, int16_t step)
+    void ofPlotArray(QVector<double> &magnitudevector, QVector<double> &phasevector, int16_t begin, int16_t end, int16_t step)
     {
         for(int16_t ind=begin; ind<end; ind+=step)
         {
-            tabmap->insert(std::pair<int16_t, double>(ind, ofFilterGainDB(ind)));
+            magnitudevector.push_back(ofTransFuncGainDB(ind));
+            phasevector.push_back(ofTransfFuncPhase(ind));
         }
     }
 private:
     /**
-     * @brief ofAngularFreq - Angular cut frequency
-     * @param frq - frequency
+     * @brief ofTransferFunc
+     * @param frq
      * @return
      */
-    inline double ofAngularFreq(int16_t frq) const {return 2*S_PI*frq;}
-    /**
-     * @brief ofIndImpedance - Inductor impedances using Euler's formula
-     * @param frq - frequency
-     * @return
-     */
-    inline double ofIndImpedance(int16_t frq){return ofAngularFreq(frq) * ofInductance();}
-    /**
-     * @brief ofCapImpedance - Complex resistance or "impedance" Cap
-     * @param frq - frequency
-     * @return
-     */
-    inline double ofCapImpedance(int16_t frq){return 1/(ofAngularFreq(frq) * capacity);}
-    /**
-     * @brief ofCRParallResist - parallel resistance C and R
-     * @param frq - frequency
-     * @return
-     */
-    inline double ofCRParallResist(int16_t frq)
+    inline double ofTransferFunc(int16_t frq)
     {
-        return (ofCapImpedance(frq)*ofLoadResistance())/(ofCapImpedance(frq)+ofLoadResistance());
+        return 1./qSqrt(1 + qPow(((2*M_PI*frq)/ofAngularCutFreq()), 4));
     }
     /**
      * @brief ofFilterGainDB - Gain in decibels
      * @param frq - frequency
      * @return
      */
-    inline double ofFilterGainDB(int16_t frq)
+    inline double ofTransFuncGainDB(int16_t frq)
     {
-        return 20*std::log(std::abs(ofCRParallResist(frq)/(ofCRParallResist(frq)+ofIndImpedance(frq))));
+        return 20*std::log10(ofTransferFunc(frq));
+    }
+    /**
+     * @brief ofTransfFuncPhase
+     * @param frq
+     * @return
+     */
+    inline double ofTransfFuncPhase(int16_t frq)
+    {
+        return M_J*(qAtan((2*M_PI*frq)/ofAngularCutFreq())*(M_PI_DEG/M_PI));
     }
 
-    int16_t freq;
-    double capacity;
-    //double qualfact;
-    //double damprat;
+    int16_t freq=0;
+    double capacity=0;
 };
 
 #endif // OUTFILTER_H
