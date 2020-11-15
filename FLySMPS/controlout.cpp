@@ -202,7 +202,7 @@ inline double PCSSM::coCCMQualityFact() const
 {
     double dnm1 = priminduct/(std::pow(static_cast<double>(turnrat),2)*std::pow((1-duty),2)*static_cast<double>(resload));
     double dnm2 = esrcap*static_cast<double>(resload);
-    return 1/(coCCMPoleTwoAngFreq(duty)*(dnm1+dnm2));
+    return 1/(coCCMPoleTwoAngFreq()*(dnm1+dnm2));
 }
 
 /**
