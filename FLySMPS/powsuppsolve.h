@@ -75,30 +75,38 @@ signals:
         double curr_sense_res_loss;
     };
 
-    struct OutDiode
+    struct ODiode
     {
-        double sec_pow_out;
-        double sec_voltage_out;
-        double turn_ratio;
-
         double diode_rev_voltage;
         double diode_pow_diss;
     };
 
-    struct OutCap
+    struct FullOutDiode
     {
-        double sec_voltage_ripple;
-        double sec_esr_perc;
-        double sec_curr_out;
-        double sec_voltage_out;
-        double sec_crfq_value;
+        double sec_out_pwr;
+        int16_t sec_out_voltage;
+        double turn_ratio;
+        ODiode doout;
+    };
 
+    struct OCap
+    {
         double cap_value_out;
         double cap_esr_out;
         double cap_curr_rms;
         double cap_zfc_out;
         double cap_rippl_volr_out;
         double cap_out_loss;
+    };
+
+    struct FullOutCap
+    {
+        double sec_voltage_ripple;
+        double sec_esr_perc;
+        double sec_crfq_value;
+        int16_t sec_curr_peak;
+        int16_t sec_out_voltage;
+        OCap capout;
     };
 
 private:

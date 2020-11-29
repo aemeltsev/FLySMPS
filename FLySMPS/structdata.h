@@ -34,6 +34,10 @@ struct InputValue
     double volt_diode_drop_sec;
     double volt_diode_drop_bridge;
     double leakage_induct;
+    //for cap out
+    double sec_voltage_ripple;
+    double sec_esr_perc;
+    double sec_crfq_value;
 };
 
 struct FBPT
