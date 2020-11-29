@@ -35,33 +35,7 @@ struct InputValue
     double volt_diode_drop_bridge;
     double leakage_induct;
 };
-//
-struct DBridge
-{
-    double diode_peak_curr;
-    double diode_rms_curr;
-    double diode_avg_curr;
-    double diode_rms_curr_tot;
-    double load_avg_curr;
-    double diode_curr_slope;
-    double diode_cond_time;
-    double in_min_rms_voltage;
-    double in_max_rms_voltage;
-};
-//
-struct BCap
-{
-    double delta_t;
-    double charg_time;
-    double bcapacitor_value;
-    double load_curr_max;
-    double load_curr_min;
-    double bcapacitor_peak_curr;
-    double bcapacitor_rms_curr;
-    double input_min_voltage;
-    double input_dc_min_voltage;
-};
-//
+
 struct FBPT
 {
     double max_duty_cycle;//Max duty cycle
@@ -88,26 +62,6 @@ struct FBPT
 
     double actual_volt_reflected;//Recalc reflected voltage
     double actual_max_duty_cycle;//Recalc maximum duty cycle
-};
-//
-struct PMosfet
-{
-    double mosfet_voltage_nom;
-    double mosfet_voltage_max;
-    double mosfet_rise_time;
-
-    double mosfet_conduct_loss;
-    double mosfet_drive_loss;
-    double mosfet_switch_loss;
-    double mosfet_capacit_loss;
-
-    double snubber_voltage_max;
-    double snubber_pwr_diss;
-    double snubber_res_value;
-    double snubber_cap_value;
-
-    double curr_sense_res;
-    double curr_sense_res_loss;
 };
 
 #endif // STRUCTDATA_H

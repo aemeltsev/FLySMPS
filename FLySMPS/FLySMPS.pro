@@ -35,6 +35,7 @@ SOURCES += \
     diodebridge.cpp \
     bulkcap.cpp \
     outfilter.cpp \
+    powsuppsolve.cpp \
     swmosfet.cpp
 
 HEADERS += \
@@ -47,6 +48,7 @@ HEADERS += \
     diodeout.h \
     fbptransformer.h \
     outfilter.h \
+    powsuppsolve.h \
     structdata.h \
     swmosfet.h
 
