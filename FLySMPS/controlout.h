@@ -1,9 +1,8 @@
 #ifndef CONTROLOUT_H
 #define CONTROLOUT_H
+#include <QVector>
 #include <cmath>
 #include <cstdint>
-#include <map>
-#include <structdata.h>
 
 #define S_VREF       2.5      //V
 #define S_CURR_CATH  1.5*1E-3 //A
@@ -98,7 +97,7 @@ public:
     inline double coGainCurrModeContrModulator() const; //F_{m}
     inline double coDutyToOutTrasfFunct(double s, PS_MODE mode); //G_{vd}(s)
     inline double coControlToOutTransfFunct(double s, PS_MODE mode); //G_{vc}(s)
-    void coPlotArray(std::map<int16_t, double>* tabmap, PS_MODE mode, int16_t begin, int16_t end, int16_t step);
+    void coPlotArray(QVector<double>& tabvector, PS_MODE mode, int16_t begin, int16_t end, int16_t step);
 private:
     double priminduct;
     double capout;
@@ -145,8 +144,8 @@ public:
     inline double coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const; //T_{s}(s)
 
     void coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload);
-    void coCap1();
-    void coCap2();
+    double coCap1();
+    double coCap2();
 
     inline double coOptoTransfGain(double fdrp) const; //K_c
     inline double coTransfZero() const; //omega_z
@@ -163,16 +162,14 @@ private:
     double refcap;
     float curroutmax;
     int16_t voltout;
-    int16_t resdown;
+    int16_t resdown; //resistor value in the divider, set in the constructor(down resistor)
     int16_t refres;
+    int16_t resup; //resistor value in the output voltage divider(up resistor)
 
-    int16_t resup;
-    int16_t rcap1;
-    int16_t rcap2;
+    //int16_t res_cap1;
+    int16_t res_cap2;
     inline double todB(double input) const {return 20*std::log10(input);}
-    inline double resoptdiode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
-    double cap1;
-    double cap2;
+    inline double res_optic_diode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
 };
 
 #endif // CONTROLOUT_H

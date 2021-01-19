@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -2260,7 +2260,7 @@
        <item row="0" column="2">
         <widget class="QLabel" name="label_774">
          <property name="text">
-          <string>Res. Load [R]</string>
+          <string>Cap Val [F]</string>
          </property>
         </widget>
        </item>
@@ -2319,7 +2319,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Cap Val [F]</string>
+       <string>Res. Load [R]</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_619">

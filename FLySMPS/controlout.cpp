@@ -227,169 +227,163 @@ void PCSSM::coPlotArray(std::map<int16_t, double> *tabmap, PS_MODE mode, int16_t
 }
 
 /**************************FCCD*************************/
+
+
 /**************************CCM**************************/
-/**
- * @brief coOptoTransfFunct - $G_{opto}(s)$ -
- * @param s
- * @param fdrp
- * @return
- */
-inline double FCCD::coOptoTransfFunct(double s, double fdrp) const
-{
-    double tmp = 1/(1+(s/(2*S_PI*S_OPTO_POLE)));
-    return (refres/resoptdiode(fdrp))*tmp;
-}
+///**
+// * @brief coOptoTransfFunct - $G_{opto}(s)$ -
+// * @param s
+// * @param fdrp
+// * @return
+// */
+//inline double FCCD::coOptoTransfFunct(double s, double fdrp) const
+//{
+//    double tmp = 1/(1+(s/(2*S_PI*S_OPTO_POLE)));
+//    return (refres/resoptdiode(fdrp))*tmp;
+//}
 
-/**
- * @brief coContrToOutTransfFunct - $G_{co}(s)$ -
- * @param s
- * @param capout
- * @param esrcout
- * @param resload
- * @return
- */
-inline double FCCD::coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const
-{
-    return (1+s*(capout*resload))/(1+s*capout*(resload+esrcout));
-}
+///**
+// * @brief coContrToOutTransfFunct - $G_{co}(s)$ -
+// * @param s
+// * @param capout
+// * @param esrcout
+// * @param resload
+// * @return
+// */
+//inline double FCCD::coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const
+//{
+//    return (1+s*(capout*resload))/(1+s*capout*(resload+esrcout));
+//}
 
-/**
- * @brief coTransfFunct - $T_{s}(s)$ -
- * @param s
- * @param fdrp
- * @param capout
- * @param esrcout
- * @param resload
- * @return
- */
-inline double FCCD::coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const
-{
-    return todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp));
-}
+///**
+// * @brief coTransfFunct - $T_{s}(s)$ -
+// * @param s
+// * @param fdrp
+// * @param capout
+// * @param esrcout
+// * @param resload
+// * @return
+// */
+//inline double FCCD::coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const
+//{
+//    return todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp));
+//}
 
-/**
- * @brief coResCap2 -
- * @param s
- * @param fdrp
- * @param capout
- * @param esrcout
- * @param resload
- */
-void FCCD::coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload)
-{
-    double index = std::pow(10, (-1*(todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp)))));
-    rcap2 = static_cast<int16_t>(resup*index);
-}
+///**
+// * @brief coResCap2 -
+// * @param s
+// * @param fdrp
+// * @param capout
+// * @param esrcout
+// * @param resload
+// */
+//void FCCD::coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload)
+//{
+//    double index = std::pow(10, (-1*(todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp)))));
+//    res_cap2 = static_cast<int16_t>(resup*index);
+//}
 
-/**
- * @brief coCap1 -
- */
-void FCCD::coCap1()
-{
-    if(rcap2 != NULL)
-    {
-        cap1 = (capout*capoutesr)/rcap2;
-    }
-    else
-    {
-        //sorry this bad way;
-    }
-}
+///**
+// * @brief coCap1 -
+// */
+//inline double FCCD::coCap1()
+//{
+//    if(rcap2 != NULL)
+//    {
+//        return (capout*capoutesr)/rcap2;
+//    }
+//}
 
-/**
- * @brief coCap2 -
- */
-void FCCD::coCap2()
-{
-    if(rcap2 != NULL)
-    {
-        cap1 = (capout*voltout)/(rcap2*static_cast<double>(curroutmax));
-    }
-    else
-    {
-        //sorry this bad way;
-    }
-}
+///**
+// * @brief coCap2 -
+// */
+//inline double FCCD::coCap2()
+//{
+//    if(rcap2 != NULL)
+//    {
+//        return (capout*voltout)/(rcap2*static_cast<double>(curroutmax));
+//    }
+//}
 
-/**
- * @brief coOptoTransfGain - $K_{c}$ -
- * @return
- */
-inline double FCCD::coOptoTransfGain(double fdrp) const
-{
-    double kd = resdown/static_cast<double>((resup+resdown));
-    return (optoctr*kd*refres)/resoptdiode(fdrp);
-}
+///**
+// * @brief coOptoTransfGain - $K_{c}$ -
+// * @return
+// */
+//inline double FCCD::coOptoTransfGain(double fdrp) const
+//{
+//    double kd = resdown/static_cast<double>((resup+resdown));
+//    return (optoctr*kd*refres)/res_optic_diode(fdrp);
+//}
 
-/**
- * @brief coTransfZero - $\omega_{z}$
- * @return
- */
-inline double FCCD::coTransfZero() const
-{
-    return 1/(cap1*rcap2);
-}
+///**
+// * @brief coTransfZero - $\omega_{z}$
+// * @return
+// */
+//inline double FCCD::coTransfZero() const
+//{
+//    return 1/(cap1*rcap2);
+//}
 
-/**
- * @brief coTransfPoleOne - $\omega_{p1}$
- * @return
- */
-inline double FCCD::coTransfPoleOne() const
-{
-    return 1/(refcap*refres);
-}
+///**
+// * @brief coTransfPoleOne - $\omega_{p1}$
+// * @return
+// */
+//inline double FCCD::coTransfPoleOne() const
+//{
+//    return 1/(refcap*refres);
+//}
 
-/**
- * @brief coCCMTransfPoleZero - $\omega_{p0}$
- * @return
- */
-inline double FCCD::coCCMTransfPoleZero() const
-{
-    return 1/((cap1+cap2)*rcap1);
-}
+///**
+// * @brief coCCMTransfPoleZero - $\omega_{p0}$
+// * @return
+// */
+//inline double FCCD::coCCMTransfPoleZero() const
+//{
+//    return 1/((cap1+cap2)*rcap1);
+//}
 
-/**
- * @brief coTransfPoleTwo - $\omega_{p2}$
- * @return
- */
-inline double FCCD::coTransfPoleTwo() const
-{
-    return (cap1+cap2)/(cap1*cap2*rcap2);
-}
+///**
+// * @brief coTransfPoleTwo - $\omega_{p2}$
+// * @return
+// */
+//inline double FCCD::coTransfPoleTwo() const
+//{
+//    return (cap1+cap2)/(cap1*cap2*rcap2);
+//}
 
-/**
- * @brief coOptoFeedbTransfFunc -
- * @param s
- * @param mode
- * @return
- */
-inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
-{
-    double result = 0.0;
-    double num = 1+(s/coTransfZero());
-    double dnm = 0.0;
-    if(mode == CCM_MODE)
-    {
-        dnm = (s/coCCMTransfPoleZero())*(1+(s/coTransfPoleOne()))*(1+(s/coTransfPoleTwo()));
-        result = num/dnm;
-    }
-    else if(mode == DCM_MODE)
-    {
-        dnm = (s/coDCMTransfPoleZero())*(1+(s/coTransfPoleOne()));
-        result = num/dnm;
-    }
-    else
-    {
-        result = -1;
-    }
-    return result;
-}
-/**************************DCM**************************/
-/**
- * @brief coDCMTransfPoleZero - $\omega_{p2}$
- * @return
- */
-inline double FCCD::coDCMTransfPoleZero() const
-{
-    return 1/(cap1*rcap1);
-}
+///**
+// * @brief coOptoFeedbTransfFunc -
+// * @param s
+// * @param mode
+// * @return
+// */
+//inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
+//{
+//    double result = 0.0;
+//    double num = 1+(s/coTransfZero());
+//    double dnm = 0.0;
+//    if(mode == CCM_MODE)
+//    {
+//        dnm = (s/coCCMTransfPoleZero())*(1+(s/coTransfPoleOne()))*(1+(s/coTransfPoleTwo()));
+//        result = num/dnm;
+//    }
+//    else if(mode == DCM_MODE)
+//    {
+//        dnm = (s/coDCMTransfPoleZero())*(1+(s/coTransfPoleOne()));
+//        result = num/dnm;
+//    }
+//    else
+//    {
+//        result = -1;
+//    }
+//    return result;
+//}
+///**************************DCM**************************/
+///**
+// * @brief coDCMTransfPoleZero - $\omega_{p2}$
+// * @return
+// */
+//inline double FCCD::coDCMTransfPoleZero() const
+//{
+//    return 1/(cap1*rcap1);
+//}
