@@ -218,172 +218,180 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s)
     return coCCMCurrGainCoeff()*(num/dnm);
 }
 
-void PCSSM::coPlotArray(std::map<int16_t, double> *tabmap, PS_MODE mode, int16_t begin, int16_t end, int16_t step)
+void PCSSM::coPlotArray(QVector<double>& tabvector, PS_MODE mode, int16_t begin, int16_t end, int16_t step)
 {
     for(ptrdiff_t ind=begin; ind<end; ind+=step)
     {
-        tabmap->insert(std::pair<int16_t, double>(ind, coControlToOutTransfFunct(ind, mode)));
+        //tabmap->insert(std::pair<int16_t, double>(ind, coControlToOutTransfFunct(ind, mode)));
     }
 }
 
 /**************************FCCD*************************/
+/**
+ * @brief coResUp
+ * @return
+ */
+inline int16_t FCCD::coResUp() const
+{
+    return res_down * static_cast<int16_t>((volt_to_cont-S_TL431_VREF)/S_TL431_VREF);
+}
 
+/**
+ * @brief coFreqCrossSection
+ * @return
+ */
+inline double FCCD::coFreqCrossSection() const
+{
+    double ratio_factor = qPow((number_prim_turns/number_sec_turns), 2);
+    double coeff = 1/5;
+    double num = (qPow(volt_to_cont, 2)/power_out_tot)*qPow(duty_cycle, 2);
+    double dnm = 2*M_PI*induct_prim;
+    return (num/dnm)*ratio_factor*coeff;
+}
 
-/**************************CCM**************************/
-///**
-// * @brief coOptoTransfFunct - $G_{opto}(s)$ -
-// * @param s
-// * @param fdrp
-// * @return
-// */
-//inline double FCCD::coOptoTransfFunct(double s, double fdrp) const
-//{
-//    double tmp = 1/(1+(s/(2*S_PI*S_OPTO_POLE)));
-//    return (refres/resoptdiode(fdrp))*tmp;
-//}
+/**
+ * @brief coKFactor
+ * @return
+ */
+inline double FCCD::coKFactor() const
+{
+    return qTan((coBoost()/2)+45);
+}
 
-///**
-// * @brief coContrToOutTransfFunct - $G_{co}(s)$ -
-// * @param s
-// * @param capout
-// * @param esrcout
-// * @param resload
-// * @return
-// */
-//inline double FCCD::coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const
-//{
-//    return (1+s*(capout*resload))/(1+s*capout*(resload+esrcout));
-//}
+/**
+ * @brief coFreqPole
+ * @return
+ */
+inline double FCCD::coFreqPole() const
+{
+    return coKFactor()*coFreqCrossSection();
+}
 
-///**
-// * @brief coTransfFunct - $T_{s}(s)$ -
-// * @param s
-// * @param fdrp
-// * @param capout
-// * @param esrcout
-// * @param resload
-// * @return
-// */
-//inline double FCCD::coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const
-//{
-//    return todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp));
-//}
+/**
+ * @brief coFreqZero
+ * @return
+ */
+inline double FCCD::coFreqZero() const
+{
+    return coFreqCrossSection()/coKFactor();
+}
 
-///**
-// * @brief coResCap2 -
-// * @param s
-// * @param fdrp
-// * @param capout
-// * @param esrcout
-// * @param resload
-// */
-//void FCCD::coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload)
-//{
-//    double index = std::pow(10, (-1*(todB(coOptoTransfFunct(s, fdrp))+todB(coContrToOutTransfFunct(s, capout, esrcout, resload))+todB(coOptoTransfGain(fdrp)))));
-//    res_cap2 = static_cast<int16_t>(resup*index);
-//}
+/**
+ * @brief coCapPoleOpto
+ * @return
+ */
+inline double FCCD::coCapPoleOpto() const
+{
+    return opto_ctr/(2*M_PI*coFreqPole()*coResOptoDiode());
+}
 
-///**
-// * @brief coCap1 -
-// */
-//inline double FCCD::coCap1()
-//{
-//    if(rcap2 != NULL)
-//    {
-//        return (capout*capoutesr)/rcap2;
-//    }
-//}
+/**
+ * @brief coCapOpto
+ * @return
+ */
+inline double FCCD::coCapOpto() const
+{
+    return coCapPoleOpto()-opto_inner_cap;
+}
 
-///**
-// * @brief coCap2 -
-// */
-//inline double FCCD::coCap2()
-//{
-//    if(rcap2 != NULL)
-//    {
-//        return (capout*voltout)/(rcap2*static_cast<double>(curroutmax));
-//    }
-//}
+/**
+ * @brief coGainErrorAmp
+ * @param ControlToOut
+ * @return
+ */
+inline double FCCD::coGainErrorAmp(double control_to_out) const
+{
+    return qAbs(20*std::log10(coVoltageDivideGain())+20*std::log10(control_to_out)+20*std::log10(coVoltageOptoGain()));
+}
 
-///**
-// * @brief coOptoTransfGain - $K_{c}$ -
-// * @return
-// */
-//inline double FCCD::coOptoTransfGain(double fdrp) const
-//{
-//    double kd = resdown/static_cast<double>((resup+resdown));
-//    return (optoctr*kd*refres)/res_optic_diode(fdrp);
-//}
+/**
+ * @brief coResErrorAmp
+ * @param control_to_out
+ * @return
+ */
+inline double FCCD::coResErrorAmp(double control_to_out) const
+{
+    return qPow(10,(coGainErrorAmp(control_to_out)/20))*((coResUp()*res_down)/(coResUp()+res_down));
+}
 
-///**
-// * @brief coTransfZero - $\omega_{z}$
-// * @return
-// */
-//inline double FCCD::coTransfZero() const
-//{
-//    return 1/(cap1*rcap2);
-//}
+/**
+ * @brief coCapErroAmp
+ * @param frq_ea_zero
+ * @param res_ea
+ * @return
+ */
+inline double FCCD::coCapErroAmp(int16_t frq_ea_zero, int16_t res_ea) const
+{
+    return 1/(2*M_PI*frq_ea_zero*(coResUp()+res_ea));
+}
 
-///**
-// * @brief coTransfPoleOne - $\omega_{p1}$
-// * @return
-// */
-//inline double FCCD::coTransfPoleOne() const
-//{
-//    return 1/(refcap*refres);
-//}
+/**
+ * @brief coOptoTransfGain - $K_{c}$ -
+ * @return
+ */
+inline double FCCD::coOptoTransfGain() const
+{
+    double kd = res_down/static_cast<double>((coResUp()+res_down));
+    return (opto_ctr*kd*res_pull_up)/coResOptoDiode();
+}
 
-///**
-// * @brief coCCMTransfPoleZero - $\omega_{p0}$
-// * @return
-// */
-//inline double FCCD::coCCMTransfPoleZero() const
-//{
-//    return 1/((cap1+cap2)*rcap1);
-//}
+/**
+ * @brief coTransfZero - $\omega_{z}$
+ * @return
+ */
+inline double FCCD::coTransfZero(double control_to_out, int16_t frq_ea_zero, int16_t res_ea) const
+{
+    return 1/((coResErrorAmp(control_to_out)+coResUp())*coCapErroAmp(frq_ea_zero, res_ea));
+}
 
-///**
-// * @brief coTransfPoleTwo - $\omega_{p2}$
-// * @return
-// */
-//inline double FCCD::coTransfPoleTwo() const
-//{
-//    return (cap1+cap2)/(cap1*cap2*rcap2);
-//}
+/**
+ * @brief coTransfPoleOne - $\omega_{p1}$
+ * @return
+ */
+inline double FCCD::coTransfPoleOne() const
+{
+    return 1/(res_pull_up*coCapOpto());
+}
 
-///**
-// * @brief coOptoFeedbTransfFunc -
-// * @param s
-// * @param mode
-// * @return
-// */
-//inline double FCCD::coOptoFeedbTransfFunc(double s, PS_MODE mode)
-//{
-//    double result = 0.0;
-//    double num = 1+(s/coTransfZero());
-//    double dnm = 0.0;
-//    if(mode == CCM_MODE)
-//    {
-//        dnm = (s/coCCMTransfPoleZero())*(1+(s/coTransfPoleOne()))*(1+(s/coTransfPoleTwo()));
-//        result = num/dnm;
-//    }
-//    else if(mode == DCM_MODE)
-//    {
-//        dnm = (s/coDCMTransfPoleZero())*(1+(s/coTransfPoleOne()));
-//        result = num/dnm;
-//    }
-//    else
-//    {
-//        result = -1;
-//    }
-//    return result;
-//}
-///**************************DCM**************************/
-///**
-// * @brief coDCMTransfPoleZero - $\omega_{p2}$
-// * @return
-// */
-//inline double FCCD::coDCMTransfPoleZero() const
-//{
-//    return 1/(cap1*rcap1);
-//}
+/**
+ * @brief coOptoFeedbTransfFunc -
+ * @param freq
+ * @param mode
+ * @return
+ */
+inline double FCCD::coOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+{
+    double num = 1+((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
+    double dnm = 1+((2*M_PI*freq)/coTransfPoleOne());
+    return coOptoTransfGain()*(num/dnm);
+}
+
+/**
+ * @brief coGainOptoFeedbTransfFunc -
+ * @param freq
+ * @param control_to_out
+ * @param frq_ea_zero
+ * @param res_ea
+ * @return
+ */
+inline double FCCD::coGainOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+{
+    double num = 1+((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
+    double dnm = 1+((2*M_PI*freq)/coTransfPoleOne());
+    return 20*std::log10(coOptoTransfGain()*(num/dnm));
+}
+
+/**
+ * @brief coPhaseOptoFeedbTransfFunc
+ * @param freq
+ * @param control_to_out
+ * @param frq_ea_zero
+ * @param res_ea
+ * @return
+ */
+inline double FCCD::coPhaseOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+{
+    double num = ((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
+    double dnm = ((2*M_PI*freq)/coTransfPoleOne());
+    return qAtan(num)-qAtan(dnm);
+}

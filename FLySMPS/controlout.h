@@ -1,11 +1,12 @@
 #ifndef CONTROLOUT_H
 #define CONTROLOUT_H
+#include <QtMath>
 #include <QVector>
 #include <cmath>
 #include <cstdint>
 
-#define S_VREF       2.5      //V
-#define S_CURR_CATH  1.5*1E-3 //A
+#define S_TL431_VREF       2.5      //V
+#define S_TL431_CURR_CATH  1.5*1E-3 //A
 #define S_OPTO_POLE  1000     //Hz
 enum PS_MODE
 {
@@ -118,58 +119,81 @@ class FCCD
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
-     * @param vout - Output voltage
-     * @param rrf - Reference resistor in pwm side controller
+     * @param vout - Output voltage for control
+     * @param rpup - Reference resistor in pwm side controller
+     * @param ctr - The current transfer ratio in optocoupler
      * @param rdwn - Down resistor in voltage divider K_{d}
-     * @param ctr - The current transfer ratio
-     * @param cout - Output capacitor
-     * @param coutesr - Output capacitor ESR
-     * @param outcurr - Output current
+     * @param pshft - Phase shift value for phase margine in controll loop
+     * @param gain - Gain margine
+     * @param copto - Parasitic capacitance value in optocoupler transistor
      */
+    FCCD(int16_t vout, int16_t rpup,
+         int16_t ctr, int16_t rdwn,
+         int16_t pshft, int16_t gain,
+         double copto)
+        :volt_to_cont(vout), res_pull_up(rpup)
+        ,opto_ctr(ctr), res_down(rdwn)
+        ,phase_shift_val(pshft), ampl_gain_val(gain)
+        ,opto_inner_cap(copto)
+    {}
 
-    FCCD(int16_t vout, int16_t rrf,
-         int16_t rdwn, double ctr,
-         double cout, double coutesr, float outcurr
-         ):
-        capout(cout), capoutesr(coutesr),
-        optoctr(ctr), curroutmax(outcurr),
-        voltout(vout), resdown(rdwn),
-        refres(rrf)
+    inline int16_t coResOptoDiode() const;
+    inline int16_t coResOptoBias() const;
+    inline int16_t coResUp() const;
+    inline double coVoltageDivideGain() const; //K_{d}
+    inline double coVoltageOptoGain() const; //K_{c}
+    void coSetRampSlopeVal(int16_t vin, double rcursns,
+                           double indprim, int16_t duty,
+                           int16_t numprim, int16_t numsec,
+                           double ptot)
     {
-        resup = rdwn * static_cast<int16_t>((vout/S_VREF)) - 1;
+        volt_inp=vin;
+        res_cur_sense=rcursns;
+        induct_prim=indprim;
+        duty_cycle=duty;
+        number_prim_turns=numprim;
+        number_sec_turns=numsec;
+        power_out_tot=ptot;
     }
-
-    inline double coOptoTransfFunct(double s, double fdrp) const; //G_opto(s)
-    inline double coContrToOutTransfFunct(double s, double capout, double esrcout, int16_t resload) const; //G_co(s)
-    inline double coTransfFunct(double s, double fdrp, double capout, double esrcout, int16_t resload) const; //T_{s}(s)
-
-    void coResCap2(double s, double fdrp, double capout, double esrcout, int16_t resload);
-    double coCap1();
-    double coCap2();
-
-    inline double coOptoTransfGain(double fdrp) const; //K_c
-    inline double coTransfZero() const; //omega_z
-    inline double coTransfPoleOne() const; //omega_p1
-    inline double coCCMTransfPoleZero() const; //omega_p0
-    inline double coDCMTransfPoleZero() const; //omega_p0
-    inline double coTransfPoleTwo() const; //omega_p2
-    inline double coOptoFeedbTransfFunc(double s, PS_MODE mode); //G_c(s)
+    inline double coExterRampSlope() const; //S_{e}
+    inline double coIndOnTimeSlope() const; //S_{n}
+    inline double coCompRamp() const; //M_{c}
+    inline double coQuality() const; //Q_{p}
+    inline double coFreqCrossSection() const; //f_{cross}
+    inline double coKFactor() const; //k
+    inline double coFreqPole() const; //f_{pole}
+    inline double coFreqZero() const; //f_{zero}
+    inline double coCapPoleOpto() const;
+    inline double coCapOpto() const; //C_{opto}
+    inline double coResErrorAmp(double control_to_out) const; //R_{f}
+    inline double coCapErroAmp(int16_t frq_ea_zero, int16_t res_ea) const; //C_{f}
+    inline double coOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
+    inline double coGainOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
+    inline double coPhaseOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
 
 private:
-    double capout;
-    double capoutesr;
-    double optoctr;
-    double refcap;
-    float curroutmax;
-    int16_t voltout;
-    int16_t resdown; //resistor value in the divider, set in the constructor(down resistor)
-    int16_t refres;
-    int16_t resup; //resistor value in the output voltage divider(up resistor)
+    int16_t volt_to_cont;
+    int16_t res_pull_up;
+    int16_t opto_ctr;
+    int16_t res_down;
+    int16_t phase_shift_val; //P degre
+    int16_t ampl_gain_val; //M degre
+    double opto_inner_cap;
 
-    //int16_t res_cap1;
-    int16_t res_cap2;
-    inline double todB(double input) const {return 20*std::log10(input);}
-    inline double res_optic_diode(double fdrp) const {return (voltout-S_VREF-fdrp)/S_CURR_CATH;}
+    int16_t volt_inp=0;
+    double res_cur_sense=0;
+    double induct_prim=0;
+    int16_t duty_cycle=0;
+    int16_t number_prim_turns=0;
+    int16_t number_sec_turns=0;
+    double power_out_tot=0;
+
+    int16_t inv_duty_cycle=1-duty_cycle;
+    inline int16_t coBoost() const {return ampl_gain_val-phase_shift_val-90;}
+    inline double coGainErrorAmp(double control_to_out) const;
+    inline double coOptoTransfGain() const; //K_{c}
+    inline double coTransfZero(double control_to_out, int16_t frq_ea_zero, int16_t res_ea) const; //\omega_{z}
+    inline double coTransfPoleOne() const; //\omega_{p1}
 };
 
 #endif // CONTROLOUT_H
