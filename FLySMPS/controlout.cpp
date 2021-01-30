@@ -147,7 +147,7 @@ inline double PCSSM::coControlToOutTransfFunct(double s, PS_MODE mode)
 }
 /**********************CCM****************************/
 /**
- * @brief coCCMZeroTwoAngFreq - $\omega_{zrhp}$ -
+ * @brief coCCMZeroTwoAngFreq - $\omega_{zrhp}$
  * @param duty
  * @return
  */
@@ -158,7 +158,7 @@ inline double PCSSM::coCCMZeroTwoAngFreq() const
 }
 
 /**
- * @brief coCCMPoleTwoAngFreq - $\omega_{o}$ -
+ * @brief coCCMPoleTwoAngFreq - $\omega_{o}$
  * @param duty
  * @return
  */
@@ -171,7 +171,7 @@ inline double PCSSM::coCCMPoleTwoAngFreq() const
 }
 
 /**
- * @brief coDCMVoltGainCoeff - $K_{vd}$ -
+ * @brief coDCMVoltGainCoeff - $K_{vd}$
  * @param duty
  * @return
  */
@@ -181,7 +181,7 @@ inline double PCSSM::coCCMVoltGainCoeff() const
 }
 
 /**
- * @brief coDCMCurrGainCoeff - $K_{id}$ -
+ * @brief coDCMCurrGainCoeff - $K_{id}$
  * @param duty
  * @return
  */
@@ -194,7 +194,7 @@ inline double PCSSM::coCCMCurrGainCoeff() const
 }
 
 /**
- * @brief coDCMQualityFact - $Q$ -
+ * @brief coDCMQualityFact - $Q$
  * @param duty
  * @return
  */
@@ -206,7 +206,7 @@ inline double PCSSM::coCCMQualityFact() const
 }
 
 /**
- * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s)$ -
+ * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s)$
  * @param s
  * @param duty
  * @return
@@ -218,15 +218,28 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s)
     return coCCMCurrGainCoeff()*(num/dnm);
 }
 
-void PCSSM::coPlotArray(QVector<double>& tabvector, PS_MODE mode, int16_t begin, int16_t end, int16_t step)
+/**************************FCCD*************************/
+/**
+ * @brief coResOptoDiode -
+ * @return
+ */
+inline int16_t FCCD::coResOptoDiode() const
 {
-    for(ptrdiff_t ind=begin; ind<end; ind+=step)
-    {
-        //tabmap->insert(std::pair<int16_t, double>(ind, coControlToOutTransfFunct(ind, mode)));
-    }
+    double num = volt_to_cont-S_OPTO_FORVARD_DROP-S_TL431_VREF;
+    double dnm = S_INT_BIAS_CONTR-S_OPTO_CE_SAT+(S_TL431_CURR_CATH*opto_ctr*res_pull_up);
+    return static_cast<int16_t>((num/dnm)*0.15);//15% marg
 }
 
-/**************************FCCD*************************/
+/**
+ * @brief coResOptoBias -
+ * @return
+ */
+inline int16_t FCCD::coResOptoBias() const
+{
+    double num = S_OPTO_FORVARD_DROP+(coResOptoDiode()*((S_INT_BIAS_CONTR-3)/(res_pull_up*opto_ctr)));
+    return static_cast<int16_t>(num/S_TL431_CURR_CATH);
+}
+
 /**
  * @brief coResUp
  * @return
@@ -237,7 +250,63 @@ inline int16_t FCCD::coResUp() const
 }
 
 /**
- * @brief coFreqCrossSection
+ * @brief FCCD::coVoltageDivideGain
+ * @return
+ */
+inline double FCCD::coVoltageDivideGain() const
+{
+    return res_down/(coResUp()+res_down);
+}
+
+/**
+ * @brief FCCD::coVoltageOptoGain
+ * @return
+ */
+inline double FCCD::coVoltageOptoGain() const
+{
+    return (res_pull_up/coResOptoDiode())*opto_ctr;
+}
+
+/**
+ * @brief FCCD::coIndOnTimeSlope - S_{n}
+ * @return
+ */
+inline double FCCD::coIndOnTimeSlope() const
+{
+    return (volt_inp*res_cur_sense)/induct_prim;
+}
+
+/**
+ * @brief FCCD::coCompRamp - M_{c}
+ * @return
+ */
+inline double FCCD::coCompRamp() const
+{
+    double coeff = number_prim_turns/number_sec_turns;
+    return (coeff*volt_to_cont)/volt_inp;
+}
+
+/**
+ * @brief FCCD::coExterRampSlope - S_{e}
+ * @return
+ */
+inline double FCCD::coExterRampSlope() const
+{
+    return (coCompRamp()-1)*coIndOnTimeSlope();
+}
+
+/**
+ * @brief FCCD::coQuality - Q_{p}
+ * @return
+ */
+inline double FCCD::coQuality() const
+{
+    double inv_duty = 1-duty_cycle;
+    return 1/(M_PI*(coCompRamp()*inv_duty-0.5));
+}
+
+/**
+ * @brief coFreqCrossSection - f_{cross}
  * @return
  */
 inline double FCCD::coFreqCrossSection() const
@@ -315,7 +384,7 @@ inline double FCCD::coResErrorAmp(double control_to_out) const
 }
 
 /**
- * @brief coCapErroAmp
+ * @brief coCapErroAmp -
  * @param frq_ea_zero
  * @param res_ea
  * @return
@@ -326,7 +395,7 @@ inline double FCCD::coCapErroAmp(int16_t frq_ea_zero, int16_t res_ea) const
 }
 
 /**
- * @brief coOptoTransfGain - $K_{c}$ -
+ * @brief coOptoTransfGain - $K_{c}$
  * @return
  */
 inline double FCCD::coOptoTransfGain() const

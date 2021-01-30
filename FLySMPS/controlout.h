@@ -5,8 +5,11 @@
 #include <cmath>
 #include <cstdint>
 
-#define S_TL431_VREF       2.5      //V
-#define S_TL431_CURR_CATH  1.5*1E-3 //A
+#define S_TL431_VREF           2.5      //V
+#define S_TL431_CURR_CATH      1.5*1E-3 //bias current A
+#define S_OPTO_CE_SAT          2.5*1E-1 //saturation voltage V
+#define S_OPTO_FORVARD_DROP    1        //V
+#define S_INT_BIAS_CONTR       5        //V
 #define S_OPTO_POLE  1000     //Hz
 enum PS_MODE
 {
@@ -98,7 +101,6 @@ public:
     inline double coGainCurrModeContrModulator() const; //F_{m}
     inline double coDutyToOutTrasfFunct(double s, PS_MODE mode); //G_{vd}(s)
     inline double coControlToOutTransfFunct(double s, PS_MODE mode); //G_{vc}(s)
-    void coPlotArray(QVector<double>& tabvector, PS_MODE mode, int16_t begin, int16_t end, int16_t step);
 private:
     double priminduct;
     double capout;
