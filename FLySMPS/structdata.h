@@ -40,32 +40,17 @@ struct InputValue
     double sec_crfq_value;
 };
 
-struct FBPT
+struct PulseTransPreDesign
 {
-    double max_duty_cycle;//Max duty cycle
-    double inp_power;//Input power
-    double primary_induct;//Primary inductance
+    double mag_flux_dens;
+    double win_util_factor;
+    int16_t max_curr_dens;
+    double al_induct_factor;
+};
 
-    double curr_primary_aver;//Primary average current during turn-on
-    double curr_primary_peak_peak;//Primary peak-to-peak current
-    double curr_primary_peak;//Primary peak current
-    double curr_primary_valley;//Primary valley current
-    double curr_primary_rms;//Primary RMS current
+struct PulseTransMechanical
+{
 
-    double core_area_product;//Core area product Ap
-    double core_win_core_sect;////Product of areas factor W_a*A_e
-    double area_wind_tot;//
-    double curr_dens;//
-
-    double number_primary;//
-
-    double length_air_gap;//Air-gap length considered with fringing effect
-    double fring_flux_fact;//
-    double actual_num_primary;
-    double actual_b_peak;//Calc peak flux density
-
-    double actual_volt_reflected;//Recalc reflected voltage
-    double actual_max_duty_cycle;//Recalc maximum duty cycle
 };
 
 #endif // STRUCTDATA_H

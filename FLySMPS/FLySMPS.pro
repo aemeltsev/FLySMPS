@@ -36,6 +36,7 @@ SOURCES += \
     bulkcap.cpp \
     outfilter.cpp \
     powsuppsolve.cpp \
+    qcustomplot.cpp \
     swmosfet.cpp
 
 HEADERS += \
@@ -49,6 +50,7 @@ HEADERS += \
     fbptransformer.h \
     outfilter.h \
     powsuppsolve.h \
+    qcustomplot.h \
     structdata.h \
     swmosfet.h
 
