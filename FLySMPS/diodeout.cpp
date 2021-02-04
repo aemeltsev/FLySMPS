@@ -7,7 +7,7 @@
  */
 double DiodeOut::doDiodeRevVolt(int16_t ac_inp_volt_max) const
 {
-    return (volt_out+(ac_inp_volt_max/(std::sqrt(2))))/turn_ratio;
+    return (volt_out+(ac_inp_volt_max/(qSqrt(2))))/turn_ratio;
 }
 
 /**

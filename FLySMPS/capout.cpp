@@ -46,7 +46,7 @@ inline double CapOut::ocCapOutValue(int16_t freq_switch) const
  */
 inline double CapOut::ocCurrOurRMS(float actual_max_duty_cycle) const
 {
-    return curr_peak_out*std::sqrt((static_cast<double>(actual_max_duty_cycle)/3.))-curr_peak_out;
+    return curr_peak_out*qSqrt((static_cast<double>(actual_max_duty_cycle)/3.))-curr_peak_out;
 }
 
 /**
@@ -56,7 +56,7 @@ inline double CapOut::ocCurrOurRMS(float actual_max_duty_cycle) const
  */
 inline double CapOut::ocCapOutLoss(float actual_max_duty_cycle) const
 {
-    return std::pow(ocCurrOurRMS(actual_max_duty_cycle), 2)*ocESRCapOut();
+    return qPow(ocCurrOurRMS(actual_max_duty_cycle), 2)*ocESRCapOut();
 }
 
 /**
@@ -66,7 +66,7 @@ inline double CapOut::ocCapOutLoss(float actual_max_duty_cycle) const
  */
 inline double CapOut::ocZeroFreqCapOut(int16_t freq_switch) const
 {
-    return 1./(2.*S_PI*ocESRCapOut()*ocCapOutValue(freq_switch));
+    return 1./(2.*M_PI*ocESRCapOut()*ocCapOutValue(freq_switch));
 }
 
 /**

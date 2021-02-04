@@ -1,8 +1,7 @@
 #ifndef DIODEOUT_H
 #define DIODEOUT_H
-#include <cmath>
+#include <QtMath>
 #include <cstdint>
-#include <structdata.h>
 
 class DiodeOut
 {

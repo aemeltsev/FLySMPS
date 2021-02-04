@@ -1,8 +1,12 @@
 #ifndef FBPTRANSFORMER_H
 #define FBPTRANSFORMER_H
+#include <QtMath>
 #include <cmath>
 #include <cstdint>
-#include <structdata.h>
+
+#define S_MU_Z     4.*M_PI*1E-7 //H/m
+#define S_RO_OM    1.72E-8 //Ohm/m
+#define S_K_1      85*1E-4
 
 class FBPTPrimary
 {

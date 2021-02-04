@@ -25,7 +25,7 @@ double FBPTPrimary::InputPower()
  */
 double FBPTPrimary::PriInduct()
 {
-    return std::pow((input_dc_min_voltage * DutyCycleDCM()), 2)/(2. * InputPower()*static_cast<double>(freq_switch)*ripple_factor);
+    return qPow((input_dc_min_voltage * DutyCycleDCM()), 2)/(2. * InputPower()*static_cast<double>(freq_switch)*ripple_factor);
 }
 /*Inductance of primary side*/
 
@@ -72,7 +72,7 @@ double FBPTPrimary::CurrPriValley()
   */
 double FBPTPrimary::CurrPriRMS()
 {
-    return std::sqrt((3.*(std::pow(CurrPriAver(),2))+(std::pow((CurrPriPeakToPeak()/2.),2)))*(DutyCycleDCM()/3.));
+    return qSqrt((3.*(qPow(CurrPriAver(),2))+(qPow((CurrPriPeakToPeak()/2.),2)))*(DutyCycleDCM()/3.));
 }
 
 /*All current primary side*/
@@ -84,7 +84,7 @@ double FBPTPrimary::CurrPriRMS()
  */
 double FBPTCore::EnergyStoredChoke() const
 {
-    return (primary_induct * std::pow(curr_primary_peak, 2))/2.;
+    return (primary_induct * qPow(curr_primary_peak, 2))/2.;
 }
 
 /**
@@ -115,7 +115,7 @@ double FBPTCore::DeltaFluxMax()
 double FBPTCore::CoreWinToCoreSect() const
 {
     double tmp = (primary_induct * curr_primary_rms * curr_primary_peak)/(flux_dens_max * S_K_1);
-    return std::pow(tmp, (4./3.));
+    return qPow(tmp, (4./3.));
 }
 
 /**
@@ -126,7 +126,7 @@ double FBPTCore::CoreWinToCoreSect() const
 double FBPTCore::AreaWindTotal(const CoreSelection &cs) const
 {
     double tmp = core_win_util_fact * cs.core_wind_area * S_RO_OM * cs.mean_leng_per_turn;
-    return curr_primary_peak * std::sqrt(tmp/static_cast<double>(power_out_max));
+    return curr_primary_peak * qSqrt(tmp/static_cast<double>(power_out_max));
 }
 
 /**
@@ -174,7 +174,7 @@ double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns
     double temp = 0.0;
     if(fns == FBPT_INDUCT_FACTOR)
     {
-        temp = std::sqrt(primary_induct/cs.ind_fact);
+        temp = qSqrt(primary_induct/cs.ind_fact);
     }
     else if(fns == FBPT_FLUX_PEAK)
     {
@@ -241,8 +241,8 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, dou
     }
     else if(fsag == ROUND_AIR_GAP)
     {
-        csa = (S_PI*pow(mchdm.Diam, 2))/4.;
-        af = S_PI * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
+        csa = (M_PI*qPow(mchdm.Diam, 2))/4.;
+        af = M_PI * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
         temp = 1 + (af/(csa*k));
     }
     return temp;
@@ -264,7 +264,7 @@ int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsa
     {
         ag = agLength(cs, varNumPrim);
         ffg = agFringFluxFact(cs, varNumPrim, ewff, fsag, mchdm, k);
-        act_num_prim_turns = static_cast<int16_t>(sqrt((ag*varIndPrim)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
+        act_num_prim_turns = static_cast<int16_t>(qSqrt((ag*varIndPrim)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
         flux_peak = (S_MU_Z * act_num_prim_turns * ffg * (currPeakPrim/2))/(ag+(cs.mean_mag_path_leng/cs.core_permeal));
     }
     while(flux_peak > flux_dens_max);
@@ -335,7 +335,7 @@ inline double FBPTSecondary::outCurrPeakSecond()
 inline double FBPTSecondary::outCurrRMSSecond(int16_t actual_volt_reflected, int16_t input_min_voltage)
 {
     double tmp = ((1-postMaxDutyCycle(actual_volt_reflected, input_min_voltage))/postMaxDutyCycle(actual_volt_reflected, input_min_voltage));
-    return curr_primary_rms * outCoeffPWR() * outNumTurnRatio() * std::sqrt(tmp);
+    return curr_primary_rms * outCoeffPWR() * outNumTurnRatio() * qSqrt(tmp);
 }
 /*Second Side*/
 
@@ -374,7 +374,7 @@ inline double FBPTWinding::wCoperWireCrossSectArea(const CoreSelection &cs, cons
  */
 inline double FBPTWinding::wMaxWireSizeAWG(double wirecrosssect) const
 {
-    return (9.97*(1.8277 - (2*std::log10(2*std::sqrt((wirecrosssect)/S_PI)))));
+    return (9.97*(1.8277 - (2*std::log10(2*qSqrt((wirecrosssect)/M_PI)))));
 }
 
 /**
@@ -383,7 +383,7 @@ inline double FBPTWinding::wMaxWireSizeAWG(double wirecrosssect) const
  */
 inline double FBPTWinding::wSkinDepth() const
 {
-    return std::sqrt((S_RO_OM)/(2.*S_PI*static_cast<double>(freq_switch)*S_MU_Z));
+    return qSqrt((S_RO_OM)/(2.*M_PI*static_cast<double>(freq_switch)*S_MU_Z));
 }
 
 /**
@@ -405,7 +405,7 @@ inline double FBPTWinding::wCoperWireDiam() const
 {
     double tmp = (AWGp)/(2.*9.97);
     double out = ((1.8277/2.)-(tmp));
-    return std::pow(10., out);
+    return qPow(10., out);
 }
 
 /**
@@ -414,7 +414,7 @@ inline double FBPTWinding::wCoperWireDiam() const
  */
 inline double FBPTWinding::wCoperWireCrossSectAreaPost() const
 {
-    return (S_PI/4.)*std::pow(wCoperWireDiam(), 2.)*Np;
+    return (M_PI/4.)*qPow(wCoperWireDiam(), 2.)*Np;
 }
 
 /**

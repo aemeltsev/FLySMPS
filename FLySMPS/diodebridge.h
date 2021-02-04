@@ -3,9 +3,8 @@
 */
 #ifndef DIODEBRIDGE_H
 #define DIODEBRIDGE_H
-#include <cmath>
+#include <QtMath>
 #include <cstdint>
-#include <structdata.h>
 
 class DiodeBridge
 {

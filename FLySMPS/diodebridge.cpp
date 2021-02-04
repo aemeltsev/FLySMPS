@@ -55,7 +55,7 @@ double DiodeBridge::IDiodeAVG() const
  */
 double DiodeBridge::IDiodeRMS() const
 {
-    return ILoadAVG()/(std::sqrt(3.* static_cast<double>(freq_line)*DiodeConductTime()));
+    return ILoadAVG()/(qSqrt(3.* static_cast<double>(freq_line)*DiodeConductTime()));
 }
 
 /**
@@ -64,7 +64,7 @@ double DiodeBridge::IDiodeRMS() const
  */
 double DiodeBridge::IDiodeRMSTot() const
 {
-    return (ILoadAVG()*std::sqrt(2.))/(std::sqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
+    return (ILoadAVG()*qSqrt(2.))/(qSqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
 }
 
 /**
@@ -73,7 +73,7 @@ double DiodeBridge::IDiodeRMSTot() const
  */
 double DiodeBridge::MinPeakInVoltage() const
 {
-    return ac_inp_volt_min*std::sqrt(2.);
+    return ac_inp_volt_min*qSqrt(2.);
 }
 
 /**
@@ -82,5 +82,5 @@ double DiodeBridge::MinPeakInVoltage() const
  */
 double DiodeBridge::MaxPeakInVoltage() const
 {
-    return  ac_inp_volt_max*std::sqrt(2.);
+    return  ac_inp_volt_max*qSqrt(2.);
 }

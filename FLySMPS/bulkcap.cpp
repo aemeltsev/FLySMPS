@@ -9,7 +9,7 @@
  */
 double BulkCap::DeltaT() const
 {
-    return (std::asin(VDOut()/(ac_inp_volt_min*std::sqrt(2))))/(2.*S_PI*(static_cast<double>(freq_line)));
+    return (qAsin(VDOut()/(ac_inp_volt_min*qSqrt(2))))/(2.*M_PI*(static_cast<double>(freq_line)));
 }
 
 /**
@@ -27,7 +27,7 @@ double BulkCap::ChargTime() const
  */
 double BulkCap::CapValue() const
 {
-    return ((2.*static_cast<double>(pow_max_out))*(1./(4.*static_cast<double>(freq_line)))+DeltaT())/(static_cast<double>(efficiency)*(std::pow(VRRMS(),2))-(std::pow(VDOut(),2)));
+    return ((2.*static_cast<double>(pow_max_out))*(1./(4.*static_cast<double>(freq_line)))+DeltaT())/(static_cast<double>(efficiency)*(qPow(VRRMS(),2))-(qPow(VDOut(),2)));
 }
 
 /**
@@ -36,7 +36,7 @@ double BulkCap::CapValue() const
  */
 double BulkCap::ILoadMax() const
 {
-    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_min/std::sqrt(2)));
+    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_min/qSqrt(2)));
 }
 
 /**
@@ -45,7 +45,7 @@ double BulkCap::ILoadMax() const
  */
 double BulkCap::ILoadMin() const
 {
-    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_max/std::sqrt(2)));
+    return (static_cast<double>(pow_max_out))/(static_cast<double>(efficiency)*(ac_inp_volt_max/qSqrt(2)));
 }
 
 /**
@@ -54,7 +54,7 @@ double BulkCap::ILoadMin() const
  */
 double BulkCap::IBulkCapPeak() const
 {
-    return 2. * S_PI * static_cast<double>(freq_line) * CapValue() * VDOut() * (std::cos(2. * S_PI * static_cast<double>(freq_line) * DeltaT()));
+    return 2. * M_PI * static_cast<double>(freq_line) * CapValue() * VDOut() * (qCos(2. * M_PI * static_cast<double>(freq_line) * DeltaT()));
 }
 
 /**
@@ -65,7 +65,7 @@ double BulkCap::IBulkCapPeak() const
  */
 double BulkCap::IBulkCapRMS(double dio_av_curr, double dio_cond_time) const
 {
-    return dio_av_curr*(std::sqrt((2./(3.*static_cast<double>(freq_line)*dio_cond_time))-1));
+    return dio_av_curr*(qSqrt((2./(3.*static_cast<double>(freq_line)*dio_cond_time))-1));
 }
 
 /**
@@ -74,7 +74,7 @@ double BulkCap::IBulkCapRMS(double dio_av_curr, double dio_cond_time) const
  */
 double BulkCap::VMinInp() const
 {
-    return std::sqrt(std::pow(VDOut(),2)-((2.*static_cast<double>(pow_max_out)*((1./(4.*static_cast<double>(freq_line))-DeltaT())))/CapValue()));
+    return qSqrt(qPow(VDOut(),2)-((2.*static_cast<double>(pow_max_out)*((1./(4.*static_cast<double>(freq_line))-DeltaT())))/CapValue()));
 }
 
 /**
@@ -92,7 +92,7 @@ double BulkCap::VDCMin() const
  */
 double BulkCap::VRRMS() const
 {
-    return (ac_inp_volt_min*(1./(std::sqrt(2))))-(ac_inp_volt_min*(2./S_PI));
+    return (ac_inp_volt_min*(1./(qSqrt(2))))-(ac_inp_volt_min*(2./M_PI));
 }
 
 /**
@@ -101,5 +101,5 @@ double BulkCap::VRRMS() const
  */
 double BulkCap::VDOut() const
 {
-    return (ac_inp_volt_min*std::sqrt(2.))-VRRMS();
+    return (ac_inp_volt_min*qSqrt(2.))-VRRMS();
 }

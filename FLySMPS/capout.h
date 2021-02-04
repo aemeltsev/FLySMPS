@@ -1,8 +1,7 @@
 #ifndef CAPOUT_H
 #define CAPOUT_H
-#include <cmath>
+#include <QtMath>
 #include <cstdint>
-#include <structdata.h>
 
 class CapOut
 {

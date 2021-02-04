@@ -3,9 +3,8 @@
 */
 #ifndef BULKCAP_H
 #define BULKCAP_H
-#include <cmath>
+#include <QtMath>
 #include <cstdint>
-#include <structdata.h>
 
 class BulkCap
 {

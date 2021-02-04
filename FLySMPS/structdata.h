@@ -2,10 +2,7 @@
 #define STRUCTDATA_H
 #include <cstdint>
 
-#define S_PI       3.1415926535897932385
-#define S_RO_OM    1.72E-8 //Ohm/m
-#define S_MU_Z     4.*S_PI*1E-7 //H/m
-#define S_K_1      85*1E-4
+namespace indata{
 
 struct InputValue
 {
@@ -52,5 +49,7 @@ struct PulseTransMechanical
 {
 
 };
+}
+
 
 #endif // STRUCTDATA_H

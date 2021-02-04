@@ -13,7 +13,6 @@
 #include "capout.h"
 #include "outfilter.h"
 #include "controlout.h"
-#include "qcustomplot.h"
 
 class PowSuppSolve: public QObject
 {
@@ -106,8 +105,8 @@ signals:
         double sec_voltage_ripple;
         double sec_esr_perc;
         double sec_crfq_value;
-        int16_t sec_curr_peak;
-        int16_t sec_out_voltage;
+        int16_t sec_curr_peak;// from input value
+        int16_t sec_out_voltage;// from input value
         OCap capout;
     };
     
@@ -190,6 +189,8 @@ signals:
     {
 
     };
+
+
 
 private:
     bool m_isSolveRunning;
