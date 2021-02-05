@@ -21,15 +21,7 @@ public:
     explicit PowSuppSolve(QObject *parent = nullptr);
     ~PowSuppSolve();
 
-public slots:
-    void startSolve();
-    void stopSolve();
-
-signals:
-    void solveStarted();
-    void solveFinished();
-    void solveCanceled();
-
+public:
     struct DBridge
     {
         double diode_peak_curr;
@@ -109,7 +101,7 @@ signals:
         int16_t sec_out_voltage;// from input value
         OCap capout;
     };
-    
+
     struct FullOutFilter
      {
          int16_t frequency;
@@ -187,12 +179,32 @@ signals:
 
     struct PulseTransSecondWired
     {
-
+        QVector<double> out_one_wind;
+        QVector<double> out_two_wind;
+        QVector<double> out_three_wind;
+        QVector<double> out_four_wind;
+        QVector<double> out_aux_wind;
+        QVector<double> primary_wind;
     };
 
+public slots:
+    void calcInputNetwork();
+    void calcTransformetNetwork();
+    void calcSwitchNetwork();
+    void calcOtputNetwork();
+    void calcPowerStageModel();
+    void calcOptocouplerFeedback();
+
+signals:
+    void startCalcInputNetwork();
+    void finishedInputNetwork();
+    void startCalcTransformer();
+    void finishedCalcTransformer();
 
 
 private:
+    void calcBulkCapacitor();
+    void calcDiodeBridge();
     bool m_isSolveRunning;
 };
 

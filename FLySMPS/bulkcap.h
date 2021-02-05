@@ -24,6 +24,7 @@ public:
     efficiency(eff), pow_max_out(pout),
     freq_line(fl)
     {}
+    ~BulkCap(){}
 
     inline double DeltaT() const;
     inline double ChargTime() const;

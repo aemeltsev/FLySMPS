@@ -2,7 +2,7 @@
 #define STRUCTDATA_H
 #include <cstdint>
 
-namespace indata{
+namespace flsmps{
 
 struct InputValue
 {

@@ -41,15 +41,15 @@ private:
     void setPowerStageModel();
     void setPowerStageMag();
     void setPowerStagePhase();
-    void setOptoFedbStage();
-    void setOptoFedbMag();
-    void setOptoFedbPhase();
+    void setOptoFeedbStage();
+    void setOptoFeedbMag();
+    void setOptoFeedbPhase();
     void setUpdateInputValues();
     double convertToValues(const QString& input);
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
-    QScopedPointer<indata::InputValue> m_invalues;
+    QScopedPointer<flsmps::InputValue> m_invalues;
 };
 
 #endif // FLYSMPS_H
