@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QVector>
 #include "LoggingCategories.h"
-#include "structdata.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
 #include "fbptransformer.h"
@@ -22,6 +21,77 @@ public:
     ~PowSuppSolve();
 
 public:
+
+public slots:
+    void calcInputNetwork();
+    void calcTransformetNetwork();
+    void calcSwitchNetwork();
+    void calcOtputNetwork();
+    void calcPowerStageModel();
+    void calcOptocouplerFeedback();
+
+signals:
+    void startCalcInputNetwork();
+    void finishedInputNetwork();
+    void startCalcTransformer();
+    void finishedCalcTransformer();
+    void startCalcSwitchNetwork();
+    void finishedCalcSwitchNetwork();
+    void startCalcPowerStageModel();
+    void finishedCalcPowerStageModel();
+    void startCalcOptocouplerFeedback();
+    void finishedCalcOptocouplerFeedback();
+
+private:
+    //input containers
+    struct InputValue
+    {
+        int16_t input_volt_ac_max;
+        int16_t input_volt_ac_min;
+        int16_t freq_line;
+        int16_t freq_switch;
+        int16_t temp_amb;
+        //Input secondary voltage, current value
+        int16_t volt_out_one;
+        int16_t curr_out_one;
+        int16_t volt_out_two;
+        int16_t curr_out_two;
+        int16_t volt_out_three;
+        int16_t curr_out_three;
+        int16_t volt_out_four;
+        int16_t curr_out_four;
+        int16_t volt_out_aux;
+        int16_t curr_out_aux;
+        double eff;
+        double power_out_max;
+        //Pre-design
+        int16_t refl_volt_max;
+        double eff_transf;
+        int16_t voltage_spike;
+        double volt_diode_drop_sec;
+        double volt_diode_drop_bridge;
+        double leakage_induct;
+        //for cap out
+        double sec_voltage_ripple;
+        double sec_esr_perc;
+        double sec_crfq_value;
+    };
+
+    struct PulseTransPreDesign
+    {
+        double mag_flux_dens;
+        double win_util_factor;
+        int16_t max_curr_dens;
+        double al_induct_factor;
+    };
+
+    struct PulseTransMechanical
+    {
+
+    };
+    //input containers
+
+    // out containers
     struct DBridge
     {
         double diode_peak_curr;
@@ -187,24 +257,32 @@ public:
         QVector<double> primary_wind;
     };
 
-public slots:
-    void calcInputNetwork();
-    void calcTransformetNetwork();
-    void calcSwitchNetwork();
-    void calcOtputNetwork();
-    void calcPowerStageModel();
-    void calcOptocouplerFeedback();
+    DBridge *m_db;
+    BCap *m_bc;
+    PMosfet *m_pm;
+    ODiode *m_od;
+    FullOutDiode *m_fod;
+    OCap *m_oc;
+    FullOutCap *m_foc;
+    FullOutFilter *m_of;
+    PowerStageSmallSignalModel *m_pssm;
+    OptocouplerFedbackStage *m_ofs;
+    PulseTransPrimaryElectr *m_ptpe;
+    PulseTransSecondWired *m_ptsw;
+    // out containers
 
-signals:
-    void startCalcInputNetwork();
-    void finishedInputNetwork();
-    void startCalcTransformer();
-    void finishedCalcTransformer();
-
-
-private:
-    void calcBulkCapacitor();
-    void calcDiodeBridge();
+    void calcBulkCapacitor(BulkCap *p_bcap);
+    void calcDiodeBridge(DiodeBridge *p_bdiode);
+    void calcTransformerPrimary(FBPTPrimary *p_pwtrprim);
+    void calcTransformerCore(FBPTCore *p_pwtrcore);
+    void calcTransformerSecondary(FBPTSecondary *p_pwrtsec);
+    void calcTransformerWinding(FBPTWinding *p_pwtrwind);
+    void calcPowerMosfet(SwMosfet *p_swmos);
+    void calcDiodeOut(DiodeOut *p_do);
+    void calcCapacitorOut(CapOut *p_co);
+    void calcFilterOut(OutFilter *p_outfl);
+    void calcPowerStage(PCSSM *p_pcssm);
+    void calcOptocoupler(FCCD *p_fccd);
     bool m_isSolveRunning;
 };
 
