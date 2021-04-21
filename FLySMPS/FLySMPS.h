@@ -50,7 +50,6 @@ private:
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
-    QScopedPointer<flsmps::InputValue> m_invalues;
 };
 
 #endif // FLYSMPS_H
