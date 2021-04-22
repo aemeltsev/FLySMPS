@@ -59,13 +59,14 @@ struct CoreSelection
 {
     double core_area_product;//Ap
     double core_permeal;//mu_rc(mu_r - relative permeability TDK)
+    double core_win_height;//height of the window
+    double ind_fact;//Al(inductance factor TDK)
+    /**< Core parameters */
     double core_cross_sect_area;//Ac(Ae - effective magnetic cross section TDK)
     double core_wind_area;//Wa(An - winding cross section TDK)
     double core_vol;//Vc(Ve - effective magnetic volume TDK)
     double mean_leng_per_turn;//l_t(l_n - average length of turn TDK)
     double mean_mag_path_leng;//l_c(l_e - effective magnetic path length TDK)
-    double core_win_height;//height of the window
-    double ind_fact;//Al(inductance factor TDK)
 };
 
 struct MechDimension
