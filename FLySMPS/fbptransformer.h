@@ -79,6 +79,18 @@ struct MechDimension
     double Diam;
 };
 
+enum class FBPT_NUM_SETTING
+{
+    FBPT_INDUCT_FACTOR,
+    FBPT_FLUX_PEAK,
+    FBPT_CORE_AREA,
+};
+enum class FBPT_SHAPE_AIR_GAP
+{
+    RECT_AIR_GAP,
+    ROUND_AIR_GAP,
+};
+
 class FBPTCore
 {
 public:
@@ -119,18 +131,6 @@ private:
     double curr_primary_rms;//Iprms
     double curr_primary_peak_peak;//Ippkpk
     float power_out_max;
-
-    enum FBPT_NUM_SETTING
-    {
-        FBPT_INDUCT_FACTOR,
-        FBPT_FLUX_PEAK,
-        FBPT_CORE_AREA,
-    };
-    enum FBPT_SHAPE_AIR_GAP
-    {
-        RECT_AIR_GAP,
-        ROUND_AIR_GAP,
-    };
 
     inline double EnergyStoredChoke() const;//
     //Correction factor F. - the edge coefficient(FFC)
