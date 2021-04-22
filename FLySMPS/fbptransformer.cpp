@@ -172,15 +172,15 @@ void FBPTCore::setCoreSelection(double ap, double mu_rc,
 double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns)
 {
     double temp = 0.0;
-    if(fns == FBPT_INDUCT_FACTOR)
+    if(fns == FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR)
     {
         temp = qSqrt(primary_induct/cs.ind_fact);
     }
-    else if(fns == FBPT_FLUX_PEAK)
+    else if(fns == FBPT_NUM_SETTING::FBPT_FLUX_PEAK)
     {
         temp = (primary_induct*curr_primary_peak_peak)/(cs.core_cross_sect_area * flux_dens_max);
     }
-    else if(fns == FBPT_CORE_AREA)
+    else if(fns == FBPT_NUM_SETTING::FBPT_CORE_AREA)
     {
         temp = (core_win_util_fact * cs.core_wind_area)/AreaWindTotal(cs);
     }
@@ -233,13 +233,13 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, dou
 {
     double csa, af, temp = 0.0;
     double u = ewff/agLength(cs, varNumPrim);
-    if(fsag == RECT_AIR_GAP)
+    if(fsag == FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP)
     {
         csa = mchdm.C*mchdm.D;
         af = 2. * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
         temp = 1 + (af/(csa*k));
     }
-    else if(fsag == ROUND_AIR_GAP)
+    else if(fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP)
     {
         csa = (M_PI*qPow(mchdm.Diam, 2))/4.;
         af = M_PI * u * agLength(cs, varNumPrim) * (mchdm.C + mchdm.D + 2. * u * agLength(cs, varNumPrim));
