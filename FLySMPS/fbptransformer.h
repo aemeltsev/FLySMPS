@@ -82,14 +82,14 @@ struct MechDimension
 
 enum class FBPT_NUM_SETTING
 {
-    FBPT_INDUCT_FACTOR,
-    FBPT_FLUX_PEAK,
-    FBPT_CORE_AREA,
+    FBPT_INDUCT_FACTOR = 0,
+    FBPT_FLUX_PEAK     = 1,
+    FBPT_CORE_AREA     = 2
 };
 enum class FBPT_SHAPE_AIR_GAP
 {
-    RECT_AIR_GAP,
-    ROUND_AIR_GAP,
+    RECT_AIR_GAP  = 0,
+    ROUND_AIR_GAP = 1
 };
 
 class FBPTCore
