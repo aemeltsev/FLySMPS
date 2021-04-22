@@ -2,6 +2,7 @@
 #define POWSUPPSOLVE_H
 
 #include <QObject>
+#include <QScopedPointer>
 #include <QVector>
 #include "LoggingCategories.h"
 #include "diodebridge.h"
@@ -21,40 +22,7 @@ public:
     ~PowSuppSolve();
 
 public:
-    void setGeneralSecondaryValues(
-            int16_t p_volt_out_one,
-            int16_t p_curr_out_one,
-            int16_t p_volt_out_two,
-            int16_t p_curr_out_two,
-            int16_t p_volt_out_three,
-            int16_t p_curr_out_three,
-            int16_t p_volt_out_four,
-            int16_t p_curr_out_four,
-            int16_t p_volt_out_aux,
-            int16_t p_curr_out_aux
-            );
-    void setGeneralInitValues(
-            int16_t p_input_volt_ac_max,
-            int16_t p_input_volt_ac_min,
-            int16_t p_freq_line,
-            int16_t p_freq_switch,
-            int16_t p_temp_amb,
-            double p_eff,
-            double p_power_out_max
-            );
-    void setGeneralPreDesign(
-            int16_t p_refl_volt_max,
-            double p_eff_transf,
-            int16_t p_voltage_spike,
-            double p_volt_diode_drop_sec,
-            double p_volt_diode_drop_bridge,
-            double pleakage_induct
-            );
-    void setOutputCap(
-            double p_sec_voltage_ripple,
-            double p_sec_esr_perc,
-            double p_sec_crfq_value
-            );
+
     void setTransformerPreDesign(
             double p_mag_flux_dens,
             double p_win_util_factor,
@@ -109,8 +77,8 @@ private:
         double power_out_max;
         //Pre-design
         int16_t refl_volt_max;
-        double eff_transf;
         int16_t voltage_spike;
+        double eff_transf;
         double volt_diode_drop_sec;
         double volt_diode_drop_bridge;
         double leakage_induct;
@@ -118,6 +86,7 @@ private:
         double sec_voltage_ripple;
         double sec_esr_perc;
         double sec_crfq_value;
+        double mrgn; /**< margin of the output power */
     };
 
     struct PulseTransPreDesign
@@ -127,8 +96,6 @@ private:
         int16_t max_curr_dens;
         double al_induct_factor;
     };
-
-    InputValue *m_indata;
     //input containers
 
     // out containers
@@ -297,9 +264,11 @@ private:
         QVector<double> primary_wind;
     };
 
-    DBridge *m_db;
-    BCap *m_bc;
-    PMosfet *m_pm;
+    QScopedPointer<DBridge> m_db;
+    QScopedPointer<BCap> m_bc;
+    QScopedPointer<PMosfet> m_pm;
+    QScopedPointer<PulseTransPrimaryElectr> m_ptpe;
+    QScopedPointer<PulseTransSecondWired> m_ptsw;
     ODiode *m_od;
     FullOutDiode *m_fod;
     OCap *m_oc;
@@ -307,8 +276,7 @@ private:
     FullOutFilter *m_of;
     PowerStageSmallSignalModel *m_pssm;
     OptocouplerFedbackStage *m_ofs;
-    PulseTransPrimaryElectr *m_ptpe;
-    PulseTransSecondWired *m_ptsw;
+
     // out containers
 
     void calcBulkCapacitor(BulkCap *p_bcap);
@@ -324,6 +292,9 @@ private:
     void calcPowerStage(PCSSM *p_pcssm);
     void calcOptocoupler(FCCD *p_fccd);
     bool m_isSolveRunning;
+
+public:
+    InputValue m_indata;
 };
 
 #endif // POWSUPPSOLVE_H
