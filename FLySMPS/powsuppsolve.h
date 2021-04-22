@@ -128,11 +128,6 @@ private:
         double al_induct_factor;
     };
 
-    struct PulseTransMechanical
-    {
-
-    };
-
     InputValue *m_indata;
     //input containers
 
