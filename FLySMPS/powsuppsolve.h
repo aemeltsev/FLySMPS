@@ -263,38 +263,23 @@ private:
         QVector<double> out_aux_wind;
         QVector<double> primary_wind;
     };
+    // out containers
+    bool m_isSolveRunning;
 
+public:
+    InputValue m_indata;
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
     QScopedPointer<PMosfet> m_pm;
     QScopedPointer<PulseTransPrimaryElectr> m_ptpe;
     QScopedPointer<PulseTransSecondWired> m_ptsw;
-    ODiode *m_od;
-    FullOutDiode *m_fod;
-    OCap *m_oc;
-    FullOutCap *m_foc;
-    FullOutFilter *m_of;
-    PowerStageSmallSignalModel *m_pssm;
-    OptocouplerFedbackStage *m_ofs;
-
-    // out containers
-
-    void calcBulkCapacitor(BulkCap *p_bcap);
-    void calcDiodeBridge(DiodeBridge *p_bdiode);
-    void calcTransformerPrimary(FBPTPrimary *p_pwtrprim);
-    void calcTransformerCore(FBPTCore *p_pwtrcore);
-    void calcTransformerSecondary(FBPTSecondary *p_pwrtsec);
-    void calcTransformerWinding(FBPTWinding *p_pwtrwind);
-    void calcPowerMosfet(SwMosfet *p_swmos);
-    void calcDiodeOut(DiodeOut *p_do);
-    void calcCapacitorOut(CapOut *p_co);
-    void calcFilterOut(OutFilter *p_outfl);
-    void calcPowerStage(PCSSM *p_pcssm);
-    void calcOptocoupler(FCCD *p_fccd);
-    bool m_isSolveRunning;
-
-public:
-    InputValue m_indata;
+    //ODiode m_od;
+    QScopedPointer<FullOutDiode> m_fod;
+    //OCap m_oc;
+    QScopedPointer<FullOutCap> m_foc;
+    QScopedPointer<FullOutFilter> m_of;
+    QScopedPointer<PowerStageSmallSignalModel> m_pssm;
+    QScopedPointer<OptocouplerFedbackStage> m_ofs;
 };
 
 #endif // POWSUPPSOLVE_H
