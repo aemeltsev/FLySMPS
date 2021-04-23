@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -344,7 +344,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="InpCalcPushButton">
       <property name="geometry">
        <rect>
         <x>620</x>
