@@ -8,6 +8,9 @@ FLySMPS::FLySMPS(QWidget *parent) :
 {
     ui->setupUi(this);
     initInputValues();
+
+    connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
+
 }
 
 FLySMPS::~FLySMPS()
@@ -54,6 +57,16 @@ void FLySMPS::initInputValues()
     /*m_psolve->m_indata.sec_voltage_ripple = convertToValues(static_cast<QString>(ui->));
     m_psolve->m_indata.sec_esr_perc = convertToValues(static_cast<QString>(ui->));
     m_psolve->m_indata.sec_crfq_value = convertToValues(static_cast<QString>(ui->));*/
+}
+
+void FLySMPS::initTransValues()
+{
+
+}
+
+void FLySMPS::initMosfetValues()
+{
+
 }
 
 double FLySMPS::convertToValues(const QString &input)
