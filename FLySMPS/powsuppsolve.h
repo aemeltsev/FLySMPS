@@ -52,6 +52,7 @@ signals:
     void finishedCalcPowerStageModel();
     void startCalcOptocouplerFeedback();
     void finishedCalcOptocouplerFeedback();
+    void calcCanceled();
 
 private:
     //input containers
@@ -264,7 +265,7 @@ private:
         QVector<double> primary_wind;
     };
     // out containers
-    bool m_isSolveRunning;
+    bool m_isSolveRunning = false;
 
 public:
     InputValue m_indata;
