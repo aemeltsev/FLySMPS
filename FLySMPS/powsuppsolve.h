@@ -35,7 +35,7 @@ public:
 
 public slots:
     void calcInputNetwork();
-    void calcTransformetNetwork();
+    void calcTransformerNetwork();
     void calcSwitchNetwork();
     void calcOtputNetwork();
     void calcPowerStageModel();

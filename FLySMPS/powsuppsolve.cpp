@@ -35,6 +35,7 @@ void PowSuppSolve::calcInputNetwork()
                                               m_indata.eff,
                                               static_cast<float>(m_indata.power_out_max),
                                               m_indata.freq_line));
+    /**< Fill the structure */
     m_bc->delta_t = b_cap->DeltaT();
     m_bc->charg_time = b_cap->ChargTime();
     m_bc->bcapacitor_value = b_cap->CapValue();
@@ -66,4 +67,9 @@ void PowSuppSolve::calcInputNetwork()
 
     emit finishedInputNetwork();
     m_isSolveRunning = false;
+}
+
+void PowSuppSolve::calcTransformerNetwork()
+{
+
 }
