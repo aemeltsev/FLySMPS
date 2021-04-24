@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QDebug>
 #include "powsuppsolve.h"
-#include "structdata.h"
 #include "qcustomplot.h"
 
 #include "ui_FLySMPS.h"

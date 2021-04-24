@@ -51,7 +51,6 @@ HEADERS += \
     outfilter.h \
     powsuppsolve.h \
     qcustomplot.h \
-    structdata.h \
     swmosfet.h
 
 FORMS += \
