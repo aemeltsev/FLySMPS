@@ -38,7 +38,7 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.mrgn = convertToValues(static_cast<QString>(ui->Eff->text())); /* TMP after use real value */
 
     auto outPwr =
-        [=](double mrg)
+        [=](float mrg)
     {
             return ((m_psolve->m_indata.volt_out_one * m_psolve->m_indata.curr_out_one)
                     +(m_psolve->m_indata.volt_out_two * m_psolve->m_indata.curr_out_two)
@@ -50,13 +50,12 @@ void FLySMPS::initInputValues()
 
     m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->ReflVoltage->text())));
     m_psolve->m_indata.voltage_spike = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VSpike->text())));
+    m_psolve->m_indata.ripple_fact = convertToValues(static_cast<QString>(/*TMP*/ui->VSpike->text()));
     m_psolve->m_indata.eff_transf = convertToValues(static_cast<QString>(ui->EffTransf->text()));
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
     m_psolve->m_indata.leakage_induct = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
-    /*m_psolve->m_indata.sec_voltage_ripple = convertToValues(static_cast<QString>(ui->));
-    m_psolve->m_indata.sec_esr_perc = convertToValues(static_cast<QString>(ui->));
-    m_psolve->m_indata.sec_crfq_value = convertToValues(static_cast<QString>(ui->));*/
+
 }
 
 void FLySMPS::initTransValues()
@@ -67,6 +66,18 @@ void FLySMPS::initTransValues()
 void FLySMPS::initMosfetValues()
 {
 
+}
+
+void FLySMPS::initOutDiodeValues()
+{
+
+}
+
+void FLySMPS::initOutCapValues()
+{
+    /*m_psolve->m_indata.sec_voltage_ripple = convertToValues(static_cast<QString>(ui->));
+    m_psolve->m_indata.sec_esr_perc = convertToValues(static_cast<QString>(ui->));
+    m_psolve->m_indata.sec_crfq_value = convertToValues(static_cast<QString>(ui->));*/
 }
 
 double FLySMPS::convertToValues(const QString &input)
