@@ -71,5 +71,13 @@ void PowSuppSolve::calcInputNetwork()
 
 void PowSuppSolve::calcTransformerNetwork()
 {
+    m_isSolveRunning = true;
+    emit startCalcTransformer();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
 
 }

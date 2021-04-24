@@ -21,18 +21,6 @@ public:
     explicit PowSuppSolve(QObject *parent = nullptr);
     ~PowSuppSolve();
 
-public:
-
-    void setTransformerPreDesign(
-            double p_mag_flux_dens,
-            double p_win_util_factor,
-            int16_t p_max_curr_dens,
-            double p_al_induct_factor
-            );
-    void setTransformerCoreParam(
-            
-            );
-
 public slots:
     void calcInputNetwork();
     void calcTransformerNetwork();
@@ -79,15 +67,16 @@ private:
         //Pre-design
         int16_t refl_volt_max;
         int16_t voltage_spike;
-        double eff_transf;
-        double volt_diode_drop_sec;
-        double volt_diode_drop_bridge;
+        float ripple_fact;
+        float eff_transf;
+        float volt_diode_drop_sec;
+        float volt_diode_drop_bridge;
         double leakage_induct;
         //for cap out
         double sec_voltage_ripple;
-        double sec_esr_perc;
+        float sec_esr_perc;
         double sec_crfq_value;
-        double mrgn; /**< margin of the output power */
+        float mrgn; /**< margin of the output power */
     };
 
     struct PulseTransPreDesign
