@@ -140,12 +140,6 @@ private:
                            double k=1.0) const;
 
 public:
-    /*Core Geometry Factor and Core Selection*/
-    void setCoreSelection(double ap, double mu_rc,
-                          double ac, double wa,
-                          double vc, double lt,
-                          double lc, double hw,
-                          double al, CoreSelection &cs);
     inline double CoreAreaProd() const;//Core geometry coefficient(Ap)
     inline double CoreWinToCoreSect() const;//Cross-sectional area to Window area core(WaAe)
     //inline double DeltaFluxMax() const;

@@ -138,28 +138,6 @@ double FBPTCore::CurrentDens(const CoreSelection &cs) const
 {
     return curr_primary_peak/AreaWindTotal(cs);
 }
-
-/**
-  * @brief
-  * @param
-  * @return
-  */
-void FBPTCore::setCoreSelection(double ap, double mu_rc,
-                                double ac, double wa,
-                                double vc, double lt,
-                                double lc, double hw, double al,
-                                CoreSelection &cs)
-{
- cs.core_area_product = ap;
- cs.core_permeal = mu_rc;
- cs.core_cross_sect_area = ac;
- cs.core_wind_area = wa;
- cs.core_vol = vc;
- cs.mean_leng_per_turn = lt;
- cs.mean_mag_path_leng = lc;
- cs.core_win_height = hw;
- cs.ind_fact = al;
-}
 /*Area product calculation*/
 
 /*Primary turns*/
