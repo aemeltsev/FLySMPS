@@ -58,6 +58,32 @@ void FLySMPS::initInputValues()
 
 }
 
+void FLySMPS::setSolveInputDiode()
+{
+    ui->DiodeCurrPeak->setNum(m_psolve->m_db->diode_peak_curr);
+    ui->DiodeCurrRMS->setNum(m_psolve->m_db->diode_rms_curr);
+    ui->DiodeCurrAVG->setNum(m_psolve->m_db->diode_avg_curr);
+    ui->DiodeCurrRMSTot->setNum(m_psolve->m_db->diode_rms_curr_tot);
+    ui->LoadCurrAVG->setNum(m_psolve->m_db->load_avg_curr);
+    ui->DiodeCurrSlope->setNum(m_psolve->m_db->diode_curr_slope);
+    ui->DiodeCondTime->setNum(m_psolve->m_db->diode_cond_time);
+    ui->VoltMinPeakInput->setNum(m_psolve->m_db->in_min_rms_voltage);
+    ui->VoltMaxPeakInput->setNum(m_psolve->m_db->in_max_rms_voltage);
+}
+
+void FLySMPS::setSolveBulkCap()
+{
+    ui->DeltaT->setNum(m_psolve->m_bc->delta_t);
+    ui->ChargT->setNum(m_psolve->m_bc->charg_time);
+    ui->ILoadMax->setNum(m_psolve->m_bc->load_curr_max);
+    ui->ILoadMin->setNum(m_psolve->m_bc->load_curr_min);
+    ui->BulkCapacitance->setNum(m_psolve->m_bc->bcapacitor_value);
+    ui->IBulkCapPeak->setNum(m_psolve->m_bc->bcapacitor_peak_curr);
+    ui->IBulkCapRMS->setNum(m_psolve->m_bc->bcapacitor_rms_curr);
+    ui->VoltDCMin->setNum(m_psolve->m_bc->input_dc_min_voltage);
+    ui->MinInpVolt->setNum(m_psolve->m_bc->input_min_voltage);
+}
+
 void FLySMPS::initTransValues()
 {
 
