@@ -358,8 +358,8 @@
        <rect>
         <x>290</x>
         <y>190</y>
-        <width>321</width>
-        <height>63</height>
+        <width>241</width>
+        <height>91</height>
        </rect>
       </property>
       <property name="title">
@@ -374,16 +374,23 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="PowOut"/>
+        <widget class="QLabel" name="PowOut">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="0" column="2">
+       <item row="1" column="0">
         <widget class="QLabel" name="label_24">
          <property name="text">
           <string>Eff.</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="1" column="1">
         <widget class="QLineEdit" name="Eff"/>
        </item>
       </layout>
@@ -391,8 +398,8 @@
      <widget class="QPushButton" name="InpCalcPushButton">
       <property name="geometry">
        <rect>
-        <x>620</x>
-        <y>220</y>
+        <x>290</x>
+        <y>300</y>
         <width>80</width>
         <height>22</height>
        </rect>
@@ -419,24 +426,25 @@
        <string>Diode Bridge:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_9">
-       <item row="3" column="5">
-        <widget class="QLineEdit" name="VoltMaxPeakInput"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_46">
+       <item row="2" column="4">
+        <widget class="QLabel" name="label_51">
          <property name="text">
-          <string>Diode Current Slope [A/s]</string>
+          <string>Minimum peak input voltage [V]</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="DiodeCurrAVG"/>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="DiodeCurrRMSTot"/>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="DiodeCurrRMS"/>
+       <item row="0" column="1">
+        <widget class="QLabel" name="DiodeCurrPeak">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_41">
@@ -445,10 +453,24 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="label_43">
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_46">
          <property name="text">
-          <string>I Diode AVG. [A]</string>
+          <string>Diode Current Slope [A/s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_42">
+         <property name="text">
+          <string>I Diode RMS. [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLabel" name="label_50">
+         <property name="text">
+          <string>Maximum peak input voltage [V]</string>
          </property>
         </widget>
        </item>
@@ -459,26 +481,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_40">
-         <property name="text">
-          <string>I Diode Peak [A]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="DiodeCurrPeak"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="DiodeCondTime"/>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_42">
-         <property name="text">
-          <string>I Diode RMS. [A]</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_44">
          <property name="text">
@@ -486,26 +488,97 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="LoadCurrAVG"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="DiodeCurrSlope"/>
-       </item>
-       <item row="2" column="5">
-        <widget class="QLineEdit" name="VoltMinPeakInput"/>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLabel" name="label_51">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_40">
          <property name="text">
-          <string>Minimum peak input voltage [V]</string>
+          <string>I Diode Peak [A]</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="4">
-        <widget class="QLabel" name="label_50">
+       <item row="1" column="4">
+        <widget class="QLabel" name="label_43">
          <property name="text">
-          <string>Maximum peak input voltage [V]</string>
+          <string>I Diode AVG. [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="DiodeCondTime">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="LoadCurrAVG">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="DiodeCurrRMSTot">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="DiodeCurrRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="DiodeCurrSlope">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLabel" name="DiodeCurrAVG">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QLabel" name="VoltMinPeakInput">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="QLabel" name="VoltMaxPeakInput">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -517,42 +590,29 @@
         <x>20</x>
         <y>166</y>
         <width>781</width>
-        <height>161</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
        <string>Bulk Capacitor:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_10">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_33">
+       <item row="2" column="1">
+        <widget class="QLabel" name="ILoadMax">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>Delta time [s]</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="DeltaT"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_37">
+       <item row="2" column="6">
+        <widget class="QLabel" name="label_48">
          <property name="text">
-          <string>Bulk Cap. [F]</string>
+          <string>Minimum Input voltage [V]</string>
          </property>
         </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="BulkCapacitance"/>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_38">
-         <property name="text">
-          <string>I bulk cap. peak [A]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="IBulkCapPeak"/>
        </item>
        <item row="0" column="6">
         <widget class="QLabel" name="label_39">
@@ -561,8 +621,22 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="7">
-        <widget class="QLineEdit" name="IBulkCapRMS"/>
+       <item row="0" column="3">
+        <widget class="QLabel" name="BulkCapacitance">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_37">
+         <property name="text">
+          <string>Bulk Cap. [F]</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_34">
@@ -571,8 +645,83 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_35">
+         <property name="text">
+          <string>I load. max. [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="DeltaT">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="IBulkCapRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="ILoadMin">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="IBulkCapPeak">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_33">
+         <property name="text">
+          <string>Delta time [s]</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="ChargT"/>
+        <widget class="QLabel" name="ChargT">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_36">
+         <property name="text">
+          <string>I load. min. [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_38">
+         <property name="text">
+          <string>I bulk cap. peak [A]</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="6">
         <widget class="QLabel" name="label_49">
@@ -582,35 +731,22 @@
         </widget>
        </item>
        <item row="1" column="7">
-        <widget class="QLineEdit" name="VoltDCMin"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_35">
+        <widget class="QLabel" name="VoltDCMin">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>I load. max. [A]</string>
+          <string/>
          </property>
         </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="ILoadMax"/>
        </item>
        <item row="2" column="7">
-        <widget class="QLineEdit" name="MinInpVolt"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_36">
-         <property name="text">
-          <string>I load. min. [A]</string>
+        <widget class="QLabel" name="MinInpVolt">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="ILoadMin"/>
-       </item>
-       <item row="2" column="6">
-        <widget class="QLabel" name="label_48">
          <property name="text">
-          <string>Minimum Input voltage [V]</string>
+          <string/>
          </property>
         </widget>
        </item>
