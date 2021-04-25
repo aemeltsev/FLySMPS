@@ -148,11 +148,6 @@ public:
     /*Core Geometry Factor and Core Selection*/
 
     double numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
-
-    /*Air-Gap Length Considered with Fringing Effect*/
-    void setMechanDimension(double f, double c,
-                            double e, double d,
-                            MechDimension &mch, double diam);
     inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
     /*Air-Gap Length Considered with Fringing Effect*/
 
