@@ -10,6 +10,8 @@ FLySMPS::FLySMPS(QWidget *parent) :
     initInputValues();
 
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveInputDiode);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveBulkCap);
 
 }
 
@@ -55,7 +57,6 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
     m_psolve->m_indata.leakage_induct = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
-
 }
 
 void FLySMPS::setSolveInputDiode()
