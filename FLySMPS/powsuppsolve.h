@@ -258,6 +258,11 @@ private:
 
 public:
     InputValue m_indata;
+    CoreSelection m_cs;
+    MechDimension m_md;
+    FBPT_NUM_SETTING m_fns;
+    FBPT_SHAPE_AIR_GAP m_fsag;
+
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
     QScopedPointer<PMosfet> m_pm;
