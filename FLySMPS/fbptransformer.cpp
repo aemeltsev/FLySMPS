@@ -130,7 +130,7 @@ double FBPTCore::AreaWindTotal(const CoreSelection &cs) const
 }
 
 /**
- * @brief FBPTCore::CurrentDens
+ * @brief CurrentDens
  * @param cs
  * @return
  */
@@ -167,23 +167,6 @@ double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns
 /*Primary turns*/
 
 /*Air gap methods*/
-/**
-  * @brief Mechanical dimension
-  * @param c - width of core, TDK dimension nomenclature
-  * @param e - window width, TDK dimension nomenclature
-  * @param f - window half height, TDK dimension nomenclature
-  * @param d - size of rectangular central kern, TDK dimension nomenclature
-  * @param diam - size of round central kern, TDK dimension nomenclature
-  */
-void FBPTCore::setMechanDimension(double c, double e,
-                                  double f, double d, MechDimension &mchdm, double diam=0.0)
-{
-    mchdm.C = c;
-    mchdm.E = e;
-    mchdm.F = f;
-    mchdm.D = d;
-    mchdm.Diam = diam;
-}
 /**
   * @brief agLength - Air gap length
   * @param cs - core parameters
