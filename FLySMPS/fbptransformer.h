@@ -72,12 +72,12 @@ struct CoreSelection
 struct MechDimension
 {
     /* Rectangular Air Gap */
-    double C;
-    double E;
-    double F;
-    double D; //size of rectangulared, central kern
+    float C; /**< c - width of core, TDK dimension nomenclature */
+    float E; /**< e - window width, TDK dimension nomenclature */
+    float F; /**< f - window half height, TDK dimension nomenclature */
+    float D; /**< d - size of rectangular central kern, TDK dimension nomenclature */
     /* Round Air Gap */
-    double Diam;
+    float Diam; /**< diam - size of round central kern, TDK dimension nomenclature */
 };
 
 enum class FBPT_NUM_SETTING
