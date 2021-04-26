@@ -87,6 +87,42 @@ void FLySMPS::setSolveBulkCap()
 
 void FLySMPS::initTransValues()
 {
+    if(ui->AEUse->isChecked()){
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_CORE_AREA;
+    }
+    else if(ui->ALUse->isChecked()){
+        /**< If use AL factor for calculate */
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
+        /**< Check AL line edit */
+    }
+    else if(ui->BMUse->isChecked()){
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
+    }
+
+    /* if(ui->SAG->idChecked()){
+     *     m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
+       }
+       else if(ui->SAG->idChecked()){
+           m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
+       }
+     */
+
+    m_psolve->m_cs.core_cross_sect_area = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+    m_psolve->m_cs.core_vol = convertToValues(static_cast<QString>(ui->VE->text()));
+    m_psolve->m_cs.mean_leng_per_turn = convertToValues(static_cast<QString>(ui->MLT->text()));
+    m_psolve->m_cs.mean_mag_path_leng = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_md.D = convertToValues(static_cast<QString>(ui->Dsize->text()));
+    m_psolve->m_md.C = convertToValues(static_cast<QString>(ui->Csize->text()));
+    m_psolve->m_md.F = convertToValues(static_cast<QString>(ui->Fsize->text()));
+    m_psolve->m_md.E = convertToValues(static_cast<QString>(ui->Esize->text()));
+
+    if(m_psolve->m_fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP){
+        /* m_psolve->m_md.Diam = convertToValues(static_cast<QString>()); */
+    }
+    else{
+        m_psolve->m_md.Diam = 0.;
+    }
 
 }
 
