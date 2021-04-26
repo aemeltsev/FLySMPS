@@ -96,5 +96,5 @@ void PowSuppSolve::calcTransformerNetwork()
     m_ptpe->curr_primary_valley = t_prim->CurrPriValley();
     m_ptpe->curr_primary_rms = t_prim->CurrPriRMS();
 
-    QScopedPointer<FBPTCore> t_core(new FBPTCore())
+    //QScopedPointer<FBPTCore> t_core(new FBPTCore())
 }
