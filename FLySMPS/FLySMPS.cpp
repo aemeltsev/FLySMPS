@@ -10,6 +10,8 @@ FLySMPS::FLySMPS(QWidget *parent) :
     initInputValues();
 
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveInputDiode);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveBulkCap);
 
 }
 
@@ -55,11 +57,72 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
     m_psolve->m_indata.leakage_induct = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
+}
 
+void FLySMPS::setSolveInputDiode()
+{
+    ui->DiodeCurrPeak->setNum(m_psolve->m_db->diode_peak_curr);
+    ui->DiodeCurrRMS->setNum(m_psolve->m_db->diode_rms_curr);
+    ui->DiodeCurrAVG->setNum(m_psolve->m_db->diode_avg_curr);
+    ui->DiodeCurrRMSTot->setNum(m_psolve->m_db->diode_rms_curr_tot);
+    ui->LoadCurrAVG->setNum(m_psolve->m_db->load_avg_curr);
+    ui->DiodeCurrSlope->setNum(m_psolve->m_db->diode_curr_slope);
+    ui->DiodeCondTime->setNum(m_psolve->m_db->diode_cond_time);
+    ui->VoltMinPeakInput->setNum(m_psolve->m_db->in_min_rms_voltage);
+    ui->VoltMaxPeakInput->setNum(m_psolve->m_db->in_max_rms_voltage);
+}
+
+void FLySMPS::setSolveBulkCap()
+{
+    ui->DeltaT->setNum(m_psolve->m_bc->delta_t);
+    ui->ChargT->setNum(m_psolve->m_bc->charg_time);
+    ui->ILoadMax->setNum(m_psolve->m_bc->load_curr_max);
+    ui->ILoadMin->setNum(m_psolve->m_bc->load_curr_min);
+    ui->BulkCapacitance->setNum(m_psolve->m_bc->bcapacitor_value);
+    ui->IBulkCapPeak->setNum(m_psolve->m_bc->bcapacitor_peak_curr);
+    ui->IBulkCapRMS->setNum(m_psolve->m_bc->bcapacitor_rms_curr);
+    ui->VoltDCMin->setNum(m_psolve->m_bc->input_dc_min_voltage);
+    ui->MinInpVolt->setNum(m_psolve->m_bc->input_min_voltage);
 }
 
 void FLySMPS::initTransValues()
 {
+    if(ui->AEUse->isChecked()){
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_CORE_AREA;
+    }
+    else if(ui->ALUse->isChecked()){
+        /**< If use AL factor for calculate */
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
+        /**< Check AL line edit */
+    }
+    else if(ui->BMUse->isChecked()){
+        m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
+    }
+
+    /* if(ui->SAG->idChecked()){
+     *     m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
+       }
+       else if(ui->SAG->idChecked()){
+           m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
+       }
+     */
+
+    m_psolve->m_cs.core_cross_sect_area = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+    m_psolve->m_cs.core_vol = convertToValues(static_cast<QString>(ui->VE->text()));
+    m_psolve->m_cs.mean_leng_per_turn = convertToValues(static_cast<QString>(ui->MLT->text()));
+    m_psolve->m_cs.mean_mag_path_leng = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_md.D = convertToValues(static_cast<QString>(ui->Dsize->text()));
+    m_psolve->m_md.C = convertToValues(static_cast<QString>(ui->Csize->text()));
+    m_psolve->m_md.F = convertToValues(static_cast<QString>(ui->Fsize->text()));
+    m_psolve->m_md.E = convertToValues(static_cast<QString>(ui->Esize->text()));
+
+    if(m_psolve->m_fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP){
+        /* m_psolve->m_md.Diam = convertToValues(static_cast<QString>()); */
+    }
+    else{
+        m_psolve->m_md.Diam = 0.;
+    }
 
 }
 

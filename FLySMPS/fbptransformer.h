@@ -72,12 +72,12 @@ struct CoreSelection
 struct MechDimension
 {
     /* Rectangular Air Gap */
-    double C;
-    double E;
-    double F;
-    double D; //size of rectangulared, central kern
+    float C; /**< c - width of core, TDK dimension nomenclature */
+    float E; /**< e - window width, TDK dimension nomenclature */
+    float F; /**< f - window half height, TDK dimension nomenclature */
+    float D; /**< d - size of rectangular central kern, TDK dimension nomenclature */
     /* Round Air Gap */
-    double Diam;
+    float Diam; /**< diam - size of round central kern, TDK dimension nomenclature */
 };
 
 enum class FBPT_NUM_SETTING
@@ -148,11 +148,6 @@ public:
     /*Core Geometry Factor and Core Selection*/
 
     double numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
-
-    /*Air-Gap Length Considered with Fringing Effect*/
-    void setMechanDimension(double f, double c,
-                            double e, double d,
-                            MechDimension &mch, double diam);
     inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
     /*Air-Gap Length Considered with Fringing Effect*/
 

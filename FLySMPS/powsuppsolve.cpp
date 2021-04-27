@@ -79,5 +79,22 @@ void PowSuppSolve::calcTransformerNetwork()
         return;
     }
 
+    QScopedPointer<FBPTPrimary> t_prim(new FBPTPrimary(m_indata.ripple_fact,
+                                                       m_indata.refl_volt_max,
+                                                       m_indata.power_out_max,
+                                                       m_indata.eff,
+                                                       m_indata.freq_switch));
+    /**< 1. Set input voltage */
+    t_prim->setInputVoltage(m_bc->input_dc_min_voltage, m_bc->input_min_voltage);
+    /**< 2. Fill the structure for primary side */
+    m_ptpe->max_duty_cycle = t_prim->DutyCycleDCM();
+    m_ptpe->inp_power = t_prim->InputPower();
+    m_ptpe->primary_induct = t_prim->PriInduct();
+    m_ptpe->curr_primary_aver = t_prim->CurrPriAver();
+    m_ptpe->curr_primary_peak_peak = t_prim->CurrPriPeakToPeak();
+    m_ptpe->curr_primary_peak = t_prim->CurrPriMax();
+    m_ptpe->curr_primary_valley = t_prim->CurrPriValley();
+    m_ptpe->curr_primary_rms = t_prim->CurrPriRMS();
 
+    //QScopedPointer<FBPTCore> t_core(new FBPTCore())
 }
