@@ -82,9 +82,9 @@ private:
     struct PulseTransPreDesign
     {
         double mag_flux_dens;
-        double win_util_factor;
-        int16_t max_curr_dens;
         double al_induct_factor;
+        float win_util_factor;
+        int16_t max_curr_dens;
     };
     //input containers
 
@@ -260,6 +260,7 @@ public:
     InputValue m_indata;
     CoreSelection m_cs;
     MechDimension m_md;
+    PulseTransPreDesign m_psvar;
     FBPT_NUM_SETTING m_fns;
     FBPT_SHAPE_AIR_GAP m_fsag;
 
