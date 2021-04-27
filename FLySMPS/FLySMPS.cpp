@@ -87,7 +87,9 @@ void FLySMPS::setSolveBulkCap()
 
 void FLySMPS::initTransValues()
 {
-
+    m_psolve->m_psvar.mag_flux_dens = convertToValues(static_cast<QString>(ui->InputBMax->text()));
+    m_psolve->m_psvar.win_util_factor = convertToValues(static_cast<QString>(ui->WinUtilFact->text()));
+    m_psolve->m_psvar.max_curr_dens = convertToValues(static_cast<QString>(ui->MaxCurrDens->text()));
 
     /** If use area product */
     if(ui->AEUse->isChecked()){
@@ -99,8 +101,7 @@ void FLySMPS::initTransValues()
         QString ind_fct;
         ui->InductanceFact->textEdited(ind_fct);
         m_psolve->m_psvar.al_induct_factor = convertToValues(ind_fct);
-        //Check error value, use QValidator
-
+        //TODO Check error value, use QValidator
     }
     /** If use maximum flux density */
     else if(ui->BMUse->isChecked()){
@@ -129,7 +130,7 @@ void FLySMPS::initTransValues()
         QString diam_str;
         ui->RGDiam->textEdited(diam_str);
         m_psolve->m_md.Diam = convertToValues(diam_str);
-        //Check error value, use QValidator
+        //TODO Check error value, use QValidator
     }
     else{
         m_psolve->m_md.Diam = 0.;
