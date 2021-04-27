@@ -87,25 +87,32 @@ void FLySMPS::setSolveBulkCap()
 
 void FLySMPS::initTransValues()
 {
+
+
+    /** If use area product */
     if(ui->AEUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_CORE_AREA;
     }
+    /** If use AL factor for calculate */
     else if(ui->ALUse->isChecked()){
-        /**< If use AL factor for calculate */
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
-        /**< Check AL line edit */
+        QString ind_fct;
+        ui->InductanceFact->textEdited(ind_fct);
+        m_psolve->m_psvar.al_induct_factor = convertToValues(ind_fct);
+        //Check error value, use QValidator
+
     }
+    /** If use maximum flux density */
     else if(ui->BMUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
     }
 
-    /* if(ui->SAG->idChecked()){
-     *     m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
-       }
-       else if(ui->SAG->idChecked()){
-           m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
-       }
-     */
+    if(ui->SGap->isChecked()){
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
+    }
+    else if(ui->RGap->isChecked()){
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
+    }
 
     m_psolve->m_cs.core_cross_sect_area = convertToValues(static_cast<QString>(ui->AE->text()));
     m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
@@ -117,8 +124,12 @@ void FLySMPS::initTransValues()
     m_psolve->m_md.F = convertToValues(static_cast<QString>(ui->Fsize->text()));
     m_psolve->m_md.E = convertToValues(static_cast<QString>(ui->Esize->text()));
 
+    /** If use core with round central kern */
     if(m_psolve->m_fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP){
-        /* m_psolve->m_md.Diam = convertToValues(static_cast<QString>()); */
+        QString diam_str;
+        ui->RGDiam->textEdited(diam_str);
+        m_psolve->m_md.Diam = convertToValues(diam_str);
+        //Check error value, use QValidator
     }
     else{
         m_psolve->m_md.Diam = 0.;
