@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -815,7 +815,7 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_8">
        <item row="4" column="3">
-        <widget class="QLabel" name="GeomCoeff_2">
+        <widget class="QLabel" name="GeomCoeff">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -825,7 +825,7 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QLabel" name="CurPriRMS_2">
+        <widget class="QLabel" name="CurPriRMS">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -856,7 +856,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLabel" name="CurPriPkPk_2">
+        <widget class="QLabel" name="CurPriPkPk">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -866,7 +866,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLabel" name="MaxDutyCycle_2">
+        <widget class="QLabel" name="MaxDutyCycle">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -876,7 +876,7 @@
         </widget>
        </item>
        <item row="0" column="8">
-        <widget class="QLabel" name="ActPrimaryNum_2">
+        <widget class="QLabel" name="ActPrimaryNum">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -886,7 +886,7 @@
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QLabel" name="CurPriValley_2">
+        <widget class="QLabel" name="CurPriValley">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -896,7 +896,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QLabel" name="CurrPriAverage_2">
+        <widget class="QLabel" name="CurrPriAverage">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -913,7 +913,7 @@
         </widget>
        </item>
        <item row="7" column="3">
-        <widget class="QLabel" name="LengAirGap_2">
+        <widget class="QLabel" name="LengAirGap">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -923,7 +923,7 @@
         </widget>
        </item>
        <item row="6" column="3">
-        <widget class="QLabel" name="CurrDensity_2">
+        <widget class="QLabel" name="CurrDensity">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -947,7 +947,7 @@
         </widget>
        </item>
        <item row="5" column="3">
-        <widget class="QLabel" name="WaAe_2">
+        <widget class="QLabel" name="WaAe">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -971,7 +971,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLabel" name="InputPWR_2">
+        <widget class="QLabel" name="InputPWR">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -981,7 +981,7 @@
         </widget>
        </item>
        <item row="5" column="1">
-        <widget class="QLabel" name="CurPriMax_2">
+        <widget class="QLabel" name="CurPriMax">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1012,7 +1012,7 @@
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QLabel" name="InductPri_2">
+        <widget class="QLabel" name="InductPri">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1071,7 +1071,7 @@
         </widget>
        </item>
        <item row="7" column="5">
-        <widget class="QLabel" name="FrigRluxCoeff_2">
+        <widget class="QLabel" name="FrigRluxCoeff">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1081,7 +1081,7 @@
         </widget>
        </item>
        <item row="6" column="5">
-        <widget class="QLabel" name="ActDutyMax_2">
+        <widget class="QLabel" name="ActDutyMax">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1091,7 +1091,7 @@
         </widget>
        </item>
        <item row="5" column="5">
-        <widget class="QLabel" name="ActReflVolt_2">
+        <widget class="QLabel" name="ActReflVolt">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1101,7 +1101,7 @@
         </widget>
        </item>
        <item row="4" column="5">
-        <widget class="QLabel" name="ActBMax_2">
+        <widget class="QLabel" name="ActBMax">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1111,7 +1111,7 @@
         </widget>
        </item>
        <item row="0" column="5">
-        <widget class="QLabel" name="PrimaryNum_2">
+        <widget class="QLabel" name="PrimaryNum">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -1206,14 +1206,12 @@
        <string>Core parameters:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="3" column="3">
-        <widget class="QLineEdit" name="Esize"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="Csize"/>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="MPL"/>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_127">
+         <property name="text">
+          <string>F [m]</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_124">
@@ -1222,6 +1220,18 @@
          </property>
         </widget>
        </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="Esize"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="WA"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="Dsize"/>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="RGDiam"/>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_69">
          <property name="text">
@@ -1229,38 +1239,8 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_68">
-         <property name="text">
-          <string>MPL [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_125">
-         <property name="text">
-          <string>D [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="WA"/>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="MLT"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_127">
-         <property name="text">
-          <string>F [m]</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="3">
         <widget class="QLineEdit" name="Fsize"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="Dsize"/>
        </item>
        <item row="3" column="2">
         <widget class="QLabel" name="label_128">
@@ -1272,13 +1252,20 @@
        <item row="2" column="1">
         <widget class="QLineEdit" name="VE"/>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="AE"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_126">
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_130">
          <property name="text">
-          <string>C [m]</string>
+          <string>Diam round gap [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="MLT"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_73">
+         <property name="text">
+          <string>MLT [m]</string>
          </property>
         </widget>
        </item>
@@ -1289,17 +1276,47 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_73">
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="AE"/>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_125">
          <property name="text">
-          <string>MLT [m]</string>
+          <string>D [m]</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QLabel" name="label_130">
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="MPL"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="Csize"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_126">
          <property name="text">
-          <string>D [m]</string>
+          <string>C [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_68">
+         <property name="text">
+          <string>MPL [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QCheckBox" name="RGap">
+         <property name="text">
+          <string>Use Round Gap</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QCheckBox" name="SGap">
+         <property name="text">
+          <string>Use Square Gap</string>
          </property>
         </widget>
        </item>
