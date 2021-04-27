@@ -88,7 +88,7 @@ double FBPTCore::EnergyStoredChoke() const
 }
 
 /**
- * @brief CoreAreaProd - Estimate the core geometry coefficient
+ * @brief CoreAreaProd - Estimate the core geometry coefficient Kg or Ap
  * @return
  */
 double FBPTCore::CoreAreaProd() const
