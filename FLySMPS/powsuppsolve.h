@@ -223,8 +223,8 @@ private:
         double max_duty_cycle;//Max duty cycle
         double inp_power;//Input power
         double primary_induct;//Primary inductance
-        double number_primary;
-        double actual_num_primary;
+        int32_t number_primary;
+        int32_t actual_num_primary;
 
         double curr_primary_aver;//Primary average current during turn-on
         double curr_primary_peak_peak;//Primary peak-to-peak current
