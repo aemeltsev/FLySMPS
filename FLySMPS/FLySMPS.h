@@ -25,6 +25,7 @@ private:
     void initInputValues();
     void setSolveInputDiode();
     void setSolveBulkCap();
+    void initPreCalcTransValues();
     void initTransValues();
     void setSolveTransPrimaryElecrt();
     void setSolveTransSecondWired();
