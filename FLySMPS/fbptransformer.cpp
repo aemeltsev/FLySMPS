@@ -193,7 +193,11 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*d
                                  FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k) const
 {
     double csa, af, temp = 0.0;
+<<<<<<< HEAD
     double u = /*ewff/agLength(cs, varNumPrim);*/ 1;
+=======
+    double u = /*ewff/agLength(cs, varNumPrim)*/ 1;
+>>>>>>> 98c4ab626387a16c9dbea3b50bfa88133ffedae6
     if(fsag == FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP)
     {
         csa = mchdm.C*mchdm.D;
@@ -217,7 +221,11 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*d
 int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsag,
                                 MechDimension &mchdm, /*double ewff,*/
                                 double varNumPrim, double varIndPrim,
+<<<<<<< HEAD
                                 double currPeakPrim, double k) const
+=======
+                                double currPeakPrim, double k=2.0) const
+>>>>>>> 98c4ab626387a16c9dbea3b50bfa88133ffedae6
 {
     int16_t act_num_prim_turns = 0;
     double ag, ffg, flux_peak = 0.0;
