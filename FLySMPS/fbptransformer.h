@@ -134,14 +134,7 @@ private:
     float power_out_max;
 
     inline double EnergyStoredChoke() const;//
-<<<<<<< HEAD
     inline double AreaWindTotal(const CoreSelection &cs) const;//Cross-sectional area of the winding bare wire
-=======
-    //Correction factor F. - the edge coefficient(FFC)
-    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
-                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=2.0) const;
->>>>>>> 98c4ab626387a16c9dbea3b50bfa88133ffedae6
 
 public:
     inline double CoreAreaProd() const;//Core geometry coefficient(Ap)

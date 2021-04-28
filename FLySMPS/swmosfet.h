@@ -4,7 +4,7 @@
 #ifndef SWMOSFET_H
 #define SWMOSFET_H
 #include <cmath>
-#include <structdata.h>
+
 
 class SwMosfet
 {
