@@ -135,9 +135,9 @@ private:
 
     inline double EnergyStoredChoke() const;//
     //Correction factor F. - the edge coefficient(FFC)
-    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
+    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
                            FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=1.0) const;
+                           double k=2.0) const;
 
 public:
     inline double CoreAreaProd() const;//Core geometry coefficient(Ap)
@@ -153,7 +153,7 @@ public:
 
     /*Recalc Np, Bm */
     inline int16_t actNumPrimary(const CoreSelection &cs,
-                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double ewff,
+                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, /*double ewff,*/
                           double varNumPrim, double varIndPrim, double currPeakPrim,
                           double k) const;
     /*Recalc Np, Bm */
