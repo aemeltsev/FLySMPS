@@ -134,16 +134,15 @@ private:
     float power_out_max;
 
     inline double EnergyStoredChoke() const;//
-    //Correction factor F. - the edge coefficient(FFC)
-    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, double ewff,
-                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=1.0) const;
+    inline double AreaWindTotal(const CoreSelection &cs) const;//Cross-sectional area of the winding bare wire
 
 public:
     inline double CoreAreaProd() const;//Core geometry coefficient(Ap)
     inline double CoreWinToCoreSect() const;//Cross-sectional area to Window area core(WaAe)
-    //inline double DeltaFluxMax() const;
-    inline double AreaWindTotal(const CoreSelection &cs) const;//Cross-sectional area of the winding bare wire
+    //Correction factor F. - the edge coefficient(FFC)
+    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
+                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
+                           double k=2.0) const;
     inline double CurrentDens(const CoreSelection &cs) const;
     /*Core Geometry Factor and Core Selection*/
 
@@ -153,10 +152,11 @@ public:
 
     /*Recalc Np, Bm */
     inline int16_t actNumPrimary(const CoreSelection &cs,
-                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double ewff,
+                          FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, /*double ewff,*/
                           double varNumPrim, double varIndPrim, double currPeakPrim,
-                          double k) const;
+                          double k=2.0) const;
     /*Recalc Np, Bm */
+    //inline double DeltaFluxMax() const;
 };
 
 inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
