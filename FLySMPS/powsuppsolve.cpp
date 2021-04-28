@@ -69,10 +69,10 @@ void PowSuppSolve::calcInputNetwork()
     m_isSolveRunning = false;
 }
 
-void PowSuppSolve::calcTransformerNetwork()
+void PowSuppSolve::calcElectricalPrimarySide()
 {
     m_isSolveRunning = true;
-    emit startCalcTransformer();
+    emit startCalcElectricalPrimarySide();
 
     if(!m_isSolveRunning){
         emit calcCanceled();
@@ -96,5 +96,57 @@ void PowSuppSolve::calcTransformerNetwork()
     m_ptpe->curr_primary_valley = t_prim->CurrPriValley();
     m_ptpe->curr_primary_rms = t_prim->CurrPriRMS();
 
-    //QScopedPointer<FBPTCore> t_core(new FBPTCore())
+    emit finishedCalcElectricalPrimarySide();
+    m_isSolveRunning = false;
 }
+
+void PowSuppSolve::calcArea()
+{
+    m_isSolveRunning = true;
+    emit startCalcArea();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    m_core.reset(new FBPTCore(m_psvar.max_curr_dens,
+                              m_psvar.win_util_factor,
+                              m_psvar.mag_flux_dens));
+    m_ptpe->core_area_product = m_core->CoreAreaProd();
+    m_ptpe->core_win_core_sect = m_core->CoreWinToCoreSect();
+
+    emit finishedCalcArea();
+    m_isSolveRunning = false;
+}
+
+void PowSuppSolve::calcElectroMagProperties()
+{
+    m_isSolveRunning = true;
+    emit startCalcElectroMagProperties();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    m_core->setPreCalc(m_ptpe->primary_induct, m_ptpe->curr_primary_peak,
+                       m_ptpe->curr_primary_rms, m_indata.power_out_max,
+                       m_ptpe->curr_primary_peak_peak);
+    m_ptpe->curr_dens = m_core->CurrentDens(m_cs);
+    m_ptpe->number_primary = m_core->numPrimary(m_cs, m_fns);
+    m_ptpe->length_air_gap = m_core->agLength(m_cs, m_ptpe->number_primary);
+    m_ptpe->fring_flux_fact = m_core->agFringFluxFact(m_cs, m_ptpe->number_primary, m_fsag, m_md);
+    m_ptpe->actual_num_primary = m_core->actNumPrimary(m_cs, m_fsag,
+                                                       m_md, m_ptpe->number_primary,
+                                                       m_ptpe->primary_induct,
+                                                       m_ptpe->curr_primary_peak);
+    //m_ptpe->actual_flux_dens_peak = ;
+    //m_ptpe->actual_volt_reflected = postVoltageRefl(m_ptpe->actual_num_primary,);
+    //m_ptpe->actual_max_duty_cycle = ;
+
+    emit finishedCalcElectroMagProperties();
+    m_isSolveRunning = false;
+}
+
+
