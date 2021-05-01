@@ -145,13 +145,12 @@ public:
                            FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
                            double k=2.0) const;
     inline double CurrentDens(const CoreSelection &cs) const;
-    /*Core Geometry Factor and Core Selection*/
 
     double numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
-    inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
     /*Air-Gap Length Considered with Fringing Effect*/
+    inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
 
-    /*Recalc Np, Bm */
+    /*Recalc Np, Bm, Duty, Vro */
     inline int16_t actNumPrimary(const CoreSelection &cs,
                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, /*double ewff,*/
                           double varNumPrim, double varIndPrim, double currPeakPrim,
@@ -162,7 +161,7 @@ public:
                               int16_t fsw, double prim_ind) const;
     inline int16_t actReflVoltage(float actDuty, float maxOutPwr,
                                   double primInduct, int16_t fsw) const;
-    /*Recalc Np, Bm */
+    /*Recalc Np, Bm, Duty, Vro */
 };
 
 //inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
