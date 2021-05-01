@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QVector>
+#include <QPair>
 #include "LoggingCategories.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
@@ -250,7 +251,7 @@ private:
         double length_air_gap;//Air-gap length considered with fringing effect
 
         double actual_flux_dens_peak;//Calc peak flux density
-        //double actual_volt_reflected;//Recalc reflected voltage
+        double actual_volt_reflected;//Recalc reflected voltage
         double actual_max_duty_cycle;//Recalc maximum duty cycle
         double fring_flux_fact;//
     };
