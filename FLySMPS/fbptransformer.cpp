@@ -210,10 +210,16 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*d
 }
 /*Recalc Np, Bm */
 /**
-  * @brief
-  * @param
-  * @return
-  */
+ * @brief actNumPrimary -
+ * @param cs
+ * @param fsag
+ * @param mchdm
+ * @param varNumPrim
+ * @param varIndPrim
+ * @param currPeakPrim
+ * @param k
+ * @return
+ */
 int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsag,
                                 MechDimension &mchdm, /*double ewff,*/
                                 double varNumPrim, double varIndPrim,
@@ -231,6 +237,65 @@ int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsa
     while(flux_peak > flux_dens_max);
     return act_num_prim_turns;
 }
+
+/**
+ * @brief actMagneticFluxPeak
+ * @param cs
+ * @param actNumPrim
+ * @param maxCurPrim
+ * @param agLength
+ * @return
+ */
+double FBPTCore::actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim, double maxCurPrim, float agLength) const
+{
+    return (S_MU_Z * actNumPrim * maxCurPrim)/(agLength+(cs.mean_mag_path_leng/cs.core_permeal));
+}
+
+/**
+ * @brief actDutyCycle - Recalculate actual value for duty cycle using 4 output voltage/current values
+ *                       More see Ayachit A.-Magnetising inductance of multiple-output flyback dc–dc convertor for dcm
+ * @param outVtcr - Output secondary voltage/current vector
+ * @param in_volt_min - Input minimal DC voltage
+ * @param fsw - Switching frequency
+ * @param prim_ind - Primary inductance
+ * @return - Duty cycle value
+ */
+float FBPTCore::actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_volt_min,
+                             int16_t fsw, double prim_ind) const
+{
+    auto get_max = [](double frst, double scnd){return qMax(frst, scnd);};
+
+    auto max_vdc1_ratio = [&outVtcr, &in_volt_min](){return outVtcr[0].first/in_volt_min;}; //first - n-th voltage out
+    auto duty1_max = max_vdc1_ratio()*qSqrt((2*fsw*prim_ind)/(outVtcr[0].first/outVtcr[0].second));
+
+    auto max_vdc2_ratio = [&outVtcr, &in_volt_min](){return outVtcr[1].first/in_volt_min;};
+    auto duty2_max = max_vdc2_ratio()*qSqrt((2*fsw*prim_ind)/(outVtcr[1].first/outVtcr[1].second));
+
+    auto max_vdc3_ratio = [&outVtcr, &in_volt_min](){return outVtcr[2].first/in_volt_min;};
+    auto duty3_max = max_vdc3_ratio()*qSqrt((2*fsw*prim_ind)/(outVtcr[2].first/outVtcr[2].second));
+
+    auto max_vdc4_ratio = [&outVtcr, &in_volt_min](){return outVtcr[3].first/in_volt_min;};
+    auto duty4_max = max_vdc4_ratio()*qSqrt((2*fsw*prim_ind)/(outVtcr[3].first/outVtcr[3].second));
+
+    return static_cast<float>(qMax(get_max(duty1_max, duty2_max), get_max(duty3_max, duty4_max)));
+}
+
+/**
+ * @brief actReflVoltage - The recalculate actual value of the reflected voltage
+ *                         use a duty cycle of the secondary side - (1-D)
+ *                         More see AN5287 170W high input voltage two switch flyback based on L6565 and 1500V K5 MOSFETs
+ * @param actDuty - Actual duty cycle value
+ * @param maxOutPwr - Common output power value
+ * @param primInduct - Primary inductance
+ * @param fsw - Switching frequency value
+ * @return - Reflected voltage value
+ */
+int16_t FBPTCore::actReflVoltage(float actDuty, float maxOutPwr,
+                                 double primInduct, int16_t fsw) const
+{
+    return qSqrt(2*maxOutPwr*primInduct*fsw)/(1-actDuty);
+}
+
 /*Recalc Np, Bm */
 
 /*Recalc actual methods vreflected and duty*/
@@ -242,10 +307,10 @@ int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsa
  * @param numsec - secondary turns controlled side
  * @return actual voltage reflected in V
  */
-inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec)
+/*inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec)
 {
     return static_cast<double>((voltout + voltdrop))*(actual_num_primary/static_cast<double>(numsec));
-}
+}*/
 
 /**
  * @brief postMaxDutyCycle - Post calculated max duty
@@ -253,16 +318,16 @@ inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float v
  * @param input_min_voltage - recalculation after input capacitor selection
  * @return actual duty cucle ratio
  */
-inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage)
+/*inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage)
 {
     return (actual_volt_reflected)/(actual_volt_reflected + input_min_voltage);
-}
+}*/
 /*Recalc actual methods vreflected and duty*/
 
 /*Second Side*/
 /**
  * @brief outNumSecond -
- * @return
+ * @return -
  */
 double FBPTSecondary::outNumSecond() const
 {
@@ -293,9 +358,9 @@ inline double FBPTSecondary::outCurrPeakSecond()
  * @param input_min_voltage - recalculation after input capacitor selection
  * @return
  */
-inline double FBPTSecondary::outCurrRMSSecond(int16_t actual_volt_reflected, int16_t input_min_voltage)
+inline double FBPTSecondary::outCurrRMSSecond()
 {
-    double tmp = ((1-postMaxDutyCycle(actual_volt_reflected, input_min_voltage))/postMaxDutyCycle(actual_volt_reflected, input_min_voltage));
+    double tmp = ((1-actual_duty_cycle)/actual_duty_cycle);
     return curr_primary_rms * outCoeffPWR() * outNumTurnRatio() * qSqrt(tmp);
 }
 /*Second Side*/

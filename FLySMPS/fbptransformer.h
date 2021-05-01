@@ -1,7 +1,8 @@
 #ifndef FBPTRANSFORMER_H
 #define FBPTRANSFORMER_H
 #include <QtMath>
-#include <cmath>
+#include <QVector>
+#include <QPair>
 #include <cstdint>
 
 #define S_MU_Z     4.*M_PI*1E-7 //H/m
@@ -155,12 +156,17 @@ public:
                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, /*double ewff,*/
                           double varNumPrim, double varIndPrim, double currPeakPrim,
                           double k=2.0) const;
+    inline double actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim,
+                                   double maxCurPrim, float agLength) const;
+    inline float actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_volt_min,
+                              int16_t fsw, double prim_ind) const;
+    inline int16_t actReflVoltage(float actDuty, float maxOutPwr,
+                                  double primInduct, int16_t fsw) const;
     /*Recalc Np, Bm */
-    //inline double DeltaFluxMax() const;
 };
 
-inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
-inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage);//Post-calculated maximum duty cycle(DMaxPost)
+//inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
+//inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage);//Post-calculated maximum duty cycle(DMaxPost)
 
 class FBPTSecondary
 {
@@ -176,10 +182,10 @@ public:
      */
     FBPTSecondary(float currout, float voltout,
                   float voltreflect, float powout,
-                  int16_t aprnm, float ddrp):
+                  int16_t aprnm, float adc, float ddrp):
         curr(currout), volt(voltout),
         refl_volt(voltreflect), pow_out_max(powout),
-        actual_num_primary(aprnm), diode_drop_sec(ddrp)
+        actual_num_primary(aprnm), actual_duty_cycle(adc), diode_drop_sec(ddrp)
     {}
 
     inline double outPWR() const {return static_cast<double>(curr*volt);}
@@ -190,13 +196,14 @@ public:
     void setCurrentParam(double pkcpr, double rmscpr){curr_primary_peak = pkcpr; curr_primary_rms = rmscpr;}
     //Current for secondary layers
     inline double outCurrPeakSecond();//Peak current(IAMax)
-    inline double outCurrRMSSecond(int16_t actual_volt_reflected, int16_t input_min_voltage);//RMS current(ISRMS)
+    inline double outCurrRMSSecond();//RMS current(ISRMS)
 private:
     float curr;
     float volt;
     float refl_volt;
     float pow_out_max;
     int16_t actual_num_primary;
+    float actual_duty_cycle;
     float diode_drop_sec;
 
     double curr_primary_peak;
