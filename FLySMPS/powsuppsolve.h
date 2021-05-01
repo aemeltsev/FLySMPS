@@ -256,7 +256,7 @@ private:
         double fring_flux_fact;//
     };
 
-    struct PulseTransSecondWired
+    struct PulseTransWires
     {
         QVector<double> out_one_wind;
         QVector<double> out_two_wind;
@@ -282,7 +282,7 @@ public:
     QScopedPointer<BCap> m_bc;
     QScopedPointer<PMosfet> m_pm;
     QScopedPointer<PulseTransPrimaryElectr> m_ptpe;
-    QScopedPointer<PulseTransSecondWired> m_ptsw;
+    QScopedPointer<PulseTransWires> m_ptsw;
     //ODiode m_od;
     QScopedPointer<FullOutDiode> m_fod;
     //OCap m_oc;

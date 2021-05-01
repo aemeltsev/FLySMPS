@@ -7,7 +7,7 @@ PowSuppSolve::PowSuppSolve(QObject *parent)
     m_bc.reset(new BCap);
     m_pm.reset(new PMosfet);
     m_ptpe.reset(new PulseTransPrimaryElectr());
-    m_ptsw.reset(new PulseTransSecondWired());
+    m_ptsw.reset(new PulseTransWires());
     //m_od = new ODiode();
     m_fod.reset(new FullOutDiode);
     //m_oc = new OCap();
@@ -161,5 +161,6 @@ void PowSuppSolve::calcElectroMagProperties()
     emit finishedCalcElectroMagProperties();
     m_isSolveRunning = false;
 }
+
 
 
