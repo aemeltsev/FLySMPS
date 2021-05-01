@@ -130,6 +130,16 @@ void PowSuppSolve::calcElectroMagProperties()
         return;
     }
 
+    QVector<QPair<float, float>> out_vlcr;
+    out_vlcr[0] = qMakePair(static_cast<float>(m_indata.volt_out_one),
+                            static_cast<float>(m_indata.curr_out_one));
+    out_vlcr[1] = qMakePair(static_cast<float>(m_indata.volt_out_two),
+                            static_cast<float>(m_indata.curr_out_two));
+    out_vlcr[2] = qMakePair(static_cast<float>(m_indata.volt_out_three),
+                            static_cast<float>(m_indata.curr_out_three));
+    out_vlcr[3] = qMakePair(static_cast<float>(m_indata.volt_out_four),
+                            static_cast<float>(m_indata.curr_out_four));
+
     m_core->setPreCalc(m_ptpe->primary_induct, m_ptpe->curr_primary_peak,
                        m_ptpe->curr_primary_rms, m_indata.power_out_max,
                        m_ptpe->curr_primary_peak_peak);
@@ -141,10 +151,13 @@ void PowSuppSolve::calcElectroMagProperties()
                                                        m_md, m_ptpe->number_primary,
                                                        m_ptpe->primary_induct,
                                                        m_ptpe->curr_primary_peak);
-    //m_ptpe->actual_flux_dens_peak = ;
-    //m_ptpe->actual_volt_reflected = postVoltageRefl(m_ptpe->actual_num_primary,);
-    //m_ptpe->actual_max_duty_cycle = ;
-
+    m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs, m_ptpe->actual_num_primary,
+                                                                m_ptpe->curr_primary_peak,
+                                                                m_ptpe->fring_flux_fact);
+    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc->input_dc_min_voltage,
+                                                         m_indata.freq_switch, m_ptpe->primary_induct);
+    m_ptpe->actual_volt_reflected = m_core->actReflVoltage(m_ptpe->actual_max_duty_cycle, m_indata.power_out_max,
+                                                           m_ptpe->primary_induct, m_indata.freq_switch);
     emit finishedCalcElectroMagProperties();
     m_isSolveRunning = false;
 }
