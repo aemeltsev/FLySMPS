@@ -5,6 +5,7 @@
 #include <QScopedPointer>
 #include <QVector>
 #include <QPair>
+#include <QHash>
 #include "LoggingCategories.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
@@ -256,14 +257,29 @@ private:
         double fring_flux_fact;//
     };
 
+    /**
+     * @brief The PulseTransWires struct
+     *        Secondary hash:                                        Primary hash:
+     *        JSP - Peak current for secondary layer                 AP - Wire copper area for primary winding
+     *        JSRMS - RMS current for secondary layer                AWGP - Wire size in AWG unit
+     *        NSEC - Number turn for secondary layer                 DP - Primary wire diameter from cooper area
+     *        ANS - Wire copper area for secondsry winding           ECA - Effective copper area
+     *        AWGNS - Wire size in AWG unit                          JP - Current density
+     *        DS - Secondary wire diameter from cooper area          OD - Wire outer diameter including insulation
+     *        ECA - Effective copper area                            NTL - Max number of turns per layer
+     *        JS - Current density                                   LN - Min number of layers
+     *        OD - Wire outer diameter including insulation
+     *        NTL - Max number of turns per layer
+     *        LN - Min number of layers
+     */
     struct PulseTransWires
     {
-        QVector<double> out_one_wind;
-        QVector<double> out_two_wind;
-        QVector<double> out_three_wind;
-        QVector<double> out_four_wind;
-        QVector<double> out_aux_wind;
-        QVector<double> primary_wind;
+        QHash<QString, float> out_one_wind;
+        QHash<QString, float> out_two_wind;
+        QHash<QString, float> out_three_wind;
+        QHash<QString, float> out_four_wind;
+        QHash<QString, float> out_aux_wind;
+        QHash<QString, float> primary_wind;
     };
     // out containers
 
