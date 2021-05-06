@@ -1,6 +1,7 @@
 #ifndef FBPTRANSFORMER_H
 #define FBPTRANSFORMER_H
 #include <QtMath>
+#include <QtAlgorithms>
 #include <QVector>
 #include <QPair>
 #include <cstdint>
@@ -56,10 +57,16 @@ private:
     int16_t input_min_voltage; // recalc after input capacitor selection
 };
 
+struct CoreArea
+{
+    double mag_flux_dens;
+    float win_util_factor;
+    int16_t max_curr_dens;
+};
+
 struct CoreSelection
 {
     double core_area_product;//Ap
-    double core_permeal;//mu_rc(mu_r - relative permeability TDK)
     double core_win_height;//height of the window
     double ind_fact;//Al(inductance factor TDK)
     /**< Core parameters */
@@ -68,6 +75,7 @@ struct CoreSelection
     double core_vol;//Vc(Ve - effective magnetic volume TDK)
     double mean_leng_per_turn;//l_t(l_n - average length of turn TDK)
     double mean_mag_path_leng;//l_c(l_e - effective magnetic path length TDK)
+    double core_permeal;//mu_rc(mu_r - relative permeability TDK)
 };
 
 struct MechDimension
@@ -80,6 +88,7 @@ struct MechDimension
     /* Round Air Gap */
     float Diam; /**< diam - size of round central kern, TDK dimension nomenclature */
 };
+
 
 enum class FBPT_NUM_SETTING
 {
@@ -102,50 +111,41 @@ public:
      * @param utilfact
      * @param fluxdens
      */
-    FBPTCore(double currdens, double utilfact, double fluxdens):
-        curr_dens(currdens),
-        core_win_util_fact(utilfact),
-        flux_dens_max(fluxdens)
-    {}
-
-    /**
-     * @brief setPreCalc
-     * @param prin
-     * @param pkprcr
-     * @param rmsprcr
-     */
-    void setPreCalc(double prin, double pkprcr,
-                    double rmsprcr, float pout,
-                    double ppprcr)
+    FBPTCore(CoreArea& ca, double prin,
+             double pkprcr, double rmsprcr,
+             double ppprcr, float pout):
+        primary_induct(prin),//Lp - primary inductance
+        curr_primary_peak(pkprcr),//Ippk - primary peak current
+        curr_primary_rms(rmsprcr),//Iprms - primary RMS current
+        curr_primary_peak_peak(ppprcr),//Ippkpk -
+        power_out_max(pout)//Pout - max output power
     {
-        primary_induct = prin;
-        curr_primary_peak = pkprcr;
-        curr_primary_rms = rmsprcr;
-        power_out_max = pout;
-        curr_primary_peak_peak = ppprcr;
+        //Jm - the maximum current density
+        //Ku - window utilization factor
+        //Bm - saturation magnetic field density
+        qSwap(m_ca, ca);
     }
+
 private:
-    double curr_dens;//Jm - the maximum current density
-    double core_win_util_fact;//Ku - window utilization factor
-    double flux_dens_max;//Bm - saturation magnetic field density
-    double primary_induct;//Lp
-    double curr_primary_peak;//Ippk
-    double curr_primary_rms;//Iprms
-    double curr_primary_peak_peak;//Ippkpk
+    CoreArea m_ca;
+    double primary_induct;
+    double curr_primary_peak;
+    double curr_primary_rms;
+    double curr_primary_peak_peak;
     float power_out_max;
 
     inline double EnergyStoredChoke() const;//
     inline double AreaWindTotal(const CoreSelection &cs) const;//Cross-sectional area of the winding bare wire
 
 public:
-    inline double CoreAreaProd() const;//Core geometry coefficient(Ap)
-    inline double CoreWinToCoreSect() const;//Cross-sectional area to Window area core(WaAe)
-    //Correction factor F. - the edge coefficient(FFC)
-    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
-                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm,
-                           double k=2.0) const;
+    inline double CoreAreaProd() const;//Core area product(Ap)
+    inline double CoreGeometryCoeff(int16_t outPwr) const;//Core geometry coefficient(K_g)
+    inline double CoreAreaProd_WaAe() const;//Cross-sectional area to Window area core(WaAe)
     inline double CurrentDens(const CoreSelection &cs) const;
 
+    //Correction factor F. - the edge coefficient(FFC)
+    double agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
+                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm) const;
     double numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns);
     /*Air-Gap Length Considered with Fringing Effect*/
     inline double agLength(const CoreSelection &cs, double varNumPrim) const;//The air-gap length(lg)
@@ -153,8 +153,7 @@ public:
     /*Recalc Np, Bm, Duty, Vro */
     inline int16_t actNumPrimary(const CoreSelection &cs,
                           FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, /*double ewff,*/
-                          double varNumPrim, double varIndPrim, double currPeakPrim,
-                          double k=2.0) const;
+                          double varNumPrim, double varIndPrim, double currPeakPrim) const;
     inline double actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim,
                                    double maxCurPrim, float agLength) const;
     inline float actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_volt_min,

@@ -79,8 +79,8 @@ double FBPTPrimary::CurrPriRMS()
 
 /*Area product calculation*/
 /**
- * @brief EnergyStoredChoke -
- * @return in W
+ * @brief EnergyStoredChoke - The maximum energy stored in the inductor
+ * @return stored value in watt(W_l) w
  */
 double FBPTCore::EnergyStoredChoke() const
 {
@@ -88,51 +88,64 @@ double FBPTCore::EnergyStoredChoke() const
 }
 
 /**
- * @brief CoreAreaProd - Estimate the core geometry coefficient Kg or Ap
- * @return
+ * @brief CoreAreaProd - Estimate the core area product or Ap. The window
+ *                       utilization factor(K_u) and the saturation flux
+ *                       density(B_sat) are assumed a priori. The current
+ *                       density of the conductor is selected based on the
+ *                       peak current requement.
+ * @return core area value(A_p) m^4 - using for select next core parameters
  */
 double FBPTCore::CoreAreaProd() const
 {
-    return (2. * EnergyStoredChoke())/(curr_dens * core_win_util_fact * flux_dens_max);
+    return (2. * EnergyStoredChoke())/(m_ca.win_util_factor * m_ca.max_curr_dens * m_ca.mag_flux_dens);
 }
 
 /**
-  * @brief
-  * @param
-  * @return
-  */
-/*
-double FBPTCore::DeltaFluxMax()
-{
-    return  flux_dens_max * (curr_primary_peak_peak/(1.1*(curr_primary_peak_peak)));
-}
-*/
-
-/**
- * @brief CoreWinToCoreSect - Calculate windows area product AP
- * @return area product ratio
+ * @brief CoreGeometryCoeff - The core geometry coefficient. The K_g provides
+ *                            the core with a good combination of W_a, A_c and
+ *                            MLT satisfying electromagnetic condition, dc-winding-loss
+ *                            condition, and core-area restriction simultaneously.
+ * @param outPow - Total output power in converter
+ * @return core geometry coefficient(K_g) m^5
  */
-double FBPTCore::CoreWinToCoreSect() const
+double FBPTCore::CoreGeometryCoeff(int16_t outPwr) const
 {
-    double tmp = (primary_induct * curr_primary_rms * curr_primary_peak)/(flux_dens_max * S_K_1);
+    return (2 * S_RO_OM * primary_induct * EnergyStoredChoke() * qPow(curr_primary_rms,2))/(outPwr * qPow(m_ca.mag_flux_dens,2));
+}
+
+/**
+ * @brief CoreWinToCoreSect - Estimate cross-sectional area to Window area core(WaAe) equivalent to Ap
+ * @return core area value(A_p) m^4
+ */
+double FBPTCore::CoreAreaProd_WaAe() const
+{
+    double tmp = (primary_induct * curr_primary_rms * curr_primary_peak)/(m_ca.mag_flux_dens * S_K_1);
     return qPow(tmp, (4./3.));
 }
 
 /**
- * @brief AreaWindTotal
- * @param cs
- * @return
+ * @brief AreaWindTotal - The cross-sectional area of the winding bare wire
+ * @param cs - Multiparameters object, contain core selection properties
+ * @return cross-section wind area(A_w) m^2
  */
 double FBPTCore::AreaWindTotal(const CoreSelection &cs) const
 {
-    double tmp = core_win_util_fact * cs.core_wind_area * S_RO_OM * cs.mean_leng_per_turn;
-    return curr_primary_peak * qSqrt(tmp/static_cast<double>(power_out_max));
+    double wa=0., result=0.;
+
+    if(cs.core_wind_area){
+        result = m_ca.win_util_factor * cs.core_wind_area * S_RO_OM * cs.mean_leng_per_turn;
+    }
+    else{
+        wa = CoreAreaProd()/cs.core_cross_sect_area;
+        result = m_ca.win_util_factor * wa * S_RO_OM * cs.mean_leng_per_turn;
+    }
+    return curr_primary_peak * qSqrt(result/static_cast<double>(power_out_max));
 }
 
 /**
- * @brief CurrentDens
- * @param cs
- * @return
+ * @brief CurrentDens - Current density of the winding
+ * @param cs - Multiparameters object, contain core selection properties
+ * @return - current density(J_m) A/m^2
  */
 double FBPTCore::CurrentDens(const CoreSelection &cs) const
 {
@@ -140,11 +153,10 @@ double FBPTCore::CurrentDens(const CoreSelection &cs) const
 }
 /*Area product calculation*/
 
-/*Primary turns*/
 /**
   * @brief numPrimary - Estimate turns of primary side
-  * @param cs - core geometry values
-  * @param fns - select method for num primary turns calculate
+  * @param cs - Multiparameters object, contain core selection properties
+  * @param fns - Select method for num primary turns calculate
   * @return number of turns the primary side
   */
 double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns)
@@ -156,22 +168,29 @@ double FBPTCore::numPrimary(const CoreSelection &cs, const FBPT_NUM_SETTING &fns
     }
     else if(fns == FBPT_NUM_SETTING::FBPT_FLUX_PEAK)
     {
-        temp = (primary_induct*curr_primary_peak_peak)/(cs.core_cross_sect_area * flux_dens_max);
+        temp = (primary_induct*curr_primary_peak_peak)/(cs.core_cross_sect_area * m_ca.mag_flux_dens);
     }
     else if(fns == FBPT_NUM_SETTING::FBPT_CORE_AREA)
     {
-        temp = (core_win_util_fact * cs.core_wind_area)/AreaWindTotal(cs);
+        auto check_wa = [&](){
+            if(cs.core_wind_area){
+                return cs.core_wind_area;
+            }
+            else{
+                return CoreAreaProd()/cs.core_cross_sect_area;
+            }
+        };
+        temp = (m_ca.win_util_factor * check_wa())/AreaWindTotal(cs);
     }
     return temp;
 }
-/*Primary turns*/
 
 /*Air gap methods*/
 /**
   * @brief agLength - Air gap length
-  * @param cs - core parameters
-  * @param varNumPrim - number of turns the primary side
-  * @return length ag in m
+  * @param cs - Multiparameters object, contain core selection properties
+  * @param varNumPrim - Number of turns the primary side
+  * @return Air gap length(l_g) m
   */
 double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
 {
@@ -180,20 +199,26 @@ double FBPTCore::agLength(const CoreSelection &cs, double varNumPrim) const
 }
 
  /**
- * @brief agFringFluxFact -
- * @param cs
- * @param varNumPrim
- * @param ewff
- * @param fsag
- * @param mchdm
- * @param k
- * @return
+ * @brief agFringFluxFact - A friging flux  is present around the air gap
+ *                          whenever the core is excited. The magnetic flux
+ *                          lines bulge outward because the magnetic lines
+ *                          repel each other when passing through a nonmagnetic
+ *                          material. As result, the cross-sectional area
+ *                          of the magnetic field is increased and the flux
+ *                          density is decreased this effect is called the
+ *                          fringing flux effect.
+ * @param cs - Multiparameters object, contain core selection properties
+ * @param varNumPrim - Number of turns the primary side
+ * @param fsag - Select core central kern shape
+ * @param mchdm - Mechanical dimensions of the core
+ * @return fringing flux factor value()
  */
 double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*double ewff,*/
-                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm, double k) const
+                                 FBPT_SHAPE_AIR_GAP &fsag, MechDimension &mchdm) const
 {
     double csa, af, temp = 0.0;
-    double u = /*ewff/agLength(cs, varNumPrim);*/ 1;
+    double k = /*empl/agLength(cs, varNumPrim);*/ 2;//empl - the mean effective of the magnetic path length in the fringing area
+    double u = /*ewff/agLength(cs, varNumPrim);*/ 1;//ewff - the effective width of the fringing flux cross-sectional area
     if(fsag == FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP)
     {
         csa = mchdm.C*mchdm.D;
@@ -210,41 +235,40 @@ double FBPTCore::agFringFluxFact(const CoreSelection &cs, double varNumPrim, /*d
 }
 /*Recalc Np, Bm */
 /**
- * @brief actNumPrimary -
- * @param cs
- * @param fsag
- * @param mchdm
- * @param varNumPrim
- * @param varIndPrim
- * @param currPeakPrim
- * @param k
- * @return
+ * @brief actNumPrimary - Actual number of turns to the primary side
+ * @param cs - Multiparameters object, contain core selection properties
+ * @param fsag - Select core central kern shape
+ * @param mchdm - Mechanical dimensions of the core
+ * @param varNumPrim - The last calculated Number of turns
+ * @param varIndPrim - Primary inductance
+ * @param currPeakPrim - Primary peak current
+ * @return actual number of turns value
  */
 int16_t FBPTCore::actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsag,
-                                MechDimension &mchdm, /*double ewff,*/
-                                double varNumPrim, double varIndPrim,
-                                double currPeakPrim, double k) const
+                                MechDimension &mchdm, double varNumPrim,
+                                double varIndPrim, double currPeakPrim) const
 {
     int16_t act_num_prim_turns = 0;
     double ag, ffg, flux_peak = 0.0;
     do
     {
         ag = agLength(cs, varNumPrim);
-        ffg = agFringFluxFact(cs, varNumPrim, fsag, mchdm, k);
+        ffg = agFringFluxFact(cs, varNumPrim, fsag, mchdm);
         act_num_prim_turns = static_cast<int16_t>(qSqrt((ag*varIndPrim)/(S_MU_Z*cs.core_cross_sect_area*ffg)));
         flux_peak = (S_MU_Z * act_num_prim_turns * ffg * (currPeakPrim/2))/(ag+(cs.mean_mag_path_leng/cs.core_permeal));
     }
-    while(flux_peak > flux_dens_max);
+    while(flux_peak > m_ca.mag_flux_dens);
     return act_num_prim_turns;
 }
 
 /**
- * @brief actMagneticFluxPeak
- * @param cs
- * @param actNumPrim
- * @param maxCurPrim
- * @param agLength
- * @return
+ * @brief actMagneticFluxPeak - Actual magnetic flux peak
+ *                              More see Sekiya H.- Design of RF-choke inductors using core geometry coefficient
+ * @param cs - Multiparameters object, contain core selection properties
+ * @param actNumPrim - Actual number of turns to the primary side
+ * @param maxCurPrim - Primary peak current
+ * @param agLength - Air gap length
+ * @return actual maximum flux density
  */
 double FBPTCore::actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim, double maxCurPrim, float agLength) const
 {
@@ -258,7 +282,7 @@ double FBPTCore::actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim
  * @param in_volt_min - Input minimal DC voltage
  * @param fsw - Switching frequency
  * @param prim_ind - Primary inductance
- * @return - Duty cycle value
+ * @return duty cycle value
  */
 float FBPTCore::actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_volt_min,
                              int16_t fsw, double prim_ind) const
@@ -288,7 +312,7 @@ float FBPTCore::actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_vo
  * @param maxOutPwr - Common output power value
  * @param primInduct - Primary inductance
  * @param fsw - Switching frequency value
- * @return - Reflected voltage value
+ * @return reflected voltage value
  */
 int16_t FBPTCore::actReflVoltage(float actDuty, float maxOutPwr,
                                  double primInduct, int16_t fsw) const
@@ -297,32 +321,6 @@ int16_t FBPTCore::actReflVoltage(float actDuty, float maxOutPwr,
 }
 
 /*Recalc Np, Bm */
-
-/*Recalc actual methods vreflected and duty*/
-/**
- * @brief postVoltageRefl - Post calculated reflected voltage
- * @param actual_num_primary - num primary turns
- * @param voltout - output voltage
- * @param voltdrop - diode drop voltage
- * @param numsec - secondary turns controlled side
- * @return actual voltage reflected in V
- */
-/*inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec)
-{
-    return static_cast<double>((voltout + voltdrop))*(actual_num_primary/static_cast<double>(numsec));
-}*/
-
-/**
- * @brief postMaxDutyCycle - Post calculated max duty
- * @param actual_volt_reflected - post calculated reflected voltage
- * @param input_min_voltage - recalculation after input capacitor selection
- * @return actual duty cucle ratio
- */
-/*inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage)
-{
-    return (actual_volt_reflected)/(actual_volt_reflected + input_min_voltage);
-}*/
-/*Recalc actual methods vreflected and duty*/
 
 /*Second Side*/
 /**
