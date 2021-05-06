@@ -29,7 +29,7 @@ public slots:
     void calcElectricalPrimarySide();
     void calcArea();
     void calcElectroMagProperties();
-    void calcTransformerNetwork();
+    void calcTransformerWired();
     //Calculate transformer
     void calcSwitchNetwork();
     void calcOtputNetwork();
@@ -45,6 +45,8 @@ signals:
     void finishedCalcArea();
     void startCalcElectroMagProperties();
     void finishedCalcElectroMagProperties();
+    void startCalcTransformerWired();
+    void finishedCalcTransformerWired();
     void startCalcTransformer();
     void finishedCalcTransformer();
     void startCalcSwitchNetwork();
@@ -92,13 +94,14 @@ private:
         float mrgn; /**< margin of the output power */
     };
 
-    struct PulseTransPreDesign
+    struct PulseTransWired
     {
-        double mag_flux_dens;
-        double al_induct_factor;
-        float win_util_factor;
-        int16_t max_curr_dens;
+        QVector<float> m_af;
+        QVector<float> m_ins;
+        int16_t m_mcd; /**< Safety standart margin */
+        float m_fcu; /**< Copper space factor */
     };
+
     //input containers
 
     // out containers
@@ -246,7 +249,7 @@ private:
         double curr_primary_rms;//Primary RMS current
 
         double core_area_product;//Core area product Ap
-        double core_win_core_sect;////Product of areas factor W_a*A_e
+        double core_geom_coeff;////The core geometry coefficient(K_g)
         //double area_wind_tot;
         double curr_dens;//
         double length_air_gap;//Air-gap length considered with fringing effect
@@ -288,9 +291,9 @@ private:
 
 public:
     InputValue m_indata;
+    CoreArea m_ca;
     CoreSelection m_cs;
     MechDimension m_md;
-    PulseTransPreDesign m_psvar;
     FBPT_NUM_SETTING m_fns;
     FBPT_SHAPE_AIR_GAP m_fsag;
 

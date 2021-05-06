@@ -110,11 +110,11 @@ void PowSuppSolve::calcArea()
         return;
     }
 
-    m_core.reset(new FBPTCore(m_psvar.max_curr_dens,
-                              m_psvar.win_util_factor,
-                              m_psvar.mag_flux_dens));
+    m_core.reset(new FBPTCore(m_ca, m_ptpe->primary_induct,
+                              m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms,
+                              m_ptpe->curr_primary_peak_peak, m_indata.power_out_max));
     m_ptpe->core_area_product = m_core->CoreAreaProd();
-    m_ptpe->core_win_core_sect = m_core->CoreWinToCoreSect();
+    m_ptpe->core_geom_coeff = m_core->CoreGeometryCoeff(m_indata.power_out_max);
 
     emit finishedCalcArea();
     m_isSolveRunning = false;
@@ -139,10 +139,6 @@ void PowSuppSolve::calcElectroMagProperties()
                             static_cast<float>(m_indata.curr_out_three));
     out_vlcr[3] = qMakePair(static_cast<float>(m_indata.volt_out_four),
                             static_cast<float>(m_indata.curr_out_four));
-
-    m_core->setPreCalc(m_ptpe->primary_induct, m_ptpe->curr_primary_peak,
-                       m_ptpe->curr_primary_rms, m_indata.power_out_max,
-                       m_ptpe->curr_primary_peak_peak);
     m_ptpe->curr_dens = m_core->CurrentDens(m_cs);
     m_ptpe->number_primary = m_core->numPrimary(m_cs, m_fns);
     m_ptpe->length_air_gap = m_core->agLength(m_cs, m_ptpe->number_primary);
@@ -160,6 +156,19 @@ void PowSuppSolve::calcElectroMagProperties()
                                                            m_ptpe->primary_induct, m_indata.freq_switch);
     emit finishedCalcElectroMagProperties();
     m_isSolveRunning = false;
+}
+
+void PowSuppSolve::calcTransformerWired()
+{
+    m_isSolveRunning = true;
+    emit startCalcTransformerWired();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+
 }
 
 
