@@ -89,7 +89,6 @@ struct MechDimension
     float Diam; /**< diam - size of round central kern, TDK dimension nomenclature */
 };
 
-
 enum class FBPT_NUM_SETTING
 {
     FBPT_INDUCT_FACTOR = 0,
