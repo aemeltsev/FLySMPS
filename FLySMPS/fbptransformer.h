@@ -162,20 +162,18 @@ public:
     /*Recalc Np, Bm, Duty, Vro */
 };
 
-//inline double postVoltageRefl(int16_t actual_num_primary, float voltout, float voltdrop, float numsec);//Post-calculated reflected voltage(VRPost)
-//inline double postMaxDutyCycle(int16_t actual_volt_reflected, int16_t input_min_voltage);//Post-calculated maximum duty cycle(DMaxPost)
-
 class FBPTSecondary
 {
 public:
     /**
-     * @brief FBPTSecondary
-     * @param currout
-     * @param voltout
-     * @param voltreflect
-     * @param powout
-     * @param aprnm
-     * @param ddrp
+     * @brief FBPTSecondary - ctor for implement one secondary side winding
+     * @param currout - out current
+     * @param voltout - out voltage
+     * @param voltreflect - implement reflected voltage
+     * @param powout - common maximum power output
+     * @param aprnm - actual number turns of the primary side
+     * @param adc - actual duty cycle
+     * @param ddrp - secondary side diode voltage drop
      */
     FBPTSecondary(float currout, float voltout,
                   float voltreflect, float powout,
@@ -187,13 +185,13 @@ public:
 
     inline double outPWR() const {return static_cast<double>(curr*volt);}
     inline double outCoeffPWR() const {return outPWR()/ static_cast<double>(pow_out_max);}
-    inline double outNumSecond() const;
+    inline double outNumSecond() const;//Number turn for secondary layer(NSEC)
     inline double outNumTurnRatio() const;
 
     void setCurrentParam(double pkcpr, double rmscpr){curr_primary_peak = pkcpr; curr_primary_rms = rmscpr;}
     //Current for secondary layers
-    inline double outCurrPeakSecond();//Peak current(IAMax)
-    inline double outCurrRMSSecond();//RMS current(ISRMS)
+    inline double outCurrPeakSecond();//Peak current(JSP)
+    inline double outCurrRMSSecond();//RMS current(JSRMS)
 private:
     float curr;
     float volt;
@@ -236,8 +234,8 @@ public:
     inline double wCoperWireDiam() const;//(DP) or (DS)
     inline double wCoperWireCrossSectAreaPost() const;//
     inline double wCurrentDenst() const;//(JP) or (JS)
-    inline double wNumTurnToLay(const MechDimension &mchdm) const;//Number of turns per layer(NL)
-    inline double wNumLay(const MechDimension &mchdm) const;//(LNp)
+    inline double wNumTurnToLay(const MechDimension &mchdm) const;//Number of turns per layer(NTL)
+    inline double wNumLay(const MechDimension &mchdm) const;//(LN)
     /*Winding*/
 private:
     int16_t actual_num_primary;
