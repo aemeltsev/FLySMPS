@@ -101,7 +101,6 @@ private:
         int16_t m_mcd; /**< Safety standart margin */
         float m_fcu; /**< Copper space factor */
     };
-
     //input containers
 
     // out containers
@@ -248,7 +247,7 @@ private:
         double curr_primary_valley;//Primary valley current
         double curr_primary_rms;//Primary RMS current
 
-        double core_area_product;//Core area product Ap
+        double core_area_product;//Core area product(A_p)
         double core_geom_coeff;////The core geometry coefficient(K_g)
         //double area_wind_tot;
         double curr_dens;//
@@ -288,6 +287,8 @@ private:
 
     bool m_isSolveRunning = false;
     QScopedPointer<FBPTCore> m_core;
+    QVector<QScopedPointer<FBPTSecondary>> m_sec;
+    QVector<QScopedPointer<FBPTWinding>> m_wind;
 
 public:
     InputValue m_indata;
@@ -310,5 +311,4 @@ public:
     QScopedPointer<PowerStageSmallSignalModel> m_pssm;
     QScopedPointer<OptocouplerFedbackStage> m_ofs;
 };
-
 #endif // POWSUPPSOLVE_H
