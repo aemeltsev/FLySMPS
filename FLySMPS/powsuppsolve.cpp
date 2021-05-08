@@ -162,13 +162,67 @@ void PowSuppSolve::calcTransformerWired()
 {
     m_isSolveRunning = true;
     emit startCalcTransformerWired();
+    m_sec.reserve(SET_SECONDARY_WIRED);
+    m_wind.reserve(SET_SECONDARY_WIRED+1);
 
     if(!m_isSolveRunning){
         emit calcCanceled();
         return;
     }
 
+    QScopedPointer<FBPTSecondary> sec_one(new FBPTSecondary(m_indata.curr_out_one, m_indata.volt_out_one,
+                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                            m_indata.volt_diode_drop_sec));
 
+    QScopedPointer<FBPTSecondary> sec_two(new FBPTSecondary(m_indata.volt_out_two, m_indata.curr_out_two,
+                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                            m_indata.volt_diode_drop_sec));
+
+    QScopedPointer<FBPTSecondary> sec_three(new FBPTSecondary(m_indata.volt_out_three, m_indata.curr_out_three,
+                                                              m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                              m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                              m_indata.volt_diode_drop_sec));
+
+    QScopedPointer<FBPTSecondary> sec_four(new FBPTSecondary(m_indata.volt_out_four, m_indata.curr_out_four,
+                                                             m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                             m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                             m_indata.volt_diode_drop_sec));
+    m_sec.push_back(sec_one);
+    m_sec.push_back(sec_two);
+    m_sec.push_back(sec_three);
+    m_sec.push_back(sec_four);
+
+    QScopedPointer<FBPTWinding> wind_prim(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                          m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                          m_psw.m_fcu, m_psw.m_ins[0]));
+
+    QScopedPointer<FBPTWinding> wind_sec_one(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                             m_psw.m_fcu, m_psw.m_ins[1]));
+
+    QScopedPointer<FBPTWinding> wind_sec_two(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                             m_psw.m_fcu, m_psw.m_ins[2]));
+
+    QScopedPointer<FBPTWinding> wind_sec_three(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                               m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                               m_psw.m_fcu, m_psw.m_ins[3]));
+
+    QScopedPointer<FBPTWinding> wind_sec_four(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                              m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                              m_psw.m_fcu, m_psw.m_ins[4]));
+
+    QScopedPointer<FBPTWinding> wind_aux(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                         m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                         m_psw.m_fcu, m_psw.m_ins[5]));
+    m_wind.push_back(wind_prim);
+    m_wind.push_back(wind_sec_one);
+    m_wind.push_back(wind_sec_two);
+    m_wind.push_back(wind_sec_three);
+    m_wind.push_back(wind_sec_four);
+    m_wind.push_back(wind_aux);
 }
 
 
