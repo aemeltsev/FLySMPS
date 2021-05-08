@@ -16,6 +16,8 @@
 #include "outfilter.h"
 #include "controlout.h"
 
+#define SET_SECONDARY_WIRED 4
+
 class PowSuppSolve: public QObject
 {
     Q_OBJECT
@@ -94,9 +96,21 @@ private:
         float mrgn; /**< margin of the output power */
     };
 
-    struct PulseTransWired
+    struct TransWired
     {
+        /** [0]-Primary area coefficient,
+         *  [1]-1st area coefficient,
+         *  [2]-2nd area coefficient,
+         *  [3]-3th area coefficient,
+         *  [4]-4th area coefficient,
+         *  [5]-Aux area coefficient */
         QVector<float> m_af;
+        /** [0]-Primary insulation coefficient,
+         *  [1]-1st wired insulation coefficient,
+         *  [2]-2nd wired insulation coefficient,
+         *  [3]-3th wired insulation coefficient,
+         *  [4]-4th wired insulation coefficient,
+         *  [5]-Aux insulation coefficient */
         QVector<float> m_ins;
         int16_t m_mcd; /**< Safety standart margin */
         float m_fcu; /**< Copper space factor */
@@ -297,6 +311,7 @@ public:
     MechDimension m_md;
     FBPT_NUM_SETTING m_fns;
     FBPT_SHAPE_AIR_GAP m_fsag;
+    TransWired m_psw;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
