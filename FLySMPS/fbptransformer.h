@@ -95,6 +95,7 @@ enum class FBPT_NUM_SETTING
     FBPT_FLUX_PEAK     = 1,
     FBPT_CORE_AREA     = 2
 };
+
 enum class FBPT_SHAPE_AIR_GAP
 {
     RECT_AIR_GAP  = 0,
