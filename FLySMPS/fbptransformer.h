@@ -233,7 +233,7 @@ public:
     inline double wSkinDepth() const;
     void setWireDiam(double awgp, uint16_t np);
     inline double wCoperWireDiam() const;//(DP) or (DS)
-    inline double wCoperWireCrossSectAreaPost() const;//
+    inline double wCoperWireCrossSectAreaPost() const;//(ECA)
     inline double wCurrentDenst() const;//(JP) or (JS)
     inline double wNumTurnToLay(const MechDimension &mchdm) const;//Number of turns per layer(NTL)
     inline double wNumLay(const MechDimension &mchdm) const;//(LN)
