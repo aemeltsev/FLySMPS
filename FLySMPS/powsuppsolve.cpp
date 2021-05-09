@@ -162,14 +162,14 @@ void PowSuppSolve::calcTransformerWired()
 {
     m_isSolveRunning = true;
     emit startCalcTransformerWired();
-    m_sec.reserve(SET_SECONDARY_WIRED);
-    m_wind.reserve(SET_SECONDARY_WIRED+1);
+    m_sec.reserve(SET_SECONDARY_WIRED); /**< Reserve for number of secondary side */
+    m_wind.reserve(SET_SECONDARY_WIRED+1); /**< Reserve for all windings */
 
     if(!m_isSolveRunning){
         emit calcCanceled();
         return;
     }
-
+    // Make secondary side objects
     QScopedPointer<FBPTSecondary> sec_one(new FBPTSecondary(m_indata.curr_out_one, m_indata.volt_out_one,
                                                             m_ptpe->actual_volt_reflected, m_indata.power_out_max,
                                                             m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
@@ -189,11 +189,13 @@ void PowSuppSolve::calcTransformerWired()
                                                              m_ptpe->actual_volt_reflected, m_indata.power_out_max,
                                                              m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
                                                              m_indata.volt_diode_drop_sec));
+    // Packing of the secondary side objects
     m_sec.push_back(sec_one);
     m_sec.push_back(sec_two);
     m_sec.push_back(sec_three);
     m_sec.push_back(sec_four);
 
+    // Make winding objects
     QScopedPointer<FBPTWinding> wind_prim(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
                                                           m_ptpe->curr_primary_rms, m_psw.m_mcd,
                                                           m_psw.m_fcu, m_psw.m_ins[0]));
@@ -217,12 +219,86 @@ void PowSuppSolve::calcTransformerWired()
     QScopedPointer<FBPTWinding> wind_aux(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
                                                          m_ptpe->curr_primary_rms, m_psw.m_mcd,
                                                          m_psw.m_fcu, m_psw.m_ins[5]));
+    // Packing of the winding objects in to sequence container
     m_wind.push_back(wind_prim);
     m_wind.push_back(wind_sec_one);
     m_wind.push_back(wind_sec_two);
     m_wind.push_back(wind_sec_three);
     m_wind.push_back(wind_sec_four);
     m_wind.push_back(wind_aux);
+
+    // Packing winding properties of the primary side
+    m_ptsw->primary_wind.insert("AP", m_wind[0]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[0]));
+    m_ptsw->primary_wind.insert("AWGP", m_wind[0]->wMaxWireSizeAWG(m_ptsw->primary_wind.value("AP")));
+    m_wind[0]->setWireDiam(m_ptsw->primary_wind.value("AWGP"), m_ptpe->actual_num_primary);
+    m_ptsw->primary_wind.insert("DP", m_wind[0]->wCoperWireDiam());
+    m_ptsw->primary_wind.insert("ECA", m_wind[0]->wCoperWireCrossSectAreaPost());
+    m_ptsw->primary_wind.insert("JP", m_wind[0]->wCurrentDenst());
+    m_ptsw->primary_wind.insert("OD", 1);
+    m_ptsw->primary_wind.insert("NTL", m_wind[0]->wNumTurnToLay(m_md));
+    m_ptsw->primary_wind.insert("LN", m_wind[0]->wNumLay(m_md));
+
+    // Packing winding properties of the 1st secondary side
+    m_ptsw->out_one_wind.insert("JSP", 1);
+    m_ptsw->out_one_wind.insert("JSRMS", 1);
+    m_ptsw->out_one_wind.insert("NSEC", 1);
+    m_ptsw->out_one_wind.insert("ANS", 1);
+    m_ptsw->out_one_wind.insert("AWGNS", 1);
+    m_ptsw->out_one_wind.insert("DS", 1);
+    m_ptsw->out_one_wind.insert("ECA", 1);
+    m_ptsw->out_one_wind.insert("JS", 1);
+    m_ptsw->out_one_wind.insert("OD", 1);
+    m_ptsw->out_one_wind.insert("NTL", 1);
+    m_ptsw->out_one_wind.insert("LN", 1);
+
+    // Packing winding properties of the 2nd secondary side
+    m_ptsw->out_two_wind.insert("JSP", 1);
+    m_ptsw->out_two_wind.insert("JSRMS", 1);
+    m_ptsw->out_two_wind.insert("NSEC", 1);
+    m_ptsw->out_two_wind.insert("ANS", 1);
+    m_ptsw->out_two_wind.insert("AWGNS", 1);
+    m_ptsw->out_two_wind.insert("DS", 1);
+    m_ptsw->out_two_wind.insert("ECA", 1);
+    m_ptsw->out_two_wind.insert("JS", 1);
+    m_ptsw->out_two_wind.insert("OD", 1);
+    m_ptsw->out_two_wind.insert("NTL", 1);
+    m_ptsw->out_two_wind.insert("LN", 1);
+
+    // Packing winding properties of the 3th secondary side
+    m_ptsw->out_three_wind.insert("JSP", 1);
+    m_ptsw->out_three_wind.insert("JSRMS", 1);
+    m_ptsw->out_three_wind.insert("NSEC", 1);
+    m_ptsw->out_three_wind.insert("ANS", 1);
+    m_ptsw->out_three_wind.insert("AWGNS", 1);
+    m_ptsw->out_three_wind.insert("DS", 1);
+    m_ptsw->out_three_wind.insert("ECA", 1);
+    m_ptsw->out_three_wind.insert("JS", 1);
+    m_ptsw->out_three_wind.insert("OD", 1);
+    m_ptsw->out_three_wind.insert("NTL", 1);
+    m_ptsw->out_three_wind.insert("LN", 1);
+
+    // Packing winding properties of the 4th secondary side
+    m_ptsw->out_four_wind.insert("JSP", 1);
+    m_ptsw->out_four_wind.insert("JSRMS", 1);
+    m_ptsw->out_four_wind.insert("NSEC", 1);
+    m_ptsw->out_four_wind.insert("ANS", 1);
+    m_ptsw->out_four_wind.insert("AWGNS", 1);
+    m_ptsw->out_four_wind.insert("DS", 1);
+    m_ptsw->out_four_wind.insert("ECA", 1);
+    m_ptsw->out_four_wind.insert("JS", 1);
+    m_ptsw->out_four_wind.insert("OD", 1);
+    m_ptsw->out_four_wind.insert("NTL", 1);
+    m_ptsw->out_four_wind.insert("LN", 1);
+
+    // Packing winding properties of the auxilary side
+    m_ptsw->out_aux_wind.insert("NAUX", 1);
+    m_ptsw->out_aux_wind.insert("ANAUX", 1);
+    m_ptsw->out_aux_wind.insert("AWGAUX", 1);
+    m_ptsw->out_aux_wind.insert("DAUX", 1);
+    m_ptsw->out_aux_wind.insert("ECA", 1);
+    m_ptsw->out_aux_wind.insert("OD", 1);
+    m_ptsw->out_aux_wind.insert("NLT", 1);
+
 }
 
 
