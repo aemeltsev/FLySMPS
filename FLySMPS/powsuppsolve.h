@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QPair>
 #include <QHash>
+#include <QtMath>
 #include "LoggingCategories.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
@@ -49,8 +50,8 @@ signals:
     void finishedCalcElectroMagProperties();
     void startCalcTransformerWired();
     void finishedCalcTransformerWired();
-    void startCalcTransformer();
-    void finishedCalcTransformer();
+    //void startCalcTransformer();
+    //void finishedCalcTransformer();
     void startCalcSwitchNetwork();
     void finishedCalcSwitchNetwork();
     void startCalcPowerStageModel();
@@ -115,6 +116,7 @@ private:
         int16_t m_mcd; /**< Safety standart margin */
         float m_fcu; /**< Copper space factor */
     };
+
     //input containers
 
     // out containers
@@ -146,22 +148,27 @@ private:
 
     struct PMosfet
     {
-        double mosfet_voltage_nom;
-        double mosfet_voltage_max;
+        int16_t mosfet_voltage_nom;
+        int16_t mosfet_voltage_max;
+        float mosfet_ds_curr;
+        double mosfet_on_time;
+        double mosfet_off_time;
+        double mosfet_sw_tot;
         double mosfet_rise_time;
 
-        double mosfet_conduct_loss;
-        double mosfet_drive_loss;
-        double mosfet_switch_loss;
-        double mosfet_capacit_loss;
+        float mosfet_conduct_loss;
+        float mosfet_drive_loss;
+        float mosfet_switch_loss;
+        float mosfet_capacit_loss;
+        float mosfet_total_loss;
 
-        double snubber_voltage_max;
-        double snubber_pwr_diss;
-        double snubber_res_value;
+        int16_t snubber_voltage_max;
+        float snubber_pwr_diss;
+        int16_t snubber_res_value;
         double snubber_cap_value;
 
-        double curr_sense_res;
-        double curr_sense_res_loss;
+        int16_t curr_sense_res;
+        float curr_sense_res_loss;
     };
 
     struct ODiode
@@ -262,7 +269,7 @@ private:
         double curr_primary_rms;//Primary RMS current
 
         double core_area_product;//Core area product(A_p)
-        double core_geom_coeff;////The core geometry coefficient(K_g)
+        double core_geom_coeff;//The core geometry coefficient(K_g)
         //double area_wind_tot;
         double curr_dens;//
         double length_air_gap;//Air-gap length considered with fringing effect
@@ -312,6 +319,7 @@ public:
     FBPT_NUM_SETTING m_fns;
     FBPT_SHAPE_AIR_GAP m_fsag;
     TransWired m_psw;
+    MosfetProp m_mospr;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
