@@ -9,7 +9,7 @@
  */
 double SwMosfet::swMosfetVoltageNom() const
 {
-    return in_max_rms_voltage + actual_volt_reflected;
+    return in_max_pk_voltage + actual_volt_reflected;
 }
 
 /**
@@ -30,61 +30,71 @@ double SwMosfet::swMosfetVoltageMax() const
 double SwMosfet::swMosfetCurrent(double leakage_induct, double primary_induct) const
 {
     double time_switch = (1/freq_switch);
-    return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_rms_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_rms_voltage * actual_max_duty_cycle) * time_switch)/swLeakageInduct(leakage_induct, primary_induct));
+    return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_pk_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_pk_voltage * actual_max_duty_cycle) * time_switch)/swLeakageInduct(leakage_induct, primary_induct));
+}
+
+inline double SwMosfet::swMosfetOnTime(double primary_induct, double in_volt_rms) const
+{
+    return (primary_induct * power_out_max)/(efficiency * actual_max_duty_cycle * qPow(in_volt_rms, 2));
+}
+
+inline double SwMosfet::swMosfetOffTime(double sw_on_time)
+{
+    return (actual_max_duty_cycle * sw_on_time) - sw_on_time;
 }
 
 /**
  * @brief swMosfetRiseTime - estimated fet vds rise and fall time
  * @return rise time
  */
-double SwMosfet::swMosfetRiseTime() const
+double SwMosfet::swMosfetRiseTime(const MosfetProp &mp) const
 {
-    return Qg * (2./Idrv);
+    return mp.m_qg * (2./mp.m_idr);
 }
 
 /**
  * @brief swMosfetConductLoss - estimated of conduction losses
  * @retval conduction losses
  */
-double SwMosfet::swMosfetConductLoss() const
+double SwMosfet::swMosfetConductLoss(MosfetProp &mp) const
 {
-    return std::pow(curr_primary_rms, 2) * RDSon;
+    return std::pow(curr_primary_rms, 2) * mp.m_rdson;
 }
 
 /**
  * @brief swMosfetDriveLoss - estimated fet power loss by driving the fet’s gate
  * @return loss by driving the gate
  */
-double SwMosfet::swMosfetDriveLoss() const
+double SwMosfet::swMosfetDriveLoss(MosfetProp &mp) const
 {
-    return Vdrv * Qg * freq_switch;
+    return mp.m_vds * mp.m_qg * freq_switch;
 }
 
 /**
  * @brief swMosfetSwitchLoss - estimated fet average switching loss
  * @return switching loss
  */
-double SwMosfet::swMosfetSwitchLoss() const
+double SwMosfet::swMosfetSwitchLoss(MosfetProp &mp) const
 {
-    return ((Coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.) + (swMosfetVoltageMax()*static_cast<double>(curr_primary_peak)*swMosfetRiseTime()*freq_switch);
+    return ((mp.m_coss*qPow(swMosfetVoltageMax(), 2)*freq_switch)/2.) + (swMosfetVoltageMax()*static_cast<double>(curr_primary_peak)*swMosfetRiseTime(mp)*freq_switch);
 }
 
 /**
  * @brief swMosfetCapacitLoss - estimated fet coss power dissipation
  * @return coss power dissipation
  */
-double SwMosfet::swMosfetCapacitLoss() const
+double SwMosfet::swMosfetCapacitLoss(MosfetProp &mp) const
 {
-    return (Coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.;
+    return (mp.m_coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.;
 }
 
 /**
  * @brief swMosfetTotalLoss - multiply of all losses values
  * @return total losses
  */
-double SwMosfet::swMosfetTotalLoss() const
+double SwMosfet::swMosfetTotalLoss(MosfetProp &mp) const
 {
-    return swMosfetConductLoss()*swMosfetDriveLoss()*swMosfetSwitchLoss()*swMosfetCapacitLoss();
+    return swMosfetConductLoss(mp)*swMosfetDriveLoss(mp)*swMosfetSwitchLoss(mp)*swMosfetCapacitLoss(mp);
 }
 
 /**
@@ -96,41 +106,6 @@ void SwMosfet::setCurrValues(float rmscp, float pkcp)
 {
     curr_primary_rms = rmscp;
     curr_primary_peak = pkcp;
-}
-
-/**
- * @brief setSWValue - set property values for mosfet switch
- * @param rdson - drain-source on-state resistance
- * @param qg - total gate charge
- * @param coss - output capacitance
- * @param idrive - continuous gate current
- * @param vdrive - gate-drive voltage
- */
-void SwMosfet::setSWValue(double rdson, double qg, double coss, double idrive, int16_t vdrive)
-{
-    RDSon = rdson;
-    Qg = qg;
-    Coss = coss;
-    Idrv = idrive;
-    Vdrv = vdrive;
-}
-
-/**
- * @brief swMosfetCustomIdrv - calculate custom gate current
- * @return continuous gate current
- */
-double SwMosfet::swMosfetCustomIdrv() const
-{
-    return Qg*freq_switch;
-}
-
-/**
- * @brief getCustomIdrv - get current value
- * @return continuous gate current
- */
-double SwMosfet::getCustomIdrv() const
-{
-    return swMosfetCustomIdrv();
 }
 
 /**
@@ -150,7 +125,7 @@ double SwMosfet::swLeakageInduct(double leakage_induct, double primary_induct) c
  */
 double SwMosfet::clVoltageMax() const
 {
-    return swMosfetVoltageMax() - in_max_rms_voltage - actual_volt_reflected;
+    return swMosfetVoltageMax() - in_max_pk_voltage - actual_volt_reflected;
 }
 
 /**
