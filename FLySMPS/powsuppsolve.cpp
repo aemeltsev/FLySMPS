@@ -189,6 +189,11 @@ void PowSuppSolve::calcTransformerWired()
                                                              m_ptpe->actual_volt_reflected, m_indata.power_out_max,
                                                              m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
                                                              m_indata.volt_diode_drop_sec));
+
+    QScopedPointer<FBPTSecondary> aux_out(new FBPTSecondary(m_indata.volt_out_aux, m_indata.curr_out_aux,
+                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                            m_indata.volt_diode_drop_sec));
     // Packing of the secondary side objects
     m_sec.push_back(sec_one);
     m_sec.push_back(sec_two);
@@ -230,7 +235,9 @@ void PowSuppSolve::calcTransformerWired()
     // Packing winding properties of the primary side
     m_ptsw->primary_wind.insert("AP", m_wind[0]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[0]));
     m_ptsw->primary_wind.insert("AWGP", m_wind[0]->wMaxWireSizeAWG(m_ptsw->primary_wind.value("AP")));
+
     m_wind[0]->setWireDiam(m_ptsw->primary_wind.value("AWGP"), m_ptpe->actual_num_primary);
+
     m_ptsw->primary_wind.insert("DP", m_wind[0]->wCoperWireDiam());
     m_ptsw->primary_wind.insert("ECA", m_wind[0]->wCoperWireCrossSectAreaPost());
     m_ptsw->primary_wind.insert("JP", m_wind[0]->wCurrentDenst());
@@ -239,67 +246,133 @@ void PowSuppSolve::calcTransformerWired()
     m_ptsw->primary_wind.insert("LN", m_wind[0]->wNumLay(m_md));
 
     // Packing winding properties of the 1st secondary side
-    m_ptsw->out_one_wind.insert("JSP", 1);
-    m_ptsw->out_one_wind.insert("JSRMS", 1);
-    m_ptsw->out_one_wind.insert("NSEC", 1);
-    m_ptsw->out_one_wind.insert("ANS", 1);
-    m_ptsw->out_one_wind.insert("AWGNS", 1);
-    m_ptsw->out_one_wind.insert("DS", 1);
-    m_ptsw->out_one_wind.insert("ECA", 1);
-    m_ptsw->out_one_wind.insert("JS", 1);
+    m_sec[0]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
+
+    m_ptsw->out_one_wind.insert("JSP", m_sec[0]->outCurrPeakSecond());
+    m_ptsw->out_one_wind.insert("JSRMS", m_sec[0]->outCurrRMSSecond());
+    m_ptsw->out_one_wind.insert("NSEC", m_sec[0]->outNumSecond());
+    m_ptsw->out_one_wind.insert("ANS", m_wind[1]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[1]));
+    m_ptsw->out_one_wind.insert("AWGNS", m_wind[1]->wMaxWireSizeAWG(m_ptsw->out_one_wind.value("ANS")));
+
+    m_wind[1]->setWireDiam(m_ptsw->out_one_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+
+    m_ptsw->out_one_wind.insert("DS", m_wind[1]->wCoperWireDiam());
+    m_ptsw->out_one_wind.insert("ECA", m_wind[1]->wCoperWireCrossSectAreaPost());
+    m_ptsw->out_one_wind.insert("JS", m_wind[1]->wCurrentDenst());
     m_ptsw->out_one_wind.insert("OD", 1);
-    m_ptsw->out_one_wind.insert("NTL", 1);
-    m_ptsw->out_one_wind.insert("LN", 1);
+    m_ptsw->out_one_wind.insert("NTL", m_wind[1]->wNumTurnToLay(m_md));
+    m_ptsw->out_one_wind.insert("LN", m_wind[1]->wNumLay(m_md));
 
     // Packing winding properties of the 2nd secondary side
-    m_ptsw->out_two_wind.insert("JSP", 1);
-    m_ptsw->out_two_wind.insert("JSRMS", 1);
-    m_ptsw->out_two_wind.insert("NSEC", 1);
-    m_ptsw->out_two_wind.insert("ANS", 1);
-    m_ptsw->out_two_wind.insert("AWGNS", 1);
-    m_ptsw->out_two_wind.insert("DS", 1);
-    m_ptsw->out_two_wind.insert("ECA", 1);
-    m_ptsw->out_two_wind.insert("JS", 1);
+    m_sec[1]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
+
+    m_ptsw->out_two_wind.insert("JSP", m_sec[1]->outCurrPeakSecond());
+    m_ptsw->out_two_wind.insert("JSRMS", m_sec[1]->outCurrRMSSecond());
+    m_ptsw->out_two_wind.insert("NSEC", m_sec[1]->outNumSecond());
+    m_ptsw->out_two_wind.insert("ANS", m_wind[2]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[2]));
+    m_ptsw->out_two_wind.insert("AWGNS", m_wind[2]->wMaxWireSizeAWG(m_ptsw->out_two_wind.value("ANS")));
+
+    m_wind[2]->setWireDiam(m_ptsw->out_two_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+
+    m_ptsw->out_two_wind.insert("DS", m_wind[2]->wCoperWireDiam());
+    m_ptsw->out_two_wind.insert("ECA", m_wind[2]->wCoperWireCrossSectAreaPost());
+    m_ptsw->out_two_wind.insert("JS", m_wind[2]->wCurrentDenst());
     m_ptsw->out_two_wind.insert("OD", 1);
-    m_ptsw->out_two_wind.insert("NTL", 1);
-    m_ptsw->out_two_wind.insert("LN", 1);
+    m_ptsw->out_two_wind.insert("NTL", m_wind[2]->wNumTurnToLay(m_md));
+    m_ptsw->out_two_wind.insert("LN", m_wind[2]->wNumLay(m_md));
 
     // Packing winding properties of the 3th secondary side
-    m_ptsw->out_three_wind.insert("JSP", 1);
-    m_ptsw->out_three_wind.insert("JSRMS", 1);
-    m_ptsw->out_three_wind.insert("NSEC", 1);
-    m_ptsw->out_three_wind.insert("ANS", 1);
-    m_ptsw->out_three_wind.insert("AWGNS", 1);
-    m_ptsw->out_three_wind.insert("DS", 1);
-    m_ptsw->out_three_wind.insert("ECA", 1);
-    m_ptsw->out_three_wind.insert("JS", 1);
+    m_sec[2]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
+
+    m_ptsw->out_three_wind.insert("JSP", m_sec[2]->outCurrPeakSecond());
+    m_ptsw->out_three_wind.insert("JSRMS", m_sec[2]->outCurrRMSSecond());
+    m_ptsw->out_three_wind.insert("NSEC", m_sec[2]->outNumSecond());
+    m_ptsw->out_three_wind.insert("ANS", m_wind[3]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[3]));
+    m_ptsw->out_three_wind.insert("AWGNS", m_wind[3]->wMaxWireSizeAWG(m_ptsw->out_three_wind.value("ANS")));
+
+    m_wind[3]->setWireDiam(m_ptsw->out_three_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+
+    m_ptsw->out_three_wind.insert("DS", m_wind[3]->wCoperWireDiam());
+    m_ptsw->out_three_wind.insert("ECA", m_wind[3]->wCoperWireCrossSectAreaPost());
+    m_ptsw->out_three_wind.insert("JS", m_wind[3]->wCurrentDenst());
     m_ptsw->out_three_wind.insert("OD", 1);
-    m_ptsw->out_three_wind.insert("NTL", 1);
-    m_ptsw->out_three_wind.insert("LN", 1);
+    m_ptsw->out_three_wind.insert("NTL", m_wind[3]->wNumTurnToLay(m_md));
+    m_ptsw->out_three_wind.insert("LN", m_wind[3]->wNumLay(m_md));
 
     // Packing winding properties of the 4th secondary side
-    m_ptsw->out_four_wind.insert("JSP", 1);
-    m_ptsw->out_four_wind.insert("JSRMS", 1);
-    m_ptsw->out_four_wind.insert("NSEC", 1);
-    m_ptsw->out_four_wind.insert("ANS", 1);
-    m_ptsw->out_four_wind.insert("AWGNS", 1);
-    m_ptsw->out_four_wind.insert("DS", 1);
-    m_ptsw->out_four_wind.insert("ECA", 1);
-    m_ptsw->out_four_wind.insert("JS", 1);
+    m_sec[3]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
+
+    m_ptsw->out_four_wind.insert("JSP", m_sec[3]->outCurrPeakSecond());
+    m_ptsw->out_four_wind.insert("JSRMS", m_sec[3]->outCurrRMSSecond());
+    m_ptsw->out_four_wind.insert("NSEC", m_sec[3]->outNumSecond());
+    m_ptsw->out_four_wind.insert("ANS", m_wind[4]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[4]));
+    m_ptsw->out_four_wind.insert("AWGNS", m_wind[4]->wMaxWireSizeAWG(m_ptsw->out_four_wind.value("ANS")));
+
+    m_wind[4]->setWireDiam(m_ptsw->out_four_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+
+    m_ptsw->out_four_wind.insert("DS", m_wind[4]->wCoperWireDiam());
+    m_ptsw->out_four_wind.insert("ECA", m_wind[4]->wCoperWireCrossSectAreaPost());
+    m_ptsw->out_four_wind.insert("JS", m_wind[4]->wCurrentDenst());
     m_ptsw->out_four_wind.insert("OD", 1);
-    m_ptsw->out_four_wind.insert("NTL", 1);
-    m_ptsw->out_four_wind.insert("LN", 1);
+    m_ptsw->out_four_wind.insert("NTL", m_wind[4]->wNumTurnToLay(m_md));
+    m_ptsw->out_four_wind.insert("LN", m_wind[4]->wNumLay(m_md));
 
     // Packing winding properties of the auxilary side
-    m_ptsw->out_aux_wind.insert("NAUX", 1);
-    m_ptsw->out_aux_wind.insert("ANAUX", 1);
-    m_ptsw->out_aux_wind.insert("AWGAUX", 1);
-    m_ptsw->out_aux_wind.insert("DAUX", 1);
-    m_ptsw->out_aux_wind.insert("ECA", 1);
-    m_ptsw->out_aux_wind.insert("OD", 1);
-    m_ptsw->out_aux_wind.insert("NLT", 1);
+    m_ptsw->out_aux_wind.insert("NAUX", aux_out->outNumSecond());
+    m_ptsw->out_aux_wind.insert("ANAUX", m_wind[5]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[5]));
+    m_ptsw->out_aux_wind.insert("AWGAUX", m_wind[5]->wMaxWireSizeAWG(m_ptsw->out_aux_wind.value("ANS")));
 
+    m_wind[5]->setWireDiam(m_ptsw->out_aux_wind.value("AWGAUX"), m_ptpe->actual_num_primary);
+
+    m_ptsw->out_aux_wind.insert("DAUX", m_wind[5]->wCoperWireDiam());
+    m_ptsw->out_aux_wind.insert("ECA", m_wind[5]->wCoperWireCrossSectAreaPost());
+    m_ptsw->out_aux_wind.insert("OD", 1);
+    m_ptsw->out_aux_wind.insert("NTL", m_wind[5]->wNumTurnToLay(m_md));
+
+    emit finishedCalcTransformerWired();
+    m_isSolveRunning = false;
 }
 
+void PowSuppSolve::calcSwitchNetwork()
+{
+    m_isSolveRunning = true;
+    emit startCalcSwitchNetwork();
 
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    int16_t vmaxrms = static_cast<int16_t>(m_indata.input_volt_ac_max * M_SQRT2);
+    int16_t vminrms = static_cast<int16_t>(m_indata.input_volt_ac_min * M_SQRT2);
+
+    QScopedPointer<SwMosfet> sw_mos(new SwMosfet(vmaxrms, vminrms,
+                                                 m_ptpe->actual_volt_reflected, m_indata.voltage_spike,
+                                                 m_indata.eff, m_indata.power_out_max,
+                                                 m_indata.freq_switch, m_ptpe->actual_max_duty_cycle
+                                                 ));
+    m_pm->mosfet_voltage_nom = sw_mos->swMosfetVoltageNom();
+    m_pm->mosfet_voltage_max = sw_mos->swMosfetVoltageMax();
+    m_pm->mosfet_ds_curr = ;
+    m_pm->mosfet_on_time = ;
+    m_pm->mosfet_off_time = ;
+    m_pm->mosfet_sw_tot = sw_mos->swMosfetTotPeriod();
+    m_pm->mosfet_rise_time = sw_mos->swMosfetRiseTime(m_mospr);
+    m_pm->mosfet_conduct_loss = ;
+    m_pm->mosfet_drive_loss;
+    m_pm->mosfet_switch_loss;
+    m_pm->mosfet_capacit_loss;
+    m_pm->mosfet_total_loss;
+
+    m_pm->snubber_voltage_max;
+    m_pm->snubber_pwr_diss;
+    m_pm->snubber_res_value;
+    m_pm->snubber_cap_value;
+
+    m_pm->curr_sense_res;
+    m_pm->curr_sense_res_loss;
+
+    emit finishedCalcSwitchNetwork();
+    m_isSolveRunning = false;
+}
 
