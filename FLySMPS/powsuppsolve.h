@@ -320,6 +320,7 @@ public:
     FBPT_SHAPE_AIR_GAP m_fsag;
     TransWired m_psw;
     MosfetProp m_mospr;
+    ClampCSProp m_ccsp;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;

@@ -255,7 +255,6 @@ void PowSuppSolve::calcTransformerWired()
     m_ptsw->out_one_wind.insert("AWGNS", m_wind[1]->wMaxWireSizeAWG(m_ptsw->out_one_wind.value("ANS")));
 
     m_wind[1]->setWireDiam(m_ptsw->out_one_wind.value("AWGNS"), m_ptpe->actual_num_primary);
-
     m_ptsw->out_one_wind.insert("DS", m_wind[1]->wCoperWireDiam());
     m_ptsw->out_one_wind.insert("ECA", m_wind[1]->wCoperWireCrossSectAreaPost());
     m_ptsw->out_one_wind.insert("JS", m_wind[1]->wCurrentDenst());
@@ -349,28 +348,29 @@ void PowSuppSolve::calcSwitchNetwork()
     QScopedPointer<SwMosfet> sw_mos(new SwMosfet(vmaxrms, vminrms,
                                                  m_ptpe->actual_volt_reflected, m_indata.voltage_spike,
                                                  m_indata.eff, m_indata.power_out_max,
-                                                 m_indata.freq_switch, m_ptpe->actual_max_duty_cycle
-                                                 ));
+                                                 m_indata.freq_switch, m_ptpe->actual_max_duty_cycle,
+                                                 m_indata.leakage_induct));
     m_pm->mosfet_voltage_nom = sw_mos->swMosfetVoltageNom();
     m_pm->mosfet_voltage_max = sw_mos->swMosfetVoltageMax();
-    m_pm->mosfet_ds_curr = ;
-    m_pm->mosfet_on_time = ;
-    m_pm->mosfet_off_time = ;
+    sw_mos->setCurrValues(m_ptpe->curr_primary_rms, m_ptpe->curr_primary_peak);
+    m_pm->mosfet_ds_curr = sw_mos->swMosfetCurrent();
+    m_pm->mosfet_on_time = sw_mos->swMosfetOnTime(m_ptpe->primary_induct, (m_indata.input_volt_ac_max/M_SQRT2));
+    m_pm->mosfet_off_time = sw_mos->swMosfetOffTime(m_pm->mosfet_on_time);
     m_pm->mosfet_sw_tot = sw_mos->swMosfetTotPeriod();
     m_pm->mosfet_rise_time = sw_mos->swMosfetRiseTime(m_mospr);
-    m_pm->mosfet_conduct_loss = ;
-    m_pm->mosfet_drive_loss;
-    m_pm->mosfet_switch_loss;
-    m_pm->mosfet_capacit_loss;
-    m_pm->mosfet_total_loss;
+    m_pm->mosfet_conduct_loss = sw_mos->swMosfetConductLoss(m_mospr);
+    m_pm->mosfet_drive_loss = sw_mos->swMosfetDriveLoss(m_mospr);
+    m_pm->mosfet_switch_loss = sw_mos->swMosfetSwitchLoss(m_mospr);
+    m_pm->mosfet_capacit_loss = sw_mos->swMosfetCapacitLoss(m_mospr);
+    m_pm->mosfet_total_loss = sw_mos->swMosfetTotalLoss(m_mospr);
 
-    m_pm->snubber_voltage_max;
-    m_pm->snubber_pwr_diss;
-    m_pm->snubber_res_value;
-    m_pm->snubber_cap_value;
+    m_pm->snubber_voltage_max = sw_mos->clVoltageMax();
+    m_pm->snubber_pwr_diss = sw_mos->clPowerDiss(m_ccsp);
+    m_pm->snubber_res_value = sw_mos->clResValue(m_ccsp);
+    m_pm->snubber_cap_value = sw_mos->clCapValue(m_ccsp);
 
-    m_pm->curr_sense_res;
-    m_pm->curr_sense_res_loss;
+    m_pm->curr_sense_res = sw_mos->csCurrRes(m_ccsp);
+    m_pm->curr_sense_res_loss = sw_mos->csCurrResLoss(m_ccsp);
 
     emit finishedCalcSwitchNetwork();
     m_isSolveRunning = false;
