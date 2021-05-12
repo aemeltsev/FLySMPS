@@ -14,6 +14,14 @@ struct MosfetProp
     float m_rdson;//Drain-Source on-state resistance
 };
 
+struct ClampCSProp
+{
+    int16_t cl_first_out_volt;//5~10% ripple is reasonable
+    float cl_turn_rat;//Common turn ratio value
+    double cl_vol_rip;//First controlled secondary side voltage value
+    double cs_volt;//The typical values current-sense voltage
+};
+
 class SwMosfet
 {
 public:
@@ -34,51 +42,44 @@ public:
              int16_t fsw, float mdc, double leakind):
         in_max_pk_voltage(vmaxrmsin),in_min_pk_voltage(vminrmsin),
         actual_volt_reflected(vref), voltage_spike(spv),
-        efficiency(eff), power_out_max(pout),
-        freq_switch(fsw), actual_max_duty_cycle(mdc), leakage_induct(leakind)
+        freq_switch(fsw), efficiency(eff),
+        power_out_max(pout), actual_max_duty_cycle(mdc),
+        leakage_induct(leakind)
     {}
     inline double swMosfetVoltageMax() const;
     inline double swMosfetVoltageNom() const;
-    inline double swMosfetCurrent(double leakage_induct, double primary_induct) const;
+    inline double swMosfetCurrent() const;
     inline double swMosfetTotPeriod() const {return 1./freq_switch;}
     inline double swMosfetOnTime(double primary_induct, double in_volt_rms) const;
     inline double swMosfetOffTime(double sw_on_time);
     inline double swMosfetRiseTime(const MosfetProp &mp) const;
-    inline double swMosfetConductLoss(MosfetProp &mp) const;
-    inline double swMosfetDriveLoss(MosfetProp &mp) const;
-    inline double swMosfetSwitchLoss(MosfetProp &mp) const;
-    inline double swMosfetCapacitLoss(MosfetProp &mp) const;
-    inline double swMosfetTotalLoss(MosfetProp &mp) const;
+    inline double swMosfetConductLoss(const MosfetProp &mp) const;
+    inline double swMosfetDriveLoss(const MosfetProp &mp) const;
+    inline double swMosfetSwitchLoss(const MosfetProp &mp) const;
+    inline double swMosfetCapacitLoss(const MosfetProp &mp) const;
+    inline double swMosfetTotalLoss(const MosfetProp &mp) const;
+
     void setCurrValues(float rmscp, float pkcp);
-
     inline double clVoltageMax() const;
-    inline double clPowerDiss() const;
-    inline double clResValue() const;
-    void setSnubVoltRipple(double vrp);
-    inline double clCapValue() const;
+    inline double clPowerDiss(const ClampCSProp &ccsp) const;
+    inline double clResValue(const ClampCSProp &ccsp) const;
+    inline double clCapValue(const ClampCSProp &ccsp) const;
 
-    inline double csCurrRes() const;
-    void setVoltCurrSens(double csv);
-    inline double csCurrResLoss() const;
+    inline double csCurrRes(const ClampCSProp &ccsp) const;
+    inline double csCurrResLoss(const ClampCSProp &ccsp) const;
 private:
     int16_t in_max_pk_voltage;
     int16_t in_min_pk_voltage;
     int16_t actual_volt_reflected;
     int16_t voltage_spike;
+    int16_t freq_switch;
     float efficiency;
     float power_out_max;
-    int16_t freq_switch;
     float actual_max_duty_cycle;
     double leakage_induct;
 
     float curr_primary_rms;
     float curr_primary_peak;
-
-    double clCurTsPk;
-    double clVolRip;
-    double csVoltCs;
-    inline double swLeakageInduct(double leakage_induct, double primary_induct) const;
-    void clCurrPeakTime(double leakage_induct, double primary_induct, double turn_rat, double n_out_volt);
 };
 
 #endif // SWMOSFET_H
