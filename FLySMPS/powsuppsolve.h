@@ -50,10 +50,10 @@ signals:
     void finishedCalcElectroMagProperties();
     void startCalcTransformerWired();
     void finishedCalcTransformerWired();
-    //void startCalcTransformer();
-    //void finishedCalcTransformer();
     void startCalcSwitchNetwork();
     void finishedCalcSwitchNetwork();
+    void startCalcOtputNetwork();
+    void finishedCalcOtputNetwork();
     void startCalcPowerStageModel();
     void finishedCalcPowerStageModel();
     void startCalcOptocouplerFeedback();
@@ -171,38 +171,44 @@ private:
         float curr_sense_res_loss;
     };
 
-    struct ODiode
-    {
-        double diode_rev_voltage;
-        double diode_pow_diss;
-    };
-
+    /**
+     * @brief The FullOutDiode struct
+     *        SOP - Secondary output power
+     *        SOV - Secondary output voltage
+     *        TR - Turns ratio
+     *        DRV - Output diode reverse voltage
+     *        DPD - Output diode power dissipation
+     */
     struct FullOutDiode
     {
-        double sec_out_pwr;
-        int16_t sec_out_voltage;
-        double turn_ratio;
-        ODiode doout;
+        QHash<QString, float> out_diode_first;
+        QHash<QString, float> out_diode_sec;
+        QHash<QString, float> out_diode_thrid;
+        QHash<QString, float> out_diode_four;
+        QHash<QString, float> out_diode_aux;
     };
 
-    struct OCap
-    {
-        double cap_value_out;
-        double cap_esr_out;
-        double cap_curr_rms;
-        double cap_zfc_out;
-        double cap_rippl_volr_out;
-        double cap_out_loss;
-    };
-
+    /**
+     * @brief The FullOutCap struct
+     *        SVR - Ripple voltage of the secondary side
+     *        SESR - ESR percentage(0.1–1.5 ohm)
+     *        SCRFQ - Crossover frequency(1/20 to 1/10 from working frequency)
+     *        SCP - Secondary current peak
+     *        SOV - Secondary output voltage
+     *        CVO - Output capacitor value
+     *        CESRO - Calculated output capacitor ESR
+     *        CCRMS - Output capacitor current RMS
+     *        CZFCO - Zero frequency capacitor output
+     *        CRVO - Output capacitor ripple voltage
+     *        COL - Output capacitor loss
+     */
     struct FullOutCap
-    {
-        double sec_voltage_ripple;
-        double sec_esr_perc;
-        double sec_crfq_value;
-        int16_t sec_curr_peak;// from input value
-        int16_t sec_out_voltage;// from input value
-        OCap capout;
+    {        
+        QHash<QString, float> out_cap_first;
+        QHash<QString, float> out_cap_sec;
+        QHash<QString, float> out_cap_thrid;
+        QHash<QString, float> out_cap_four;
+        QHash<QString, float> out_cap_aux;
     };
 
     struct FullOutFilter
@@ -327,9 +333,7 @@ public:
     QScopedPointer<PMosfet> m_pm;
     QScopedPointer<PulseTransPrimaryElectr> m_ptpe;
     QScopedPointer<PulseTransWires> m_ptsw;
-    //ODiode m_od;
     QScopedPointer<FullOutDiode> m_fod;
-    //OCap m_oc;
     QScopedPointer<FullOutCap> m_foc;
     QScopedPointer<FullOutFilter> m_of;
     QScopedPointer<PowerStageSmallSignalModel> m_pssm;

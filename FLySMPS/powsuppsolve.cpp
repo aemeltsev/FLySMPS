@@ -376,3 +376,18 @@ void PowSuppSolve::calcSwitchNetwork()
     m_isSolveRunning = false;
 }
 
+void PowSuppSolve::calcOtputNetwork()
+{
+    m_isSolveRunning = true;
+    emit startCalcOtputNetwork();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+
+
+    emit finishedCalcOtputNetwork();
+    m_isSolveRunning = false;
+}
