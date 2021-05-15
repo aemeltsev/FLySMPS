@@ -2,10 +2,8 @@
 #define OUTFILTER_H
 #include <QtMath>
 #include <QVector>
-#include <cmath>
 #include <cstdint>
 
-#define M_J        -1
 #define M_PI_DEG    180
 
 class OutFilter
@@ -67,12 +65,13 @@ public:
          * @param end - end frequency point
          * @param step - frequency step
          */
-        void ofPlotArray(QVector<double> &magnitudevector, QVector<double> &phasevector, int16_t begin, int16_t end, int16_t step)
+        void ofPlotArray(QVector<double> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
         {
-            for(int16_t ind=begin; ind<end; ind+=step)
+            for(int32_t ind=begin; ind<end; ind+=step)
             {
-                magnitudevector.push_back(ofTFMagnitudeGain(ind));
-                phasevector.push_back(ofTFphase(ind));
+                freq_vector.push_back(ind);
+                mag_vector.push_back(ofTFMagnitudeGain(ind));
+                phase_vector.push_back(ofTFphase(ind));
             }
         }
 private:
@@ -96,19 +95,6 @@ private:
             double denominator = 1-qPow(omega, 2);
             return (-1)*qAtan(numerator/denominator);
         }
-        /*        inline double ofTransferFunc(int16_t m_freq)
-                {
-                    return 1./qSqrt(1 + qPow(((2*M_PI*m_freq)/ofAngularCutFreq()), 4));
-                }
-                inline double ofTransFuncGainDB(int16_t frq)
-                {
-                    return 20*std::log10(ofTransferFunc(frq));
-                }
-                inline double ofTransfFuncPhase(int16_t frq)
-                {
-                    return M_J*(qAtan((2*M_PI*frq)/ofAngularCutFreq())*(M_PI_DEG/M_PI));
-                }
-        */
 
         int16_t m_freq=0;
         int16_t m_rload=0;
