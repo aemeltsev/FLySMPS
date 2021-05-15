@@ -36,6 +36,7 @@ public slots:
     //Calculate transformer
     void calcSwitchNetwork();
     void calcOtputNetwork();
+    void calcOutputFilter();
     void calcPowerStageModel();
     void calcOptocouplerFeedback();
 
@@ -54,6 +55,8 @@ signals:
     void finishedCalcSwitchNetwork();
     void startCalcOtputNetwork();
     void finishedCalcOtputNetwork();
+    void startCalcOutputFilter();
+    void finishedCalcOutputFilter();
     void startCalcPowerStageModel();
     void finishedCalcPowerStageModel();
     void startCalcOptocouplerFeedback();
@@ -100,17 +103,11 @@ private:
     struct TransWired
     {
         /** [0]-Primary area coefficient,
-         *  [1]-1st area coefficient,
-         *  [2]-2nd area coefficient,
-         *  [3]-3th area coefficient,
-         *  [4]-4th area coefficient,
+         *  [1]-1st area coefficient ... [4]-4th area coefficient,
          *  [5]-Aux area coefficient */
         QVector<float> m_af;
         /** [0]-Primary insulation coefficient,
-         *  [1]-1st wired insulation coefficient,
-         *  [2]-2nd wired insulation coefficient,
-         *  [3]-3th wired insulation coefficient,
-         *  [4]-4th wired insulation coefficient,
+         *  [1]-1st wired insulation coefficient ... [4]-4th wired insulation coefficient,
          *  [5]-Aux insulation coefficient */
         QVector<float> m_ins;
         int16_t m_mcd; /**< Safety standart margin */
@@ -190,11 +187,6 @@ private:
 
     /**
      * @brief The FullOutCap struct
-     *        SVR - Ripple voltage of the secondary side
-     *        SESR - ESR percentage(0.1–1.5 ohm)
-     *        SCRFQ - Crossover frequency(1/20 to 1/10 from working frequency)
-     *        SCP - Secondary current peak
-     *        SOV - Secondary output voltage
      *        CVO - Output capacitor value
      *        CESRO - Calculated output capacitor ESR
      *        CCRMS - Output capacitor current RMS
@@ -327,6 +319,7 @@ public:
     TransWired m_psw;
     MosfetProp m_mospr;
     ClampCSProp m_ccsp;
+    CapOutProp m_cop;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;

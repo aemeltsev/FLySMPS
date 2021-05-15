@@ -386,8 +386,120 @@ void PowSuppSolve::calcOtputNetwork()
         return;
     }
 
+    //Construct output diode objects
+    QScopedPointer<DiodeOut> d_out_one(new DiodeOut((m_indata.curr_out_one * m_indata.volt_out_one), m_indata.volt_out_one,
+                                                    (m_ptpe->actual_num_primary * m_ptsw->out_one_wind.value("NSEC"))));
 
+    QScopedPointer<DiodeOut> d_out_two(new DiodeOut((m_indata.curr_out_two*m_indata.volt_out_two), m_indata.volt_out_two,
+                                                    (m_ptpe->actual_num_primary * m_ptsw->out_two_wind.value("NSEC"))));
+
+    QScopedPointer<DiodeOut> d_out_three(new DiodeOut((m_indata.curr_out_three*m_indata.volt_out_three), m_indata.volt_out_three,
+                                                      (m_ptpe->actual_num_primary * m_ptsw->out_three_wind.value("NSEC"))));
+
+    QScopedPointer<DiodeOut> d_out_four(new DiodeOut((m_indata.curr_out_four*m_indata.volt_out_four), m_indata.volt_out_four,
+                                                     (m_ptpe->actual_num_primary * m_ptsw->out_four_wind.value("NSEC"))));
+
+    QScopedPointer<DiodeOut> d_out_aux(new DiodeOut((m_indata.curr_out_aux*m_indata.volt_out_aux), m_indata.volt_out_aux,
+                                                    (m_ptpe->actual_num_primary * m_ptsw->out_aux_wind.value("NAUX"))));
+    //Construct output capacitor objects
+    QScopedPointer<CapOut> c_out_one(new CapOut(m_cop));
+    QScopedPointer<CapOut> c_out_two(new CapOut(m_cop));
+    QScopedPointer<CapOut> c_out_three(new CapOut(m_cop));
+    QScopedPointer<CapOut> c_out_four(new CapOut(m_cop));
+    QScopedPointer<CapOut> c_out_aux(new CapOut(m_cop));
+
+    //Packing output diode values
+    m_fod->out_diode_first.insert("SOP", (m_indata.curr_out_one * m_indata.volt_out_one));
+    m_fod->out_diode_first.insert("SOV", m_indata.volt_out_one);
+    m_fod->out_diode_first.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_one_wind.value("NSEC")));
+    m_fod->out_diode_first.insert("DRV", d_out_one->doDiodeRevVolt(m_indata.input_volt_ac_max));
+    m_fod->out_diode_first.insert("DPD", d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+
+    m_fod->out_diode_sec.insert("SOP", (m_indata.curr_out_two*m_indata.volt_out_two));
+    m_fod->out_diode_sec.insert("SOV", m_indata.volt_out_two);
+    m_fod->out_diode_sec.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_two_wind.value("NSEC")));
+    m_fod->out_diode_sec.insert("DRV", d_out_two->doDiodeRevVolt(m_indata.input_volt_ac_max));
+    m_fod->out_diode_sec.insert("DPD", d_out_two->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+
+    m_fod->out_diode_thrid.insert("SOP", (m_indata.curr_out_three*m_indata.volt_out_three));
+    m_fod->out_diode_thrid.insert("SOV", m_indata.volt_out_three);
+    m_fod->out_diode_thrid.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_three_wind.value("NSEC")));
+    m_fod->out_diode_thrid.insert("DRV", d_out_three->doDiodeRevVolt(m_indata.input_volt_ac_max));
+    m_fod->out_diode_thrid.insert("DPD", d_out_three->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+
+    m_fod->out_diode_four.insert("SOP", (m_indata.curr_out_four*m_indata.volt_out_four));
+    m_fod->out_diode_four.insert("SOV", m_indata.volt_out_four);
+    m_fod->out_diode_four.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_four_wind.value("NSEC")));
+    m_fod->out_diode_four.insert("DRV", d_out_four->doDiodeRevVolt(m_indata.input_volt_ac_max));
+    m_fod->out_diode_four.insert("DPD", d_out_four->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+
+    m_fod->out_diode_aux.insert("SOP", (m_indata.curr_out_aux*m_indata.volt_out_aux));
+    m_fod->out_diode_aux.insert("SOV", m_indata.volt_out_aux);
+    m_fod->out_diode_aux.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_aux_wind.value("NAUX")));
+    m_fod->out_diode_aux.insert("DRV", d_out_aux->doDiodeRevVolt(m_indata.input_volt_ac_max));
+    m_fod->out_diode_aux.insert("DPD", d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+
+    //Packing output capacitor values
+    m_foc->out_cap_first.insert("CVO", c_out_one->ocCapOutValue(m_indata.freq_switch));
+    m_foc->out_cap_first.insert("CESRO", c_out_one->ocESRCapOut());
+    m_foc->out_cap_first.insert("CCRMS", c_out_one->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_first.insert("CZFCO", c_out_one->ocZeroFreqCapOut(m_indata.freq_switch));
+    m_foc->out_cap_first.insert("CRVO", c_out_one->ocOutRippleVolt(m_indata.curr_out_one, 1));
+    m_foc->out_cap_first.insert("COL", c_out_one->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+
+    m_foc->out_cap_sec.insert("CVO", c_out_two->ocCapOutValue(m_indata.freq_switch));
+    m_foc->out_cap_sec.insert("CESRO", c_out_two->ocESRCapOut());
+    m_foc->out_cap_sec.insert("CCRMS", c_out_two->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_sec.insert("CZFCO", c_out_two->ocZeroFreqCapOut(m_indata.freq_switch));
+    m_foc->out_cap_sec.insert("CRVO", c_out_two->ocOutRippleVolt(m_indata.curr_out_two, 1));
+    m_foc->out_cap_sec.insert("COL", c_out_two->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+
+    m_foc->out_cap_thrid.insert("CVO", c_out_three->ocCapOutValue(m_indata.freq_switch));
+    m_foc->out_cap_thrid.insert("CESRO", c_out_three->ocESRCapOut());
+    m_foc->out_cap_thrid.insert("CCRMS", c_out_three->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_thrid.insert("CZFCO", c_out_three->ocZeroFreqCapOut(m_indata.freq_switch));
+    m_foc->out_cap_thrid.insert("CRVO", c_out_three->ocOutRippleVolt(m_indata.curr_out_three, 1));
+    m_foc->out_cap_thrid.insert("COL", c_out_three->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+
+    m_foc->out_cap_four.insert("CVO", c_out_four->ocCapOutValue(m_indata.freq_switch));
+    m_foc->out_cap_four.insert("CESRO", c_out_four->ocESRCapOut());
+    m_foc->out_cap_four.insert("CCRMS", c_out_four->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_four.insert("CZFCO", c_out_four->ocZeroFreqCapOut(m_indata.freq_switch));
+    m_foc->out_cap_four.insert("CRVO", c_out_four->ocOutRippleVolt(m_indata.curr_out_four, 1));
+    m_foc->out_cap_four.insert("COL", c_out_four->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+
+    m_foc->out_cap_aux.insert("CVO", c_out_aux->ocCapOutValue(m_indata.freq_switch));
+    m_foc->out_cap_aux.insert("CESRO", c_out_aux->ocESRCapOut());
+    m_foc->out_cap_aux.insert("CCRMS", c_out_aux->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_aux.insert("CZFCO", c_out_aux->ocZeroFreqCapOut(m_indata.freq_switch));
+    m_foc->out_cap_aux.insert("CRVO", c_out_aux->ocOutRippleVolt(m_indata.curr_out_aux, 1));
+    m_foc->out_cap_aux.insert("COL", c_out_aux->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
 
     emit finishedCalcOtputNetwork();
+    m_isSolveRunning = false;
+}
+
+void PowSuppSolve::calcOutputFilter()
+{
+    m_isSolveRunning = true;
+    emit startCalcOutputFilter();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    QScopedPointer<OutFilter> out_fl(new OutFilter(m_of->frequency, m_of->load_resistance));
+
+    m_of->angular_cut_freq = out_fl->ofAngularCutFreq();
+    m_of->capacitor = out_fl->ofCapacitor();
+    m_of->inductor = out_fl->ofInductor();
+    m_of->q_factor = out_fl->ofQualityFactor();
+    m_of->damping = out_fl->ofDampingRatio();
+    m_of->cut_freq = out_fl->ofAngularCutFreq();
+    m_of->out_ripp_voltage = out_fl->ofOutRipplVolt();
+    out_fl->ofPlotArray(m_of->of_freq_array, m_of->of_magnitude_array, m_of->of_phase_array, 10, 1000000, 10);
+
+    emit finishedCalcOutputFilter();
     m_isSolveRunning = false;
 }
