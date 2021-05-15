@@ -1,26 +1,22 @@
 #ifndef CAPOUT_H
 #define CAPOUT_H
 #include <QtMath>
+#include <QtAlgorithms>
 #include <cstdint>
+
+struct CapOutProp
+{
+    int16_t co_volts_out;//Secondary output voltage
+    int16_t co_curr_peak_out;//Secondary current peak
+    float co_volts_rippl;//Ripple voltage of the secondary side
+    float co_esr_perc;//ESR percentage(0.1–1.5 ohm)
+    float co_cros_frq_start_val;//Crossover frequency(1/20 to 1/10 from working frequency)
+};
 
 class CapOut
 {
 public:
-    /**
-     * @brief CapOut
-     * @param vr
-     * @param esr
-     * @param cpo
-     * @param vo
-     * @param crfq
-     */
-    CapOut(double vr, double esr,
-           double cpo, double vo,
-           double crfq):
-        volts_rippl(vr), esr_perc(esr),
-        curr_peak_out(cpo), volts_out(vo),
-        cros_frq_start_val(crfq)
-    {}
+    CapOut(CapOutProp& cop){qSwap(m_cop, cop);}
     inline double ocESRCapOut() const;
     inline double ocCapOutValue(int16_t freq_switch) const;
     inline double ocCurrOurRMS(float actual_max_duty_cycle) const;
@@ -29,11 +25,7 @@ public:
     inline double ocCapOutLoss(float actual_max_duty_cycle) const;
 
 private:
-    double volts_rippl;
-    double esr_perc;
-    double curr_peak_out;
-    double volts_out;
-    double cros_frq_start_val;//good starting value for crossover frequency(1/20 to 1/10)
+    CapOutProp m_cop;
     inline double ocTimeCapCharg(int16_t freq_switch) const;
     inline double ocCurrCap() const;
 };

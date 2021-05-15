@@ -6,7 +6,7 @@
   */
 inline double CapOut::ocESRCapOut() const
 {
-    return (volts_rippl*esr_perc)/curr_peak_out;
+    return (m_cop.co_volts_rippl * m_cop.co_esr_perc)/m_cop.co_curr_peak_out;
 }
 
 /**
@@ -16,7 +16,7 @@ inline double CapOut::ocESRCapOut() const
  */
 inline double CapOut::ocTimeCapCharg(int16_t freq_switch) const
 {
-    double cross_frq = cros_frq_start_val*freq_switch;
+    double cross_frq = m_cop.co_cros_frq_start_val * freq_switch;
     return (1/(4*cross_frq))+(1/freq_switch);
 }
 
@@ -26,7 +26,7 @@ inline double CapOut::ocTimeCapCharg(int16_t freq_switch) const
  */
 inline double CapOut::ocCurrCap() const
 {
-    return curr_peak_out/2;
+    return m_cop.co_curr_peak_out/2;
 }
 
 /**
@@ -36,7 +36,7 @@ inline double CapOut::ocCurrCap() const
  */
 inline double CapOut::ocCapOutValue(int16_t freq_switch) const
 {
-    return (ocCurrCap()*ocTimeCapCharg(freq_switch))/(2*(volts_out*volts_rippl));
+    return (ocCurrCap()*ocTimeCapCharg(freq_switch))/(2*(m_cop.co_volts_out * m_cop.co_volts_rippl));
 }
 
 /**
@@ -46,7 +46,7 @@ inline double CapOut::ocCapOutValue(int16_t freq_switch) const
  */
 inline double CapOut::ocCurrOurRMS(float actual_max_duty_cycle) const
 {
-    return curr_peak_out*qSqrt((static_cast<double>(actual_max_duty_cycle)/3.))-curr_peak_out;
+    return m_cop.co_curr_peak_out * qSqrt((static_cast<double>(actual_max_duty_cycle)/3.)) - m_cop.co_curr_peak_out;
 }
 
 /**
