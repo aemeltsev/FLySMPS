@@ -25,7 +25,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    LoggingCategories.cpp \
+    logfilewriter.cpp \
+    loggercategories.cpp \
     capout.cpp \
     controlout.cpp \
     diodeout.cpp \
@@ -41,7 +42,8 @@ SOURCES += \
 
 HEADERS += \
         FLySMPS.h \
-    LoggingCategories.h \
+    logfilewriter.h \
+    loggercategories.h \
     capout.h \
     controlout.h \
     diodebridge.h \
