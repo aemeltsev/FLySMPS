@@ -1,56 +1,48 @@
 #include "FLySMPS.h"
+#include "loggercategories.h"
+#include "logfilewriter.h"
 #include <QApplication>
-#include <QFile>
-#include <QDir>
 #include <QScopedPointer>
-#include <QTextStream>
-#include <QDateTime>
-#include <QLoggingCategory>
+#include <QThread>
 
-//Pointer to log file
-static QScopedPointer<QFile> fbsmps_log;
+QThread *log_thread;
+LogFileWriter *log_writer;
 
-//Handler protopype
-void messageHandler(QtMsgType type, const QMessageLogContext &context,
-                    const QString &msg);
+//Message handler - qDebug, qInfo and etc
+void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    log_writer->push(QDateTime::currentDateTime(), type, QString(context.category), msg);
+}
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    log_thread = new QThread();
+    log_writer = new LogFileWriter("fsmps-logging-out", 2048LL * 1024LL * 1024LL);
 
-    //Set logs file;
-    //path file in root path app
-    fbsmps_log.reset(new QFile("fbsmps_log.txt"));
-    //Open file for logging
-    fbsmps_log.data()->open(QFile::Append | QFile::Text);
+    log_writer->moveToThread(log_thread);
+    QObject::connect(log_thread, SIGNAL(started()), log_writer, SLOT(main_loop()));
+    /** The LogFileWriter class uses its main_loop() loop,
+     *  i.e. does not exit this function -> the thread event loop is blocked.
+     *  Therefore, you need to use Qt::DirectConnection.
+     */
+    QObject::connect(log_writer, SIGNAL(finished()), log_thread, SLOT(quit()), Qt::DirectConnection);
+    log_thread->start();
+
     //Set handler
     qInstallMessageHandler(messageHandler);
 
+    QApplication a(argc, argv);
     FLySMPS w;
     w.show();
 
-    return a.exec();
-}
+    //Reset handler
+    qInstallMessageHandler(0); //If not, we can send a message to a non-existent object.
 
-//Handler declare
-void messageHandler(QtMsgType type, const QMessageLogContext &context,
-                    const QString &msg)
-{
-    //Open stream write to file
-    QTextStream out(fbsmps_log.data());
-    //Write date
-    out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz ");
-    //Select the type message
-    switch (type)
-    {
-    case QtInfoMsg:     out << "INF "; break;
-    case QtDebugMsg:    out << "DBG "; break;
-    case QtWarningMsg:  out << "WRN "; break;
-    case QtCriticalMsg: out << "CRT "; break;
-    case QtFatalMsg:    out << "FTL "; break;
-    }
-    //Write to out type message and data
-    out << context.category << ": "
-        << msg << endl;
-    out.flush();    //Clear buffer
+    log_writer->abort();
+    log_thread->wait(5000); //Better to limit the waiting time
+
+    delete log_thread;
+    delete log_writer;
+
+    return a.exec();
 }
