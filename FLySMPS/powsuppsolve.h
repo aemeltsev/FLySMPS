@@ -7,7 +7,6 @@
 #include <QPair>
 #include <QHash>
 #include <QtMath>
-#include "LoggingCategories.h"
 #include "diodebridge.h"
 #include "bulkcap.h"
 #include "fbptransformer.h"
@@ -308,6 +307,8 @@ private:
     QScopedPointer<FBPTCore> m_core;
     QVector<QScopedPointer<FBPTSecondary>> m_sec;
     QVector<QScopedPointer<FBPTWinding>> m_wind;
+    QScopedPointer<PCSSM> m_pcssm;
+    QScopedPointer<FCCD> m_fccd;
 
 public:
     InputValue m_indata;
@@ -320,6 +321,8 @@ public:
     MosfetProp m_mospr;
     ClampCSProp m_ccsp;
     CapOutProp m_cop;
+    SSMPreDesign m_ssm;
+    PS_MODE m_psm;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;

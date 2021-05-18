@@ -503,3 +503,44 @@ void PowSuppSolve::calcOutputFilter()
     emit finishedCalcOutputFilter();
     m_isSolveRunning = false;
 }
+
+void PowSuppSolve::calcPowerStageModel()
+{
+    m_isSolveRunning = true;
+    emit startCalcPowerStageModel();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    m_pcssm.reset(new PCSSM(m_ssm));
+
+    m_pssm->ps_zero_one = m_pcssm->coZeroOneAngFreq();
+    m_pssm->ps_pole_one = m_pcssm->coPoleOneAngFreq();
+    m_pssm->ps_dcm_zero_two = m_pcssm->coDCMZeroTwoAngFreq();
+    m_pssm->ps_dcm_pole_two = m_pcssm->coDCMPoleTwoAngFreq();
+    m_pssm->ps_gain_cmc_mod = m_pcssm->coGainCurrModeContrModulator();
+    m_pssm;
+    m_pssm;
+    m_pssm;
+
+    emit finishedCalcPowerStageModel();
+    m_isSolveRunning = false;
+}
+
+void PowSuppSolve::calcOptocouplerFeedback()
+{
+    m_isSolveRunning = true;
+    emit startCalcOptocouplerFeedback();
+
+    if(!m_isSolveRunning){
+        emit calcCanceled();
+        return;
+    }
+
+    m_fccd.reset(new FCCD)
+
+    emit finishedCalcOptocouplerFeedback();
+    m_isSolveRunning = false;
+}
