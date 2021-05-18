@@ -13,8 +13,24 @@
 #define S_OPTO_POLE  1000     //Hz
 enum PS_MODE
 {
-    CCM_MODE,
-    DCM_MODE
+    CCM_MODE = 0,
+    DCM_MODE = 1
+};
+
+struct SSMPreDesign
+{
+    int16_t input_voltage; //Input voltage
+    int32_t freq_switch; //Frequency of the power switch
+    float actual_duty; //Actual duty cycle
+    double primary_ind; //Primary inductance
+    double res_sense; // Current sense resitor
+
+    //Secondary side output for control
+    int16_t output_voltage; //Output voltage
+    float output_full_load_res; //Load resistance
+    float turn_ratio; //Turns ratio
+    double output_cap; //Output capacitance
+    double output_cap_esr; //Parasitic ESR of output capacitor
 };
 
 class PCSSM
@@ -56,33 +72,19 @@ public:
      *                                                 F_{m}-------------
      *
      * @brief PCSSM - Power circuit small-signal model
-     * @param tr - Turns ratio
-     * @param lp - Primary inductance
-     * @param lres - Load resistance
-     * @param vin - Input voltage
-     * @param vout - Output voltage
-     * @param cout - Output capacitance
-     * @param esr - Parasitic ESR of output capacitor
+     * @param ssmvar - Preliminary design values for small-signal estimate
      */
-    PCSSM(int16_t vin, int16_t vout,
-          float tr, float lres,
-          double lp, double cout,
-          double esr, double dt,
-          double rsn, float frqsw):
-        priminduct(lp), capout(cout),
-        esrcap(esr), duty(dt),
-        rsense(rsn), fsw(frqsw),
-        resload(lres),turnrat(tr),
-        voltin(vin),voltout(vout)
+    PCSSM(SSMPreDesign &ssmvar, PS_MODE mode = DCM_MODE)
     {
-        voltrat = voltout/voltin;
+        qSwap(m_ssmvar, ssmvar);
+        m_mode = mode;
     }
     inline double coZeroOneAngFreq() const; //\omega_{zc}
     inline double coPoleOneAngFreq() const; //\omega_{rc}
     /************DCM***********/
     inline double coDCMZeroTwoAngFreq() const; //\omega_{zrhp}
     inline double coDCMPoleTwoAngFreq() const; //\omega_{p2}
-    inline double coDCMCriticValue(float fsw) const; //K_{vd}
+    inline double coDCMCriticValue() const; //K_{vd}
     /************CCM***********/
     inline double coCCMZeroTwoAngFreq() const; //\omega_{zrhp}
     inline double coCCMPoleTwoAngFreq() const; //\omega_{o}
@@ -99,21 +101,35 @@ public:
     inline double coCurrDetectSlopeVolt() const; //S_{n}
     inline double coTimeConst() const; //\tau_{L}
     inline double coGainCurrModeContrModulator() const; //F_{m}
-    inline double coDutyToOutTrasfFunct(double s, PS_MODE mode); //G_{vd}(s)
-    inline double coControlToOutTransfFunct(double s, PS_MODE mode); //G_{vc}(s)
+    inline double coDutyToOutTrasfFunct(double s); //G_{vd}(s)
+    inline double coControlToOutTransfFunct(double s); //G_{vc}(s)
 private:
-    double priminduct;
-    double capout;
-    double esrcap;
-    double voltrat;
+    SSMPreDesign m_ssmvar;
+    PS_MODE m_mode;
     double sawvolt; //S_e
-    double duty;
-    double rsense;
-    float fsw;
-    float resload;
-    float turnrat;
-    int16_t voltin;
-    int16_t voltout;
+};
+
+struct FCPreDesign
+{
+    int16_t out_voltage; //Output voltage for control
+    int32_t res_pull_up; //Reference resistor in pwm side controller
+    int16_t res_down; //Down resistor in voltage divider K_{d}
+    int16_t phase_shift; //Phase shift value for phase margine in controll loop
+    int16_t amp_gaim_marg; //Gain margine
+    int16_t opto_ctr; //The current transfer ratio in optocoupler
+    double opto_inner_cap; //Parasitic capacitance value in optocoupler transistor
+
+};
+
+struct RampSlopePreDesign
+{
+    int16_t inp_voltage;
+    int16_t prim_turns;
+    int16_t sec_turns_to_control;
+    float actual_duty; //Actual duty cycle
+    float out_pwr_tot;
+    double primary_ind;
+    double res_sense; // Current sense resitor
 };
 
 class FCCD
@@ -121,13 +137,6 @@ class FCCD
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
-     * @param vout - Output voltage for control
-     * @param rpup - Reference resistor in pwm side controller
-     * @param ctr - The current transfer ratio in optocoupler
-     * @param rdwn - Down resistor in voltage divider K_{d}
-     * @param pshft - Phase shift value for phase margine in controll loop
-     * @param gain - Gain margine
-     * @param copto - Parasitic capacitance value in optocoupler transistor
      */
     FCCD(int16_t vout, int16_t rpup,
          int16_t ctr, int16_t rdwn,
