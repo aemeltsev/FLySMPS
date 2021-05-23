@@ -232,51 +232,55 @@ inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s)
 
 /**************************FCCD*************************/
 /**
- * @brief coResOptoDiode -
+ * @brief coResOptoDiode - R_{LED_max}
  * @return
  */
-inline int16_t FCCD::coResOptoDiode() const
+inline int32_t FCCD::coResOptoDiode() const
 {
-    double num = volt_to_cont-S_OPTO_FORVARD_DROP-S_TL431_VREF;
-    double dnm = S_INT_BIAS_CONTR-S_OPTO_CE_SAT+(S_TL431_CURR_CATH*opto_ctr*res_pull_up);
+    double num = m_fcvar.out_voltage - S_OPTO_FORVARD_DROP - S_TL431_VREF;
+    
+    double dnm = S_INT_BIAS_CONTR - S_OPTO_CE_SAT +
+            (S_TL431_CURR_CATH * m_fcvar.opto_ctr * m_fcvar.res_pull_up);
+    
     return static_cast<int16_t>((num/dnm)*0.15);//15% marg
 }
 
 /**
- * @brief coResOptoBias -
+ * @brief coResOptoBias - R_{bias}
  * @return
  */
-inline int16_t FCCD::coResOptoBias() const
+inline int32_t FCCD::coResOptoBias() const
 {
-    double num = S_OPTO_FORVARD_DROP+(coResOptoDiode()*((S_INT_BIAS_CONTR-3)/(res_pull_up*opto_ctr)));
-    return static_cast<int16_t>(num/S_TL431_CURR_CATH);
+    double num = S_OPTO_FORVARD_DROP+(coResOptoDiode()*((S_INT_BIAS_CONTR-3)/
+                                                        (m_fcvar.opto_ctr * m_fcvar.res_pull_up)));
+    return static_cast<int16_t>(num / S_TL431_CURR_CATH);
 }
 
 /**
- * @brief coResUp
+ * @brief coResUp - R_{1} or R_{up} in voltage divider K_{d}
  * @return
  */
-inline int16_t FCCD::coResUp() const
+inline int32_t FCCD::coResUp() const
 {
-    return res_down * static_cast<int16_t>((volt_to_cont-S_TL431_VREF)/S_TL431_VREF);
+    return m_fcvar.res_down * static_cast<int16_t>((m_fcvar.out_voltage - S_TL431_VREF)/S_TL431_VREF);
 }
 
 /**
- * @brief FCCD::coVoltageDivideGain
+ * @brief coVoltageDivideGain - K_{d}
  * @return
  */
 inline double FCCD::coVoltageDivideGain() const
 {
-    return res_down/(coResUp()+res_down);
+    return m_fcvar.res_down/(coResUp() + m_fcvar.res_down);
 }
 
 /**
- * @brief FCCD::coVoltageOptoGain
+ * @brief coVoltageOptoGain - K_{c} or G_{1} in Db 20*log10(K_{c})
  * @return
  */
 inline double FCCD::coVoltageOptoGain() const
 {
-    return (res_pull_up/coResOptoDiode())*opto_ctr;
+    return (m_fcvar.res_pull_up/coResOptoDiode()) * m_fcvar.opto_ctr;
 }
 
 /**
@@ -285,7 +289,7 @@ inline double FCCD::coVoltageOptoGain() const
  */
 inline double FCCD::coIndOnTimeSlope() const
 {
-    return (volt_inp*res_cur_sense)/induct_prim;
+    return (m_rsvar.inp_voltage * m_rsvar.res_sense)/m_rsvar.primary_ind;
 }
 
 /**
@@ -294,8 +298,9 @@ inline double FCCD::coIndOnTimeSlope() const
  */
 inline double FCCD::coCompRamp() const
 {
-    double coeff = number_prim_turns/number_sec_turns;
-    return (coeff*volt_to_cont)/volt_inp;
+    double coeff = m_rsvar.prim_turns/m_rsvar.sec_turns_to_control;
+
+    return (coeff * m_fcvar.out_voltage)/m_rsvar.inp_voltage;
 }
 
 /**
@@ -313,7 +318,7 @@ inline double FCCD::coExterRampSlope() const
  */
 inline double FCCD::coQuality() const
 {
-    double inv_duty = 1-duty_cycle;
+    double inv_duty = 1 - m_rsvar.actual_duty;
     return 1/(M_PI*(coCompRamp()*inv_duty-0.5));
 }
 
@@ -323,106 +328,110 @@ inline double FCCD::coQuality() const
  */
 inline double FCCD::coFreqCrossSection() const
 {
-    double ratio_factor = qPow((number_prim_turns/number_sec_turns), 2);
+    double ratio_factor = qPow((m_rsvar.prim_turns/m_rsvar.sec_turns_to_control), 2);
+
     double coeff = 1/5;
-    double num = (qPow(volt_to_cont, 2)/power_out_tot)*qPow(duty_cycle, 2);
-    double dnm = 2*M_PI*induct_prim;
+
+    double num = (qPow(m_fcvar.out_voltage, 2)/
+                  m_rsvar.out_pwr_tot) * qPow(m_rsvar.actual_duty, 2);
+
+    double dnm = 2 * M_PI * m_rsvar.primary_ind;
+
     return (num/dnm)*ratio_factor*coeff;
 }
 
 /**
- * @brief coKFactor
- * @return
- */
-inline double FCCD::coKFactor() const
-{
-    return qTan((coBoost()/2)+45);
-}
-
-/**
- * @brief coFreqPole
+ * @brief coFreqPole - f_{pole}
  * @return
  */
 inline double FCCD::coFreqPole() const
 {
-    return coKFactor()*coFreqCrossSection();
+    return (qTan(coBoost()) + qSqrt(qPow(qTan(coBoost()), 2) + 1)) * coFreqCrossSection();
 }
 
 /**
- * @brief coFreqZero
+ * @brief coFreqZero - f_{zero}
  * @return
  */
 inline double FCCD::coFreqZero() const
 {
-    return coFreqCrossSection()/coKFactor();
+    return qPow(coFreqCrossSection(), 2)/coFreqPole();
 }
 
 /**
- * @brief coCapPoleOpto
+ * @brief coResErrorAmp -
+ * @return
+ */
+int32_t FCCD::coResZero() const
+{
+    double gplant = 0.;
+    double pz_ratio = coFreqPole()/coFreqZero();
+    double t_ratio = m_rsvar.sec_turns_to_control/m_rsvar.prim_turns;
+    double ind_coeff = m_rsvar.inp_voltage * m_rsvar.res_sense * m_rsvar.primary_ind;
+
+    if(m_mode == DCM_MODE){
+        gplant = pz_ratio * qSqrt((m_rsvar.primary_ind * m_fcvar.freq_sw * m_fcvar.out_voltage)/(8 * m_fcvar.out_current)) *
+                ((m_rsvar.inp_voltage)/ind_coeff);
+    }
+    else if(m_mode == CCM_MODE){
+        gplant = pz_ratio * ((qPow(m_rsvar.inp_voltage, 2) * m_fcvar.out_voltage) /
+                          (2 * m_fcvar.out_current * (2 * m_rsvar.inp_voltage + t_ratio * m_fcvar.out_voltage) * ind_coeff));
+    }
+
+    double coeff = qSqrt(qPow((coFreqCrossSection()/coFreqPole()), 2) + 1)/
+                   qSqrt(qPow((coFreqZero()/coFreqCrossSection()), 2) + 1);
+
+    return gplant * coResUp() * coeff;
+
+}
+/**
+ * @brief coCapZero - C_{zero}
+ * @return
+ */
+inline double FCCD::coCapZero() const
+{
+    return 1/(2 * M_PI * coFreqZero() * coResZero());
+}
+
+/**
+ * @brief coCapPoleOpto - C_{opto}
  * @return
  */
 inline double FCCD::coCapPoleOpto() const
 {
-    return opto_ctr/(2*M_PI*coFreqPole()*coResOptoDiode());
+    return 1/(2 * M_PI * coFreqZero() * coResZero());
 }
 
 /**
- * @brief coCapOpto
+ * @brief coTransfLCZero - \omega_{lc-z}
  * @return
  */
-inline double FCCD::coCapOpto() const
+inline double FCCD::coTransfLCZero() const
 {
-    return coCapPoleOpto()-opto_inner_cap;
+    double lc_ratio = 1/qSqrt(m_lcfvar.lcf_ind * m_lcfvar.lcf_cap);
+    double load_ratio = qSqrt((m_fcvar.out_voltage/m_fcvar.out_current)/(m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current)));
+    return lc_ratio * load_ratio;
 }
 
 /**
- * @brief coGainErrorAmp
- * @param ControlToOut
+ * @brief coQualityLC - Q_{lc}
  * @return
  */
-inline double FCCD::coGainErrorAmp(double control_to_out) const
+inline double FCCD::coQualityLC() const
 {
-    return qAbs(20*std::log10(coVoltageDivideGain())+20*std::log10(control_to_out)+20*std::log10(coVoltageOptoGain()));
-}
+    double num = m_lcfvar.lcf_ind * m_lcfvar.lcf_cap * coTransfLCZero() * (m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current));
+    double dnm = m_lcfvar.lcf_ind + m_lcfvar.lcf_cap * (m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current));
 
-/**
- * @brief coResErrorAmp
- * @param control_to_out
- * @return
- */
-inline double FCCD::coResErrorAmp(double control_to_out) const
-{
-    return qPow(10,(coGainErrorAmp(control_to_out)/20))*((coResUp()*res_down)/(coResUp()+res_down));
-}
-
-/**
- * @brief coCapErroAmp -
- * @param frq_ea_zero
- * @param res_ea
- * @return
- */
-inline double FCCD::coCapErroAmp(int16_t frq_ea_zero, int16_t res_ea) const
-{
-    return 1/(2*M_PI*frq_ea_zero*(coResUp()+res_ea));
-}
-
-/**
- * @brief coOptoTransfGain - $K_{c}$
- * @return
- */
-inline double FCCD::coOptoTransfGain() const
-{
-    double kd = res_down/static_cast<double>((coResUp()+res_down));
-    return (opto_ctr*kd*res_pull_up)/coResOptoDiode();
+    return num/dnm;
 }
 
 /**
  * @brief coTransfZero - $\omega_{z}$
  * @return
  */
-inline double FCCD::coTransfZero(double control_to_out, int16_t frq_ea_zero, int16_t res_ea) const
+inline double FCCD::coTransfZero() const
 {
-    return 1/((coResErrorAmp(control_to_out)+coResUp())*coCapErroAmp(frq_ea_zero, res_ea));
+    return 1/(coResZero() * coCapZero());
 }
 
 /**
@@ -431,48 +440,84 @@ inline double FCCD::coTransfZero(double control_to_out, int16_t frq_ea_zero, int
  */
 inline double FCCD::coTransfPoleOne() const
 {
-    return 1/(res_pull_up*coCapOpto());
+    return 1/(m_fcvar.res_pull_up * coCapPoleOpto());
 }
 
 /**
- * @brief coOptoFeedbTransfFunc -
- * @param freq
- * @param mode
+ * @brief coLCTransfFunc - H_{lc}(s)
+ * @param s
  * @return
  */
-inline double FCCD::coOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+inline double FCCD::coMagLCTransfFunc(int32_t freq) const
 {
-    double num = 1+((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
-    double dnm = 1+((2*M_PI*freq)/coTransfPoleOne());
-    return coOptoTransfGain()*(num/dnm);
+    double qual = qPow((freq/coQualityLC() * coTransfLCZero()), 2);
+    double zero = qPow(1 - qPow((freq/coTransfLCZero()), 2), 2);
+
+    double dnm = qSqrt(zero + qual);
+
+    return 1/dnm;
+}
+
+/**
+ * @brief coOptoFeedbTransfFunc - H(s)
+ * @param s
+ * @return
+ */
+inline double FCCD::coMagOptoFeedbTransfFunc(int32_t freq) const
+{
+    double zero_one = qSqrt(1 + qPow((freq/coTransfZero()), 2));
+    double pole_one = qSqrt(1 + qPow((freq/coTransfPoleOne()), 2));
+    double g_0 = coVoltageOptoGain() * coVoltageDivideGain() * (coResZero()/coResUp());
+
+    return g_0 * (zero_one/pole_one) * coMagLCTransfFunc(freq);
+}
+
+inline double FCCD::coPhsLCTransfFunc(int32_t freq) const
+{
+    return qAtan((freq/coTransfLCZero() * coQualityLC()) * (1/(1 - qPow((freq/coTransfLCZero()), 2))));
+}
+
+inline double FCCD::coPhsOptoFeedbTransfFunc(int32_t freq) const
+{
+    return qAtan(freq/coTransfZero())-qAtan(freq/coTransfPoleOne());
 }
 
 /**
  * @brief coGainOptoFeedbTransfFunc -
  * @param freq
- * @param control_to_out
- * @param frq_ea_zero
- * @param res_ea
  * @return
  */
-inline double FCCD::coGainOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+void FCCD::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag)
 {
-    double num = 1+((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
-    double dnm = 1+((2*M_PI*freq)/coTransfPoleOne());
-    return 20*std::log10(coOptoTransfGain()*(num/dnm));
+    QVector<int32_t>::Iterator itr_freq = in_freq.begin();
+    out_mag.reserve(in_freq.size());
+    double frq = 0., result = 0.;
+
+    while(itr_freq != in_freq.end())
+    {
+        frq = *itr_freq;
+        result = 20 * log10(coMagOptoFeedbTransfFunc(frq));
+        out_mag.push_back(result);
+        itr_freq++;
+    }
 }
 
 /**
  * @brief coPhaseOptoFeedbTransfFunc
  * @param freq
- * @param control_to_out
- * @param frq_ea_zero
- * @param res_ea
  * @return
  */
-inline double FCCD::coPhaseOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea)
+void FCCD::coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase)
 {
-    double num = ((2*M_PI*freq)/coTransfZero(control_to_out, frq_ea_zero, res_ea));
-    double dnm = ((2*M_PI*freq)/coTransfPoleOne());
-    return qAtan(num)-qAtan(dnm);
+    QVector<int32_t>::Iterator itr_freq = in_freq.begin();
+    out_phase.reserve(in_freq.size());
+    double frq = 0., result = 0.;
+
+    while (itr_freq != in_freq.end())
+    {
+        frq = *itr_freq;
+        result = coPhsOptoFeedbTransfFunc(frq) - coPhsLCTransfFunc(frq);
+        out_phase.push_back(result);
+        itr_freq++;
+    }
 }

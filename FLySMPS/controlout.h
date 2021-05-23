@@ -2,15 +2,14 @@
 #define CONTROLOUT_H
 #include <QtMath>
 #include <QVector>
-#include <cmath>
 #include <cstdint>
 
-#define S_TL431_VREF           2.5      //V
-#define S_TL431_CURR_CATH      1.5*1E-3 //bias current A
-#define S_OPTO_CE_SAT          2.5*1E-1 //saturation voltage V
-#define S_OPTO_FORVARD_DROP    1        //V
-#define S_INT_BIAS_CONTR       5        //V
-#define S_OPTO_POLE  1000     //Hz
+#define S_TL431_VREF           2.5      //V_TL431_min - the TL431 minimum operating voltage V
+#define S_TL431_CURR_CATH      1.5*1E-3 //I_TL431_bias - the additional TL431 bias current A
+#define S_OPTO_CE_SAT          2.5*1E-1 //V_CE_sat - optocoupler saturation voltage V
+#define S_OPTO_FORVARD_DROP    1        //V_f - the LED forvard voltage A
+#define S_INT_BIAS_CONTR       5        //V_ccp - the pull-up Vcc level on primary side V
+#define S_OPTO_POLE            10000    //f_opto - the optocoupler pole that has ben characterized with R_pullup Hz
 enum PS_MODE
 {
     CCM_MODE = 0,
@@ -112,13 +111,14 @@ private:
 struct FCPreDesign
 {
     int16_t out_voltage; //Output voltage for control
+    float out_current;
     int32_t res_pull_up; //Reference resistor in pwm side controller
     int16_t res_down; //Down resistor in voltage divider K_{d}
-    int16_t phase_shift; //Phase shift value for phase margine in controll loop
-    int16_t amp_gaim_marg; //Gain margine
-    int16_t opto_ctr; //The current transfer ratio in optocoupler
+    int16_t phase_shift; //Phase shift value for phase margine in controll loop(P degre)
+    int16_t amp_gaim_marg; //Gain margine(M degre)
+    int16_t opto_ctr; //The minimum current transfer ratio in optocoupler
+    int32_t freq_sw;
     double opto_inner_cap; //Parasitic capacitance value in optocoupler transistor
-
 };
 
 struct RampSlopePreDesign
@@ -132,79 +132,74 @@ struct RampSlopePreDesign
     double res_sense; // Current sense resitor
 };
 
+struct LCSecondStage
+{
+    double lcf_ind;
+    double lcf_cap;
+    float lcf_cap_esr;
+};
+
 class FCCD
 {
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
+     *        For more reference:
+     *        Basso C.-Designing control loops for linear and switch mode power supples.
+     *        Kleebchampee W.-Modeling and control design of a current-mode controlled
+     *                        flyback converter with optocoupler feecdback.
+     *        Hua L.-Design Considerations and Small Signal Modeling of the Flyback Converter
+     *               Using Second Stage LC Filtering Circuit.
+     *        Srinivasa Rao M.-Designing flyback converters using peak-current-mode controllers.
      */
-    FCCD(int16_t vout, int16_t rpup,
-         int16_t ctr, int16_t rdwn,
-         int16_t pshft, int16_t gain,
-         double copto)
-        :volt_to_cont(vout), res_pull_up(rpup)
-        ,opto_ctr(ctr), res_down(rdwn)
-        ,phase_shift_val(pshft), ampl_gain_val(gain)
-        ,opto_inner_cap(copto)
-    {}
-
-    inline int16_t coResOptoDiode() const;
-    inline int16_t coResOptoBias() const;
-    inline int16_t coResUp() const;
-    inline double coVoltageDivideGain() const; //K_{d}
-    inline double coVoltageOptoGain() const; //K_{c}
-    void coSetRampSlopeVal(int16_t vin, double rcursns,
-                           double indprim, int16_t duty,
-                           int16_t numprim, int16_t numsec,
-                           double ptot)
+    FCCD(FCPreDesign &fcvar, RampSlopePreDesign &rsvar, LCSecondStage &lcfvar, PS_MODE mode = DCM_MODE)
     {
-        volt_inp=vin;
-        res_cur_sense=rcursns;
-        induct_prim=indprim;
-        duty_cycle=duty;
-        number_prim_turns=numprim;
-        number_sec_turns=numsec;
-        power_out_tot=ptot;
+        qSwap(m_fcvar, fcvar);
+        qSwap(m_rsvar, rsvar);
+        qSwap(m_lcfvar, lcfvar);
+        m_mode = mode;
     }
+    //1.
+    inline int32_t coResOptoDiode() const; //R_{LED_max}
+    inline int32_t coResOptoBias() const; //R_{bias}
+    inline int32_t coResUp() const; //R_{1} or R_{up} in voltage divider K_{d}
+    inline double coVoltageDivideGain() const; //K_{d}
+    inline double coVoltageOptoGain() const; //K_{c} or G_{1} in Db 20*log10(K_{c})
+    //2.
     inline double coExterRampSlope() const; //S_{e}
     inline double coIndOnTimeSlope() const; //S_{n}
     inline double coCompRamp() const; //M_{c}
     inline double coQuality() const; //Q_{p}
-    inline double coFreqCrossSection() const; //f_{cross}
-    inline double coKFactor() const; //k
+    //3.
+    double coFreqCrossSection() const; //f_{cross}
+    //4.
     inline double coFreqPole() const; //f_{pole}
     inline double coFreqZero() const; //f_{zero}
-    inline double coCapPoleOpto() const;
-    inline double coCapOpto() const; //C_{opto}
-    inline double coResErrorAmp(double control_to_out) const; //R_{f}
-    inline double coCapErroAmp(int16_t frq_ea_zero, int16_t res_ea) const; //C_{f}
-    inline double coOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
-    inline double coGainOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
-    inline double coPhaseOptoFeedbTransfFunc(int16_t freq, double control_to_out, int16_t frq_ea_zero, int16_t res_ea);
+    //5.
+    int32_t coResZero() const; //R_{f} or R_{zero}
+    inline double coCapZero() const; //C_{f} or C_{zero}
+    inline double coCapPoleOpto() const; //C_{opto} - pulldown capacitor in hight optocoupler side
+    //6.
+    inline double coMagLCTransfFunc(int32_t freq) const; //H_{lc}(s)
+    inline double coMagOptoFeedbTransfFunc(int32_t freq) const; //H(s)
+    inline double coPhsLCTransfFunc(int32_t freq) const;
+    inline double coPhsOptoFeedbTransfFunc(int32_t freq) const;
+    //7.
+    void coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag);
+    void coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase);
 
 private:
-    int16_t volt_to_cont;
-    int16_t res_pull_up;
-    int16_t opto_ctr;
-    int16_t res_down;
-    int16_t phase_shift_val; //P degre
-    int16_t ampl_gain_val; //M degre
-    double opto_inner_cap;
+    FCPreDesign m_fcvar;
+    RampSlopePreDesign m_rsvar;
+    LCSecondStage m_lcfvar;
+    PS_MODE m_mode;
 
-    int16_t volt_inp=0;
-    double res_cur_sense=0;
-    double induct_prim=0;
-    int16_t duty_cycle=0;
-    int16_t number_prim_turns=0;
-    int16_t number_sec_turns=0;
-    double power_out_tot=0;
-
-    int16_t inv_duty_cycle=1-duty_cycle;
-    inline int16_t coBoost() const {return ampl_gain_val-phase_shift_val-90;}
-    inline double coGainErrorAmp(double control_to_out) const;
-    inline double coOptoTransfGain() const; //K_{c}
-    inline double coTransfZero(double control_to_out, int16_t frq_ea_zero, int16_t res_ea) const; //\omega_{z}
-    inline double coTransfPoleOne() const; //\omega_{p1}
+    inline float coInvDutyCycle(){return 1 - m_rsvar.actual_duty;} //D^{`}
+    inline int16_t coBoost() const {return m_fcvar.amp_gaim_marg - m_fcvar.phase_shift - 90;} //Boost
+    inline double coTransfZero() const; //f_{z}
+    inline double coTransfPoleOne() const; //f_{p1}
+    inline double coTransfLCZero() const; //f_{lc-z}
+    inline double coQualityLC() const; //Q_{lc}
 };
 
 #endif // CONTROLOUT_H
