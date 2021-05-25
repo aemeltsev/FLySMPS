@@ -88,11 +88,11 @@ inline double PCSSM::coGainCurrModeContrModulator() const
 }
 /**********************OUT*************************/
 /**
- * @brief coDutyToOutTrasfFunct - $G_{vd}(s)$ -
- * @param s
+ * @brief coMagDutyToOutTrasfFunct - $G_{vd}(s)$ -
+ * @param freq
  * @return
  */
-inline double PCSSM::coDutyToOutTrasfFunct(int32_t freq)
+double PCSSM::coMagDutyToOutTrasfFunct(int32_t freq)
 {
     double result = 0.0;
     double num1 = 0.0;
@@ -122,25 +122,68 @@ inline double PCSSM::coDutyToOutTrasfFunct(int32_t freq)
 }
 
 /**
- * @brief coControlToOutTransfFunct - $G_{vc}(s)$ - The control-to-output transfer function
+ * @brief coPhsDutyToOutTrasfFunct - $G_{vd}(s)$ -
+ * @param freq
+ * @return
+ */
+double PCSSM::coPhsDutyToOutTrasfFunct(int32_t freq)
+{
+    double result = 0.0;
+    double farg = qAtan(freq/coCCMZeroTwoAngFreq());
+    double sarg = qAtan(freq/coZeroOneAngFreq());
+    double targ = 0.;
+    if(m_mode == DCM_MODE)
+    {
+        targ = qAtan(freq/coPoleOneAngFreq());
+        result = farg + sarg - targ + qAtan(freq/coDCMPoleTwoAngFreq());
+    }
+    else if(m_mode == CCM_MODE)
+    {
+        targ = qAtan((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())) * (1/(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2))));
+        result = farg + sarg - targ;
+    }
+    return result;
+}
+
+/**
+ * @brief coMagControlToOutTransfFunct - $G_{vc}(s)$ - The control-to-output transfer function
  * @param s
  * @return
  */
-inline double PCSSM::coControlToOutTransfFunct(int32_t freq)
+double PCSSM::coMagControlToOutTransfFunct(int32_t freq)
 {
     double result = 0.0;
     double dnm = 0.0;
     if(m_mode == DCM_MODE)
     {
-        result = 20 * log10(coDutyToOutTrasfFunct(freq)*coGainCurrModeContrModulator());
+        result = coMagDutyToOutTrasfFunct(freq) * (20 * log10(coGainCurrModeContrModulator()));
     }
     else if(m_mode == CCM_MODE)
     {
-        dnm = coGainCurrModeContrModulator() * m_ssmvar.res_sense * coCCMDutyToInductCurrTrasfFunct(freq);
-        result = 20 * log10((coGainCurrModeContrModulator() * coDutyToOutTrasfFunct(freq))/(1+dnm));
+        dnm = 20 * log10(coGainCurrModeContrModulator() * m_ssmvar.res_sense) * coMagCCMDutyToInductCurrTrasfFunct(freq);
+        result = ( 20 * log10(coGainCurrModeContrModulator()) * coMagDutyToOutTrasfFunct(freq))/(1+dnm);
     }
     return result;
+
 }
+
+double PCSSM::coPhsControlToOutTransfFunct(int32_t freq)
+{
+    double result = 0.0;
+    double dnm = 0.0;
+    if(m_mode == DCM_MODE)
+    {
+        result = coPhsDutyToOutTrasfFunct(freq) * qAtan(coGainCurrModeContrModulator());
+    }
+    else if(m_mode == CCM_MODE)
+    {
+        dnm = qAtan(coGainCurrModeContrModulator() * m_ssmvar.res_sense) * coMagCCMDutyToInductCurrTrasfFunct(freq);
+        result = (qAtan(coGainCurrModeContrModulator()) * coMagDutyToOutTrasfFunct(freq))/(1+dnm);
+    }
+    return result;
+
+}
+
 /**********************CCM****************************/
 /**
  * @brief coCCMZeroTwoAngFreq - $f_{zrhp}$
@@ -212,17 +255,62 @@ inline double PCSSM::coCCMQualityFact() const
 }
 
 /**
- * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s)$
- * @param s
+ * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s) magnitude value for current frequency$
+ * @param freq
  * @return
  */
-inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(int32_t freq)
+double PCSSM::coMagCCMDutyToInductCurrTrasfFunct(int32_t freq)
 {
     double num = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
 
     double dnm = qSqrt(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2) + qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2));
 
     return coCCMCurrGainCoeff() * (num/dnm);
+}
+
+/**
+ * @brief coPhsCCMDutyToInductCurrTrasfFunct - $G_{id}(s) phase value of current frequency$
+ * @param freq
+ * @return
+ */
+double PCSSM::coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq)
+{
+    double farg = qAtan(freq/coPoleOneAngFreq());
+    double sarg = qAtan(
+                        (freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())) *
+                        (1/(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2)))
+                       );
+    return farg - sarg;
+}
+
+void PCSSM::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag)
+{
+    auto itr_freq = in_freq.begin();
+    out_mag.reserve(in_freq.size());
+    double frq = 0., result = 0.;
+
+    while(itr_freq != in_freq.end())
+    {
+        frq = *itr_freq;
+        result = coMagControlToOutTransfFunct(frq);
+        out_mag.push_back(result);
+        itr_freq++;
+    }
+}
+
+void PCSSM::coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase)
+{
+    auto itr_freq = in_freq.begin();
+    out_phase.reserve(in_freq.size());
+    double frq = 0., result = 0.;
+
+    while(itr_freq != in_freq.end())
+    {
+        frq = *itr_freq;
+        result = coPhsControlToOutTransfFunct(frq);
+        out_phase.push_back(result);
+        itr_freq++;
+    }
 }
 
 /**************************FCCD*************************/
@@ -469,7 +557,7 @@ inline double FCCD::coMagOptoFeedbTransfFunc(int32_t freq) const
 
 inline double FCCD::coPhsLCTransfFunc(int32_t freq) const
 {
-    return qAtan((freq/coTransfLCZero() * coQualityLC()) * (1/(1 - qPow((freq/coTransfLCZero()), 2))));
+    return qAtan((freq/(coTransfLCZero() * coQualityLC())) * (1/(1 - qPow((freq/coTransfLCZero()), 2))));
 }
 
 inline double FCCD::coPhsOptoFeedbTransfFunc(int32_t freq) const
@@ -484,7 +572,7 @@ inline double FCCD::coPhsOptoFeedbTransfFunc(int32_t freq) const
  */
 void FCCD::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag)
 {
-    QVector<int32_t>::Iterator itr_freq = in_freq.begin();
+    auto itr_freq = in_freq.begin();
     out_mag.reserve(in_freq.size());
     double frq = 0., result = 0.;
 
@@ -504,7 +592,7 @@ void FCCD::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> 
  */
 void FCCD::coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase)
 {
-    QVector<int32_t>::Iterator itr_freq = in_freq.begin();
+    auto itr_freq = in_freq.begin();
     out_phase.reserve(in_freq.size());
     double frq = 0., result = 0.;
 

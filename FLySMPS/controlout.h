@@ -90,7 +90,8 @@ public:
     inline double coCCMVoltGainCoeff() const; //K_{vd}
     inline double coCCMCurrGainCoeff() const; //K_{id}
     inline double coCCMQualityFact() const; //Q
-    inline double coCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
+    double coMagCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
+    double coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
 
     /**
      * @brief coGetExternAddVolt - The compensation slope.
@@ -100,8 +101,12 @@ public:
     inline double coCurrDetectSlopeVolt() const; //S_{n}
     inline double coTimeConst() const; //\tau_{L}
     inline double coGainCurrModeContrModulator() const; //F_{m}
-    inline double coDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
-    inline double coControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
+    double coMagDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
+    double coPhsDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
+    double coMagControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
+    double coPhsControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
+    void coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag);
+    void coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase);
 private:
     SSMPreDesign m_ssmvar;
     PS_MODE m_mode;
