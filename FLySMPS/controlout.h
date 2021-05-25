@@ -78,19 +78,19 @@ public:
         qSwap(m_ssmvar, ssmvar);
         m_mode = mode;
     }
-    inline double coZeroOneAngFreq() const; //\omega_{zc}
-    inline double coPoleOneAngFreq() const; //\omega_{rc}
+    inline double coZeroOneAngFreq() const; //f_{zc}
+    inline double coPoleOneAngFreq() const; //f_{rc}
     /************DCM***********/
-    inline double coDCMZeroTwoAngFreq() const; //\omega_{zrhp}
-    inline double coDCMPoleTwoAngFreq() const; //\omega_{p2}
+    inline double coDCMZeroTwoAngFreq() const; //f_{zrhp}
+    inline double coDCMPoleTwoAngFreq() const; //f_{p2}
     inline double coDCMCriticValue() const; //K_{vd}
     /************CCM***********/
-    inline double coCCMZeroTwoAngFreq() const; //\omega_{zrhp}
-    inline double coCCMPoleTwoAngFreq() const; //\omega_{o}
+    inline double coCCMZeroTwoAngFreq() const; //f_{zrhp}
+    inline double coCCMPoleTwoAngFreq() const; //f_{o}
     inline double coCCMVoltGainCoeff() const; //K_{vd}
     inline double coCCMCurrGainCoeff() const; //K_{id}
     inline double coCCMQualityFact() const; //Q
-    inline double coCCMDutyToInductCurrTrasfFunct(double s); //G_{id}(s)
+    inline double coCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
 
     /**
      * @brief coGetExternAddVolt - The compensation slope.
@@ -100,8 +100,8 @@ public:
     inline double coCurrDetectSlopeVolt() const; //S_{n}
     inline double coTimeConst() const; //\tau_{L}
     inline double coGainCurrModeContrModulator() const; //F_{m}
-    inline double coDutyToOutTrasfFunct(double s); //G_{vd}(s)
-    inline double coControlToOutTransfFunct(double s); //G_{vc}(s)
+    inline double coDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
+    inline double coControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
 private:
     SSMPreDesign m_ssmvar;
     PS_MODE m_mode;

@@ -2,25 +2,25 @@
 
 /********************COM*************************/
 /**
- * @brief coZeroOneAngFreq - $\omega_{zc}$ - esr zero, lhp
+ * @brief coZeroOneAngFreq - $\f_{zc}$ - esr zero, lhp
  * @return esr zero value, angular frequency
  */
 inline double PCSSM::coZeroOneAngFreq() const
 {
-    return 1/(m_ssmvar.output_cap * m_ssmvar.output_cap_esr);
+    return 1/(2 * M_PI * m_ssmvar.output_cap * m_ssmvar.output_cap_esr);
 }
 
 /**
- * @brief coPoleOneAngFreq - $\omega_{rc}$ the dominant pole
+ * @brief coPoleOneAngFreq - $\f_{rc}$ the dominant pole
  * @return
  */
 inline double PCSSM::coPoleOneAngFreq() const
 {
-    return 2/(static_cast<double>(m_ssmvar.output_full_load_res) * m_ssmvar.output_cap);
+    return 2/(2 * M_PI * static_cast<double>(m_ssmvar.output_full_load_res) * m_ssmvar.output_cap);
 }
 /**********************DCM************************/
 /**
- * @brief coZeroTwoAngFreq - $\omega_{zrhp}$ - rhp zero
+ * @brief coZeroTwoAngFreq - $\f_{zrhp}$ - rhp zero
  * @return
  */
 inline double PCSSM::coDCMZeroTwoAngFreq() const
@@ -28,11 +28,11 @@ inline double PCSSM::coDCMZeroTwoAngFreq() const
     double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
     double tmp = qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res);
 
-    return tmp/(m_ssmvar.primary_ind * voltrat*(voltrat+1));
+    return tmp/(2 * M_PI * m_ssmvar.primary_ind * voltrat*(voltrat+1));
 }
 
 /**
- * @brief coPoleTwoAngFreq - $\omega_{p2}$ - pole
+ * @brief coPoleTwoAngFreq - $\f_{p2}$ - pole
  * @return
  */
 inline double PCSSM::coDCMPoleTwoAngFreq() const
@@ -40,7 +40,7 @@ inline double PCSSM::coDCMPoleTwoAngFreq() const
     double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
 
     return (qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res))
-            /(m_ssmvar.primary_ind * qPow((voltrat+1),2));
+            /(2 * M_PI * m_ssmvar.primary_ind * qPow((voltrat+1),2));
 }
 
 /**
@@ -92,7 +92,7 @@ inline double PCSSM::coGainCurrModeContrModulator() const
  * @param s
  * @return
  */
-inline double PCSSM::coDutyToOutTrasfFunct(double s)
+inline double PCSSM::coDutyToOutTrasfFunct(int32_t freq)
 {
     double result = 0.0;
     double num1 = 0.0;
@@ -101,23 +101,22 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s)
     double dnm2 = 0.0;
     if(m_mode == DCM_MODE)
     {
-        num1 = 1+(s/coZeroOneAngFreq());
-        num2 = 1-(s/coDCMZeroTwoAngFreq());
-        dnm1 = 1+(s/coPoleOneAngFreq());
-        dnm2 = 1+(s/coDCMPoleTwoAngFreq());
-        result = coDCMCriticValue()*((num1*num2)/(dnm1*dnm2));
+        num1 = qSqrt(1 + qPow((freq/coZeroOneAngFreq()), 2));
+        num2 = qSqrt(1 + qPow((freq/coDCMZeroTwoAngFreq()), 2));
+        dnm1 = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
+        dnm2 = qSqrt(1 + qPow((freq/coDCMPoleTwoAngFreq()), 2));
+        result = 20 * log10(coDCMCriticValue()*((num1*num2)/(dnm1*dnm2)));
     }
     else if(m_mode == CCM_MODE)
     {
-        num1 = 1-(s/coCCMZeroTwoAngFreq());
-        num2 = 1+(s/coZeroOneAngFreq());
-        dnm1 = s/(coCCMQualityFact()*coCCMPoleTwoAngFreq());
-        dnm2 = std::pow((s/coCCMPoleTwoAngFreq()), 2);
-        result = coCCMVoltGainCoeff()*((num1*num2)/(1+dnm1+dnm2));
-    }
-    else
-    {
-        result = -1; //it's very bad way, i will rewrite this after
+        num1 = qSqrt(1 + qPow((freq/coCCMZeroTwoAngFreq()), 2));
+        num2 = qSqrt(1 + qPow((freq/coZeroOneAngFreq()), 2));
+        dnm1 = qSqrt(
+                    qPow(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2), 2) +
+                    qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2)
+                    );
+
+        result = 20 * log10(coCCMVoltGainCoeff()*((num1*num2)/(dnm1)));
     }
     return result;
 }
@@ -127,28 +126,24 @@ inline double PCSSM::coDutyToOutTrasfFunct(double s)
  * @param s
  * @return
  */
-inline double PCSSM::coControlToOutTransfFunct(double s)
+inline double PCSSM::coControlToOutTransfFunct(int32_t freq)
 {
     double result = 0.0;
     double dnm = 0.0;
     if(m_mode == DCM_MODE)
     {
-        result = coDutyToOutTrasfFunct(s)*coGainCurrModeContrModulator();
+        result = 20 * log10(coDutyToOutTrasfFunct(freq)*coGainCurrModeContrModulator());
     }
     else if(m_mode == CCM_MODE)
     {
-        dnm = coGainCurrModeContrModulator()* m_ssmvar.res_sense *coCCMDutyToInductCurrTrasfFunct(s);
-        result = (coGainCurrModeContrModulator() * coDutyToOutTrasfFunct(s))/(1+dnm);
-    }
-    else
-    {
-        result = -1;
+        dnm = coGainCurrModeContrModulator() * m_ssmvar.res_sense * coCCMDutyToInductCurrTrasfFunct(freq);
+        result = 20 * log10((coGainCurrModeContrModulator() * coDutyToOutTrasfFunct(freq))/(1+dnm));
     }
     return result;
 }
 /**********************CCM****************************/
 /**
- * @brief coCCMZeroTwoAngFreq - $\omega_{zrhp}$
+ * @brief coCCMZeroTwoAngFreq - $f_{zrhp}$
  * @return
  */
 inline double PCSSM::coCCMZeroTwoAngFreq() const
@@ -156,17 +151,17 @@ inline double PCSSM::coCCMZeroTwoAngFreq() const
     double tmp = qPow(m_ssmvar.turn_ratio, 2) * qPow((1-m_ssmvar.actual_duty), 2)
             * static_cast<double>(m_ssmvar.output_full_load_res);
 
-    return tmp/(m_ssmvar.actual_duty * m_ssmvar.primary_ind);
+    return tmp/(2 * M_PI * m_ssmvar.actual_duty * m_ssmvar.primary_ind);
 }
 
 /**
- * @brief coCCMPoleTwoAngFreq - $\omega_{o}$
+ * @brief coCCMPoleTwoAngFreq - $f_{o}$
  * @return
  */
 inline double PCSSM::coCCMPoleTwoAngFreq() const
 {
     double tmp = static_cast<double>(m_ssmvar.turn_ratio)
-            /(qSqrt(m_ssmvar.output_cap * m_ssmvar.primary_ind));
+            /(2 * M_PI * qSqrt(m_ssmvar.output_cap * m_ssmvar.primary_ind));
 
     double num = qPow((1-m_ssmvar.actual_duty), 2);
 
@@ -221,11 +216,11 @@ inline double PCSSM::coCCMQualityFact() const
  * @param s
  * @return
  */
-inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(double s)
+inline double PCSSM::coCCMDutyToInductCurrTrasfFunct(int32_t freq)
 {
-    double num = 1+(s/coPoleOneAngFreq());
+    double num = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
 
-    double dnm = 1+(s/(coCCMQualityFact()*coCCMPoleTwoAngFreq()))+qPow((s/coCCMPoleTwoAngFreq()), 2);
+    double dnm = qSqrt(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2) + qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2));
 
     return coCCMCurrGainCoeff() * (num/dnm);
 }
