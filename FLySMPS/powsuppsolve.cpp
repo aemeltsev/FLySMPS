@@ -521,9 +521,18 @@ void PowSuppSolve::calcPowerStageModel()
     m_pssm->ps_dcm_zero_two = m_pcssm->coDCMZeroTwoAngFreq();
     m_pssm->ps_dcm_pole_two = m_pcssm->coDCMPoleTwoAngFreq();
     m_pssm->ps_gain_cmc_mod = m_pcssm->coGainCurrModeContrModulator();
-    m_pssm;
-    m_pssm;
-    m_pssm;
+
+    m_pssm->ps_freq_array.reserve(SET_FREQ_SIZE/100);
+    m_pssm->ps_magnitude_array.reserve(SET_FREQ_SIZE/100);
+    m_pssm->ps_phase_array.reserve(SET_FREQ_SIZE/100);
+
+    for(int32_t indx =10; indx<SET_FREQ_SIZE; indx +=100)
+    {
+        m_pssm->ps_freq_array.push_back(indx);
+    }
+
+    m_pcssm->coGainOptoFeedbTransfFunc(m_pssm->ps_freq_array, m_pssm->ps_magnitude_array);
+    m_pcssm->coPhaseOptoFeedbTransfFunc(m_pssm->ps_freq_array, m_pssm->ps_phase_array);
 
     emit finishedCalcPowerStageModel();
     m_isSolveRunning = false;
@@ -539,7 +548,33 @@ void PowSuppSolve::calcOptocouplerFeedback()
         return;
     }
 
-    m_fccd.reset(new FCCD)
+    m_fccd.reset(new FCCD(m_fc, m_rs, m_lc));
+
+    m_ofs->of_opto_led_res = m_fccd->coResOptoDiode();
+    m_ofs->of_opto_bias_res = m_fccd->coResOptoBias();
+    m_ofs->of_up_divide_res = m_fccd->coResUp();
+
+    m_ofs->of_quality = m_fccd->coQuality();
+    m_ofs->of_ext_ramp_slope = m_fccd->coExterRampSlope();
+    m_ofs->of_ind_on_slope = m_fccd->coIndOnTimeSlope();
+    m_ofs->of_freq_cross_sect = m_fccd->coFreqCrossSection();
+    m_ofs->of_zero = m_fccd->coFreqZero();
+    m_ofs->of_pole = m_fccd->coFreqPole();
+    m_ofs->of_cap_opto = m_fccd->coCapPoleOpto();
+    m_ofs->of_res_err_amp = m_fccd->coResZero();
+    m_ofs->of_cap_err_amp = m_fccd->coCapZero();
+
+    m_ofs->of_freq_array.reserve(SET_FREQ_SIZE/100);
+    m_ofs->of_magnitude_array.reserve(SET_FREQ_SIZE/100);
+    m_ofs->of_phase_array.reserve(SET_FREQ_SIZE/100);
+
+    for(int32_t indx =10; indx<SET_FREQ_SIZE; indx +=100)
+    {
+        m_ofs->of_freq_array.push_back(indx);
+    }
+
+    m_fccd->coGainOptoFeedbTransfFunc(m_ofs->of_freq_array, m_ofs->of_magnitude_array);
+    m_fccd->coPhaseOptoFeedbTransfFunc(m_ofs->of_freq_array, m_ofs->of_phase_array);
 
     emit finishedCalcOptocouplerFeedback();
     m_isSolveRunning = false;

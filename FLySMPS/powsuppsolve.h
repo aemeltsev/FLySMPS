@@ -17,6 +17,7 @@
 #include "controlout.h"
 
 #define SET_SECONDARY_WIRED 4
+#define SET_FREQ_SIZE 1*1E7 //10MHz
 
 class PowSuppSolve: public QObject
 {
@@ -213,7 +214,7 @@ private:
          double damping;
          double cut_freq;
          double out_ripp_voltage;
-         QVector<double> of_freq_array;
+         QVector<int32_t> of_freq_array;
          QVector<double> of_magnitude_array;
          QVector<double> of_phase_array;
      };
@@ -227,7 +228,7 @@ private:
         double ps_ccm_zero_two;
         double ps_ccm_pole_two;
         double ps_gain_cmc_mod;
-        QVector<double> ps_freq_array;
+        QVector<int32_t> ps_freq_array;
         QVector<double> ps_magnitude_array;
         QVector<double> ps_phase_array;
     };
@@ -246,7 +247,7 @@ private:
         double of_cap_opto;
         double of_res_err_amp;
         double of_cap_err_amp;
-        QVector<double> of_freq_array;
+        QVector<int32_t> of_freq_array;
         QVector<double> of_magnitude_array;
         QVector<double> of_phase_array;
     };
@@ -323,6 +324,9 @@ public:
     CapOutProp m_cop;
     SSMPreDesign m_ssm;
     PS_MODE m_psm;
+    FCPreDesign m_fc;
+    RampSlopePreDesign m_rs;
+    LCSecondStage m_lc;
 
     QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
