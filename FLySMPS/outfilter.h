@@ -65,7 +65,7 @@ public:
          * @param end - end frequency point
          * @param step - frequency step
          */
-        void ofPlotArray(QVector<double> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
+        void ofPlotArray(QVector<int32_t> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
         {
             for(int32_t ind=begin; ind<end; ind+=step)
             {
