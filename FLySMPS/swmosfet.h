@@ -16,9 +16,9 @@ struct MosfetProp
 
 struct ClampCSProp
 {
-    int16_t cl_first_out_volt;//5~10% ripple is reasonable
+    int16_t cl_first_out_volt;//First controlled secondary side voltage value
     float cl_turn_rat;//Common turn ratio value
-    double cl_vol_rip;//First controlled secondary side voltage value
+    double cl_vol_rip;//5~10% ripple is reasonable
     double cs_volt;//The typical values current-sense voltage
 };
 
