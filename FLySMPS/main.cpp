@@ -17,7 +17,7 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
 int main(int argc, char *argv[])
 {
     log_thread = new QThread();
-    log_writer = new LogFileWriter("fsmps-logging-out", 2048LL * 1024LL * 1024LL);
+    log_writer = new LogFileWriter("fsmps-logging-out", static_cast<qint64>(FILE_MAX_SIZE));
 
     log_writer->moveToThread(log_thread);
     QObject::connect(log_thread, SIGNAL(started()), log_writer, SLOT(main_loop()));
