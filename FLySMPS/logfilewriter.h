@@ -10,6 +10,7 @@
 #include <QQueue>
 #include <QWaitCondition>
 #include <QDateTime>
+#define FILE_MAX_SIZE 100 * 1024 * 1024
 
 /**
  * @brief The LogFileWriter - thread safety class for writing log file. Recommended
@@ -21,7 +22,7 @@ class LogFileWriter : public QObject
     Q_OBJECT
 public:
     explicit LogFileWriter(QString prefix = "",
-                           qint64 maxsize = 100 * 1024 * 1024,
+                           qint64 maxsize = static_cast<qint64>(FILE_MAX_SIZE),
                            QObject *parent = nullptr);
     ~LogFileWriter();
     void push(QDateTime timestamp, QtMsgType type, QString category, QString msg);

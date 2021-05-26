@@ -30,7 +30,7 @@ void LogFileWriter::abort()
     QMutexLocker loker(&m_mutex);
 
     m_abort = true;
-    m_data.enqueue(log_quantum(QDateTime::currentDateTime(), QtInfoMsg, "LogFileWriter", "Abort requested"));
+    m_data.enqueue(log_quantum(QDateTime::currentDateTime(), QtInfoMsg, "LogWriter", "Abort requested"));
 
     m_condition.wakeAll();
 }
