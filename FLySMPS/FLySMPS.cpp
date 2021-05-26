@@ -87,9 +87,9 @@ void FLySMPS::setSolveBulkCap()
 
 void FLySMPS::initTransValues()
 {
-    m_psolve->m_psvar.mag_flux_dens = convertToValues(static_cast<QString>(ui->InputBMax->text()));
-    m_psolve->m_psvar.win_util_factor = convertToValues(static_cast<QString>(ui->WinUtilFact->text()));
-    m_psolve->m_psvar.max_curr_dens = convertToValues(static_cast<QString>(ui->MaxCurrDens->text()));
+    m_psolve->m_ca.mag_flux_dens = convertToValues(static_cast<QString>(ui->InputBMax->text()));
+    m_psolve->m_ca.win_util_factor = convertToValues(static_cast<QString>(ui->WinUtilFact->text()));
+    m_psolve->m_ca.max_curr_dens = convertToValues(static_cast<QString>(ui->MaxCurrDens->text()));
 
     /** If use area product */
     if(ui->AEUse->isChecked()){
@@ -100,7 +100,7 @@ void FLySMPS::initTransValues()
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
         QString ind_fct;
         ui->InductanceFact->textEdited(ind_fct);
-        m_psolve->m_psvar.al_induct_factor = convertToValues(ind_fct);
+        m_psolve->m_cs.ind_fact = convertToValues(ind_fct);
         //TODO Check error value, use QValidator
     }
     /** If use maximum flux density */
@@ -140,7 +140,26 @@ void FLySMPS::initTransValues()
 
 void FLySMPS::initMosfetValues()
 {
+    m_psolve->m_mospr.m_vds;
+    m_psolve->m_mospr.m_idr;
+    m_psolve->m_mospr.m_qg;
+    m_psolve->m_mospr.m_coss;
+    m_psolve->m_mospr.m_rdson;
 
+    m_psolve->m_ccsp.cl_first_out_volt = m_psolve->m_indata.volt_out_one;
+
+    auto commTR =
+            [=](double amdc, int32_t nump)
+    {
+        double n_frst = amdc/((1-amdc)*(m_psolve->m_indata.volt_out_one/
+                                       (M_SQRT2*m_psolve->m_indata.input_volt_ac_min)));
+        return static_cast<float>(nump/n_frst);
+    };
+
+    m_psolve->m_ccsp.cl_turn_rat = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary);
+    m_psolve->m_ccsp.cl_vol_rip;
+
+    m_psolve->m_ccsp.cs_volt;
 }
 
 void FLySMPS::initOutDiodeValues()
