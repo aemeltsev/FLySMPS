@@ -30,6 +30,8 @@ struct SSMPreDesign
     float turn_ratio; //Turns ratio
     double output_cap; //Output capacitance
     double output_cap_esr; //Parasitic ESR of output capacitor
+
+    double sawvolt; //the externally added voltage - S_e(The compensation slope)
 };
 
 class PCSSM
@@ -63,15 +65,24 @@ public:
      *                                              \
      *                     (\omega_{zc})-------------> G_{vd}(s)----------------> G_{vc}(s)
      *                                              /                          /
-     *                     (\omega_{rc})-----------/                          /
+     *                 Inside SPICE    (\omega_{rc})-----------/                          /
      *                                            /                          /
      *                                           /                          /
      *        K-----------> K_{vd}--------------/                          /
      *                                                                    /
      *                                                 F_{m}-------------
      *
-     * @brief PCSSM - Power circuit small-signal model
+     * @brief PCSSM - Power circuit small-signal model aka the control-to-output
+     *                transfer function.
+     *                For more reference:
+     *                Kleebchampee W.-Modeling and control design of a current-mode controlled
+     *                                flyback converter with optocoupler feecdback.
+     *                Wang E.-AN017.Feedback Control Design of Off-line Flyback Converter.
+     *                Panov Y. et all.-Small-Signal Analysis and Control Design of
+     *                                 Isolated Power Supplies with Optocoupler Feedback.
+     *                Basso C.P.-Switch-Mode Power Supplies Spice Simulations and Practical Designs.
      * @param ssmvar - Preliminary design values for small-signal estimate
+     * @param mode - select operation mode. Default - discontinuous current mode
      */
     PCSSM(SSMPreDesign &ssmvar, PS_MODE mode = DCM_MODE)
     {
@@ -92,12 +103,6 @@ public:
     inline double coCCMQualityFact() const; //Q
     double coMagCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
     double coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
-
-    /**
-     * @brief coGetExternAddVolt - The compensation slope.
-     * @param se
-     */
-    void coSetExternAddVolt(double se){sawvolt = se;}
     inline double coCurrDetectSlopeVolt() const; //S_{n}
     inline double coTimeConst() const; //\tau_{L}
     inline double coGainCurrModeContrModulator() const; //F_{m}
@@ -110,7 +115,6 @@ public:
 private:
     SSMPreDesign m_ssmvar;
     PS_MODE m_mode;
-    double sawvolt; //S_e
 };
 
 struct FCPreDesign

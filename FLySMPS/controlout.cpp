@@ -84,7 +84,7 @@ inline double PCSSM::coTimeConst() const
  */
 inline double PCSSM::coGainCurrModeContrModulator() const
 {
-    return 1/((coCurrDetectSlopeVolt()+sawvolt)*coTimeConst());
+    return 1/((coCurrDetectSlopeVolt()+m_ssmvar.sawvolt)*coTimeConst());
 }
 /**********************OUT*************************/
 /**
