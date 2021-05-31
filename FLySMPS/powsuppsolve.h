@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QScopedPointer>
+#include <QMutex>
 #include <QVector>
 #include <QPair>
 #include <QHash>
@@ -15,6 +16,8 @@
 #include "capout.h"
 #include "outfilter.h"
 #include "controlout.h"
+#include <QDebug>
+#include <QThread>
 
 #define SET_SECONDARY_WIRED 4
 #define SET_FREQ_SIZE 1*1E7 //10MHz
@@ -25,6 +28,8 @@ class PowSuppSolve: public QObject
 public:
     explicit PowSuppSolve(QObject *parent = nullptr);
     ~PowSuppSolve();
+    void requestCalc();
+    void abort();
 
 public slots:
     void calcInputNetwork();
@@ -41,6 +46,7 @@ public slots:
     void calcOptocouplerFeedback();
 
 signals:
+    void calcRequested();
     void startCalcInputNetwork();
     void finishedInputNetwork();
     void startCalcElectricalPrimarySide();
@@ -304,7 +310,9 @@ private:
     };
     // out containers
 
-    bool m_isSolveRunning = false;
+    bool m_isSolveRunning;
+    bool m_isSolveAbort;
+    QMutex m_mutex;
     QScopedPointer<FBPTCore> m_core;
     QVector<QScopedPointer<FBPTSecondary>> m_sec;
     QVector<QScopedPointer<FBPTWinding>> m_wind;
