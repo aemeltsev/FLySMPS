@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include <QMainWindow>
+#include <QThread>
 #include <QDebug>
 #include "powsuppsolve.h"
 #include "qcustomplot.h"
@@ -21,24 +22,34 @@ public:
     explicit FLySMPS(QWidget *parent = nullptr);
     ~FLySMPS();
 
-private:
-    void initInputValues();
-    void setSolveInputDiode();
-    void setSolveBulkCap();
-    void initPreCalcTransValues();
+private slots:
+
+    void setInputNetwork();
+
     void initTransValues();
-    void setSolveTransPrimaryElecrt();
-    void setSolveTransSecondWired();
+    void setInitialiseTransProp();
+
+    void initTransCoreValues();
+    void setTransPrimaryProp();
+
+    void initTransWireds();
+    void setTransWiredProp();
+
     void initMosfetValues();
-    void initOutDiodeValues();
-    void initOutCapValues();
     void setSolveMosfet();
+
+    void initOutDiodeValues();
     void setSolveOutDiode();
+
+    void initOutCapValues();
     void setOutCap();
+
     void initOutFilter();
     void setSolveLCFilter();
+
     void setLCPlotMag();
     void setLCPlotPhase();
+
     void setPowerStageModel();
     void setPowerStageMag();
     void setPowerStagePhase();
@@ -46,10 +57,15 @@ private:
     void setOptoFeedbMag();
     void setOptoFeedbPhase();
     void setUpdateInputValues();
+
+private:
+    void initInputValues();
     double convertToValues(const QString& input);
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
+
+    QThread *m_psworker;
 };
 
 #endif // FLYSMPS_H

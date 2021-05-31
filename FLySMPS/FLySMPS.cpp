@@ -7,16 +7,22 @@ FLySMPS::FLySMPS(QWidget *parent) :
     m_psolve(new PowSuppSolve)
 {
     ui->setupUi(this);
+
+    m_psworker = new QThread();
     initInputValues();
 
+    m_psolve->moveToThread(m_psworker);
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveInputDiode);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setSolveBulkCap);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
 
 }
 
 FLySMPS::~FLySMPS()
 {
+    if(m_psworker->isRunning()){
+        m_psworker->quit();
+    }
+    m_psworker->deleteLater();
 }
 
 void FLySMPS::initInputValues()
@@ -57,9 +63,12 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
     m_psolve->m_indata.leakage_induct = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
+
+    ui->InductanceFact->setReadOnly(ui->ALUse->checkState() == Qt::Unchecked);
+    ui->RGDiam->setReadOnly(ui->RGap->checkState() == Qt::Unchecked);
 }
 
-void FLySMPS::setSolveInputDiode()
+void FLySMPS::setInputNetwork()
 {
     ui->DiodeCurrPeak->setNum(m_psolve->m_db->diode_peak_curr);
     ui->DiodeCurrRMS->setNum(m_psolve->m_db->diode_rms_curr);
@@ -70,10 +79,7 @@ void FLySMPS::setSolveInputDiode()
     ui->DiodeCondTime->setNum(m_psolve->m_db->diode_cond_time);
     ui->VoltMinPeakInput->setNum(m_psolve->m_db->in_min_rms_voltage);
     ui->VoltMaxPeakInput->setNum(m_psolve->m_db->in_max_rms_voltage);
-}
 
-void FLySMPS::setSolveBulkCap()
-{
     ui->DeltaT->setNum(m_psolve->m_bc->delta_t);
     ui->ChargT->setNum(m_psolve->m_bc->charg_time);
     ui->ILoadMax->setNum(m_psolve->m_bc->load_curr_max);
@@ -107,7 +113,24 @@ void FLySMPS::initTransValues()
     else if(ui->BMUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
     }
+}
 
+void FLySMPS::setInitialiseTransProp()
+{
+    ui->MaxDutyCycle->setNum(m_psolve->m_ptpe->max_duty_cycle);
+    ui->InputPWR->setNum(m_psolve->m_ptpe->inp_power);
+    ui->InductPri->setNum(m_psolve->m_ptpe->primary_induct);
+
+    ui->CurrPriAverage->setNum(m_psolve->m_ptpe->curr_primary_aver);
+    ui->CurPriPkPk->setNum(m_psolve->m_ptpe->curr_primary_peak_peak);
+    ui->CurPriMax->setNum(m_psolve->m_ptpe->curr_primary_peak);
+    ui->CurPriValley->setNum(m_psolve->m_ptpe->curr_primary_valley);
+    ui->CurPriRMS->setNum(m_psolve->m_ptpe->curr_primary_rms);
+}
+
+//TODO reimplement for use one check branch
+void FLySMPS::initTransCoreValues()
+{
     if(ui->SGap->isChecked()){
         m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
     }
@@ -135,6 +158,20 @@ void FLySMPS::initTransValues()
     else{
         m_psolve->m_md.Diam = 0.;
     }
+}
+
+void FLySMPS::setTransPrimaryProp()
+{
+
+}
+
+void FLySMPS::initTransWireds()
+{
+
+}
+
+void FLySMPS::setTransWiredProp()
+{
 
 }
 
