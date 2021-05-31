@@ -66,8 +66,8 @@ struct CoreArea
 
 struct CoreSelection
 {
-    double core_area_product;//Ap
-    double core_win_height;//height of the window
+    //double core_area_product;//Ap
+    //double core_win_height;//height of the window
     double ind_fact;//Al(inductance factor TDK)
     /**< Core parameters */
     double core_cross_sect_area;//Ac(Ae - effective magnetic cross section TDK)
