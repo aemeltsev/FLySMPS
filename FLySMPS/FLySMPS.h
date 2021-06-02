@@ -60,7 +60,7 @@ private slots:
 
 private:
     void initInputValues();
-    double convertToValues(const QString& input);
+    double convertToValues(const QString& input);   
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
