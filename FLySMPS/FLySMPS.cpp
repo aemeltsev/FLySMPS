@@ -162,7 +162,17 @@ void FLySMPS::initTransCoreValues()
 
 void FLySMPS::setTransPrimaryProp()
 {
+    ui->WaAe->setNum(m_psolve->m_ptpe->core_area_product);
+    ui->GeomCoeff->setNum(m_psolve->m_ptpe->core_geom_coeff);
+    ui->PrimaryNum->setNum(m_psolve->m_ptpe->number_primary);
+    ui->CurrDensity->setNum(m_psolve->m_ptpe->curr_dens);
+    ui->LengAirGap->setNum(m_psolve->m_ptpe->length_air_gap);
+    ui->FrigRluxCoeff->setNum(m_psolve->m_ptpe->fring_flux_fact);
 
+    ui->ActPrimaryNum->setNum(m_psolve->m_ptpe->actual_num_primary);
+    ui->ActBMax->setNum(m_psolve->m_ptpe->actual_flux_dens_peak);
+    ui->ActReflVolt->setNum(m_psolve->m_ptpe->actual_volt_reflected);
+    ui->ActDutyMax->setNum(m_psolve->m_ptpe->actual_max_duty_cycle);
 }
 
 void FLySMPS::initTransWireds()
