@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>5</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -1377,19 +1377,6 @@
        <string>Calculate</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="InpCalcPushButton_3">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>410</y>
-        <width>80</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Update</string>
-      </property>
-     </widget>
      <widget class="QPushButton" name="InpCalcPushButton_4">
       <property name="geometry">
        <rect>
@@ -1412,7 +1399,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>110</y>
+        <y>130</y>
         <width>781</width>
         <height>195</height>
        </rect>
@@ -1421,24 +1408,107 @@
        <string>Secondary side:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_79">
+       <item row="10" column="14">
+        <widget class="QLabel" name="Out1LN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>Kl [W]</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
+       <item row="0" column="3">
         <widget class="QLabel" name="label_80">
          <property name="text">
           <string>NSec</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_76">
+       <item row="10" column="4">
+        <widget class="QLabel" name="Out1ANS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>Turns Ratio</string>
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_84">
+         <property name="text">
+          <string>Out4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="6">
+        <widget class="QLabel" name="Out4DS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="6">
+        <widget class="QLabel" name="AuxD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QLabel" name="Out1ISMax">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="14">
+        <widget class="QLabel" name="Out2LN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="9">
+        <widget class="QLabel" name="Out1OD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="3">
+        <widget class="QLabel" name="Out3NSec">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="7">
+        <widget class="QLabel" name="Out2ECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -1449,10 +1519,97 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QLabel" name="label_87">
+       <item row="10" column="6">
+        <widget class="QLabel" name="Out1DS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>AWGNS</string>
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QLabel" name="Out3ISRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="11">
+        <widget class="QLabel" name="Out1NTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="7">
+        <widget class="QLabel" name="Out1ECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="7">
+        <widget class="QLabel" name="Out4ECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="5">
+        <widget class="QLabel" name="Out4AWGNS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QLabel" name="Out4NSec">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="8">
+        <widget class="QLabel" name="Out4JS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_85">
+         <property name="text">
+          <string>Aux</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLabel" name="label_76">
+         <property name="text">
+          <string>OD</string>
          </property>
         </widget>
        </item>
@@ -1463,206 +1620,415 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="7">
-        <widget class="QLabel" name="label_89">
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_87">
          <property name="text">
-          <string>ISMax [A]</string>
+          <string>AWGNS</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="QLabel" name="label_90">
-         <property name="text">
-          <string>ISRMS [A]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="9">
-        <widget class="QLabel" name="label_91">
-         <property name="text">
-          <string>JS [A/m2]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="10">
+       <item row="0" column="14">
         <widget class="QLabel" name="label_92">
          <property name="text">
-          <string>NL [T/l]</string>
+          <string>LN [T/l]</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="10" column="0">
         <widget class="QLabel" name="label_81">
          <property name="text">
           <string>Out1</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_78"/>
+       <item row="0" column="8">
+        <widget class="QLabel" name="label_91">
+         <property name="text">
+          <string>JS [A/m2]</string>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="lineEdit_77"/>
+       <item row="12" column="9">
+        <widget class="QLabel" name="Out3OD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEdit_83"/>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_79">
+         <property name="text">
+          <string>ECA</string>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="lineEdit_76"/>
+       <item row="13" column="2">
+        <widget class="QLabel" name="Out4ISRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="lineEdit_93"/>
+       <item row="13" column="9">
+        <widget class="QLabel" name="Out4OD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="lineEdit_94"/>
+       <item row="10" column="3">
+        <widget class="QLabel" name="Out1NSec">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="7">
-        <widget class="QLineEdit" name="lineEdit_95"/>
+       <item row="14" column="3">
+        <widget class="QLabel" name="AuxN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="8">
-        <widget class="QLineEdit" name="lineEdit_108"/>
+       <item row="12" column="5">
+        <widget class="QLabel" name="Out3AWGNS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="9">
-        <widget class="QLineEdit" name="lineEdit_109"/>
+       <item row="11" column="11">
+        <widget class="QLabel" name="Out2NTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="10">
-        <widget class="QLineEdit" name="lineEdit_116"/>
+       <item row="11" column="5">
+        <widget class="QLabel" name="Out2AWGNS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="0">
+       <item row="11" column="1">
+        <widget class="QLabel" name="Out2ISMax">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QLabel" name="Out1ISRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
         <widget class="QLabel" name="label_82">
          <property name="text">
           <string>Out2</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEdit_79"/>
+       <item row="14" column="5">
+        <widget class="QLabel" name="AuxAWGN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QLineEdit" name="lineEdit_84"/>
+       <item row="11" column="2">
+        <widget class="QLabel" name="Out2ISRMS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="lineEdit_88"/>
+       <item row="13" column="14">
+        <widget class="QLabel" name="Out4LN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="4">
-        <widget class="QLineEdit" name="lineEdit_92"/>
+       <item row="10" column="5">
+        <widget class="QLabel" name="Out1AWGNS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="5">
-        <widget class="QLineEdit" name="lineEdit_96"/>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_90">
+         <property name="text">
+          <string>ISRMS [A]</string>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="6">
-        <widget class="QLineEdit" name="lineEdit_97"/>
+       <item row="13" column="1">
+        <widget class="QLabel" name="Out4ISMax">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="7">
-        <widget class="QLineEdit" name="lineEdit_98"/>
+       <item row="12" column="7">
+        <widget class="QLabel" name="Out3ECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="8">
-        <widget class="QLineEdit" name="lineEdit_110"/>
+       <item row="10" column="8">
+        <widget class="QLabel" name="Out1JS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="9">
-        <widget class="QLineEdit" name="lineEdit_112"/>
+       <item row="11" column="4">
+        <widget class="QLabel" name="Out2ANS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="10">
-        <widget class="QLineEdit" name="lineEdit_117"/>
+       <item row="12" column="11">
+        <widget class="QLabel" name="Out3NTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="3" column="0">
+       <item row="11" column="3">
+        <widget class="QLabel" name="Out2NSec">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="8">
+        <widget class="QLabel" name="Out2JS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_89">
+         <property name="text">
+          <string>ISMax [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="6">
+        <widget class="QLabel" name="Out2DS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="8">
+        <widget class="QLabel" name="Out3JS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="9">
+        <widget class="QLabel" name="Out2OD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
         <widget class="QLabel" name="label_83">
          <property name="text">
           <string>Out3</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="lineEdit_80"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLineEdit" name="lineEdit_85"/>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLineEdit" name="lineEdit_89"/>
-       </item>
-       <item row="3" column="4">
-        <widget class="QLineEdit" name="lineEdit_99"/>
-       </item>
-       <item row="3" column="5">
-        <widget class="QLineEdit" name="lineEdit_100"/>
-       </item>
-       <item row="3" column="6">
-        <widget class="QLineEdit" name="lineEdit_101"/>
-       </item>
-       <item row="3" column="7">
-        <widget class="QLineEdit" name="lineEdit_102"/>
-       </item>
-       <item row="3" column="8">
-        <widget class="QLineEdit" name="lineEdit_111"/>
-       </item>
-       <item row="3" column="9">
-        <widget class="QLineEdit" name="lineEdit_113"/>
-       </item>
-       <item row="3" column="10">
-        <widget class="QLineEdit" name="lineEdit_118"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_84">
+       <item row="13" column="4">
+        <widget class="QLabel" name="Out4ANS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>Out4</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="lineEdit_81"/>
-       </item>
-       <item row="4" column="2">
-        <widget class="QLineEdit" name="lineEdit_86"/>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLineEdit" name="lineEdit_90"/>
-       </item>
-       <item row="4" column="4">
-        <widget class="QLineEdit" name="lineEdit_103"/>
-       </item>
-       <item row="4" column="5">
-        <widget class="QLineEdit" name="lineEdit_104"/>
-       </item>
-       <item row="4" column="6">
-        <widget class="QLineEdit" name="lineEdit_105"/>
-       </item>
-       <item row="4" column="7">
-        <widget class="QLineEdit" name="lineEdit_106"/>
-       </item>
-       <item row="4" column="8">
-        <widget class="QLineEdit" name="lineEdit_114"/>
-       </item>
-       <item row="4" column="9">
-        <widget class="QLineEdit" name="lineEdit_115"/>
-       </item>
-       <item row="4" column="10">
-        <widget class="QLineEdit" name="lineEdit_119"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="label_85">
+       <item row="12" column="6">
+        <widget class="QLabel" name="Out3DS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>Aux</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="lineEdit_82"/>
+       <item row="12" column="1">
+        <widget class="QLabel" name="Out3ISMax">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="2">
-        <widget class="QLineEdit" name="lineEdit_87"/>
+       <item row="12" column="14">
+        <widget class="QLabel" name="Out3LN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="3">
-        <widget class="QLineEdit" name="lineEdit_91"/>
+       <item row="12" column="4">
+        <widget class="QLabel" name="Out3ANS">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="4">
-        <widget class="QLineEdit" name="lineEdit_107"/>
+       <item row="14" column="4">
+        <widget class="QLabel" name="AuxAN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="5">
-        <widget class="QLineEdit" name="lineEdit_123"/>
+       <item row="13" column="11">
+        <widget class="QLabel" name="Out4NTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="5" column="6">
-        <widget class="QLineEdit" name="lineEdit_124"/>
+       <item row="0" column="11">
+        <widget class="QLabel" name="label_131">
+         <property name="text">
+          <string>NTL [T/l]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="7">
+        <widget class="QLabel" name="AuxECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="9">
+        <widget class="QLabel" name="AuxOD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="11">
+        <widget class="QLabel" name="AuxNTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -1670,7 +2036,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>310</y>
+        <y>330</y>
         <width>781</width>
         <height>83</height>
        </rect>
@@ -1679,6 +2045,16 @@
        <string>Primary side:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="8">
+        <widget class="QLabel" name="PrimLN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_105">
          <property name="text">
@@ -1686,42 +2062,17 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_107">
+       <item row="1" column="5">
+        <widget class="QLabel" name="PrimJP">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
          <property name="text">
-          <string>AWGP</string>
+          <string/>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_112">
-         <property name="text">
-          <string>AWGP use</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_111">
-         <property name="text">
-          <string>DP [mm]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLabel" name="label_108">
-         <property name="text">
-          <string>JP [A/m2]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_109">
-         <property name="text">
-          <string>NL [T/l]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
+       <item row="0" column="8">
         <widget class="QLabel" name="label_110">
          <property name="text">
           <string>LNp [l]</string>
@@ -1735,26 +2086,107 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_135"/>
+       <item row="1" column="4">
+        <widget class="QLabel" name="PrimECA">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
        <item row="1" column="2">
-        <widget class="QLineEdit" name="lineEdit_136"/>
+        <widget class="QLabel" name="PrimAWGP">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_111">
+         <property name="text">
+          <string>DP [mm]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_132">
+         <property name="text">
+          <string>ECA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_107">
+         <property name="text">
+          <string>AWGP</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEdit_137"/>
+        <widget class="QLabel" name="PrimDP">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="lineEdit_138"/>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_109">
+         <property name="text">
+          <string>NL [T/l]</string>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="lineEdit_139"/>
+       <item row="1" column="1">
+        <widget class="QLabel" name="PrimAP">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
        </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="lineEdit_140"/>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_108">
+         <property name="text">
+          <string>JP [A/m2]</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="7">
-        <widget class="QLineEdit" name="lineEdit_141"/>
+        <widget class="QLabel" name="PrimNTL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLabel" name="PrimOD">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_112">
+         <property name="text">
+          <string>OD</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -1764,19 +2196,15 @@
         <x>20</x>
         <y>10</y>
         <width>781</width>
-        <height>91</height>
+        <height>111</height>
        </rect>
       </property>
       <property name="title">
        <string>Winding set:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="0" column="1">
-        <widget class="QLabel" name="label_94">
-         <property name="text">
-          <string>NPm</string>
-         </property>
-        </widget>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="AFOut2"/>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_95">
@@ -1785,19 +2213,38 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_96">
+       <item row="0" column="8">
+        <widget class="QLineEdit" name="InM"/>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLabel" name="label_103">
          <property name="text">
-          <string>Out2</string>
+          <string>BWe</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_98">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_97">
          <property name="text">
-          <string>Out3</string>
+          <string>AF</string>
          </property>
         </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLineEdit" name="AFAux"/>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_100">
+         <property name="text">
+          <string>Aux</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="AFOut1"/>
+       </item>
+       <item row="1" column="8">
+        <widget class="QLineEdit" name="Fcu"/>
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="label_99">
@@ -1806,10 +2253,13 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_100">
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="AFOut3"/>
+       </item>
+       <item row="1" column="9">
+        <widget class="QLabel" name="label_104">
          <property name="text">
-          <string>Aux</string>
+          <string>Wae</string>
          </property>
         </widget>
        </item>
@@ -1820,43 +2270,38 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="QLineEdit" name="lineEdit_131"/>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="AFNPm"/>
        </item>
-       <item row="0" column="9">
-        <widget class="QLabel" name="label_103">
+       <item row="1" column="5">
+        <widget class="QLineEdit" name="AFOut4"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_98">
          <property name="text">
-          <string>BWe</string>
+          <string>Out3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_96">
+         <property name="text">
+          <string>Out2</string>
          </property>
         </widget>
        </item>
        <item row="0" column="10">
-        <widget class="QLineEdit" name="lineEdit_133"/>
+        <widget class="QLineEdit" name="BWe"/>
        </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_97">
+       <item row="1" column="10">
+        <widget class="QLineEdit" name="Wae"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_94">
          <property name="text">
-          <string>AF</string>
+          <string>NPm</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_125"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="lineEdit_126"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEdit_127"/>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="lineEdit_128"/>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="lineEdit_129"/>
-       </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="lineEdit_130"/>
        </item>
        <item row="1" column="7">
         <widget class="QLabel" name="label_102">
@@ -1865,18 +2310,37 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="8">
-        <widget class="QLineEdit" name="lineEdit_132"/>
-       </item>
-       <item row="1" column="9">
-        <widget class="QLabel" name="label_104">
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_133">
          <property name="text">
-          <string>Wae</string>
+          <string>INS</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="10">
-        <widget class="QLineEdit" name="lineEdit_134"/>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="INSPm"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="INSOut1"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="INSOut2"/>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="INSOut3"/>
+       </item>
+       <item row="2" column="5">
+        <widget class="QLineEdit" name="INSOut4"/>
+       </item>
+       <item row="2" column="6">
+        <widget class="QLineEdit" name="INSAux"/>
+       </item>
+       <item row="2" column="10">
+        <widget class="QPushButton" name="InpCalcPushButton_3">
+         <property name="text">
+          <string>Calculate</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -2662,18 +3126,12 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="lineEdit_663"/>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_766">
          <property name="text">
           <string>AngCutFrq [Hz]</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEdit_623"/>
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="label_777">
@@ -2689,15 +3147,6 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="lineEdit_655"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLineEdit" name="lineEdit_621"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="lineEdit_654"/>
-       </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_774">
          <property name="text">
@@ -2712,16 +3161,80 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="lineEdit_647"/>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="lineEdit_662"/>
-       </item>
        <item row="0" column="4">
         <widget class="QLabel" name="label_776">
          <property name="text">
           <string>Damp. Rat.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="LCAngCutFreq">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="LCInd">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="LCCap">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="LCQual">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLabel" name="LCDamp">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLabel" name="LCCutFreq">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLabel" name="LCOutRippVolt">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -2755,7 +3268,7 @@
        <rect>
         <x>150</x>
         <y>10</y>
-        <width>61</width>
+        <width>71</width>
         <height>16</height>
        </rect>
       </property>
@@ -2774,6 +3287,16 @@
       </property>
       <property name="text">
        <string/>
+      </property>
+     </widget>
+     <widget class="QCustomPlot" name="LCFilterGraph" native="true">
+      <property name="geometry">
+       <rect>
+        <x>19</x>
+        <y>129</y>
+        <width>771</width>
+        <height>301</height>
+       </rect>
       </property>
      </widget>
     </widget>
@@ -2962,6 +3485,14 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header location="global">qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
