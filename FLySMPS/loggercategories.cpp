@@ -1,3 +1,6 @@
+/**
+  See https://github.com/tvabramov/qt-sample-logging
+*/
 #include "loggercategories.h"
 
 Q_LOGGING_CATEGORY(logDebug, "Debug")

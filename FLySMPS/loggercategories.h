@@ -1,3 +1,6 @@
+/**
+  See https://github.com/tvabramov/qt-sample-logging
+*/
 #ifndef LOGGER_H
 #define LOGGER_H
 
