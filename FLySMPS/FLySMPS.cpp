@@ -177,12 +177,91 @@ void FLySMPS::setTransPrimaryProp()
 
 void FLySMPS::initTransWireds()
 {
+    m_psolve->m_psw.m_af[0] = convertToValues(static_cast<QString>(ui->AFNPm->text()));
+    m_psolve->m_psw.m_af[1] = convertToValues(static_cast<QString>(ui->AFOut1->text()));;
+    m_psolve->m_psw.m_af[2] = convertToValues(static_cast<QString>(ui->AFOut2->text()));;
+    m_psolve->m_psw.m_af[3] = convertToValues(static_cast<QString>(ui->AFOut3->text()));;
+    m_psolve->m_psw.m_af[4] = convertToValues(static_cast<QString>(ui->AFOut4->text()));;
+    m_psolve->m_psw.m_af[5] = convertToValues(static_cast<QString>(ui->AFAux->text()));;
+
+    m_psolve->m_psw.m_ins[0] = convertToValues(static_cast<QString>(ui->INSPm->text()));
+    m_psolve->m_psw.m_ins[1] = convertToValues(static_cast<QString>(ui->INSOut1->text()));
+    m_psolve->m_psw.m_ins[2] = convertToValues(static_cast<QString>(ui->INSOut2->text()));
+    m_psolve->m_psw.m_ins[3] = convertToValues(static_cast<QString>(ui->INSOut3->text()));
+    m_psolve->m_psw.m_ins[4] = convertToValues(static_cast<QString>(ui->INSOut4->text()));
+    m_psolve->m_psw.m_ins[5] = convertToValues(static_cast<QString>(ui->INSAux->text()));
+
+    m_psolve->m_psw.m_fcu = convertToValues(static_cast<QString>(ui->Fcu->text()));
+    m_psolve->m_psw.m_mcd = convertToValues(static_cast<QString>(ui->InM->text()));
 
 }
 
 void FLySMPS::setTransWiredProp()
 {
+    ui->Out1ISMax->setNum(m_psolve->m_ptsw->out_one_wind["JSP"]);
+    ui->Out1ISRMS->setNum(m_psolve->m_ptsw->out_one_wind["JSRMS"]);
+    ui->Out1NSec->setNum(m_psolve->m_ptsw->out_one_wind["NSEC"]);
+    ui->Out1ANS->setNum(m_psolve->m_ptsw->out_one_wind["ANS"]);
+    ui->Out1AWGNS->setNum(m_psolve->m_ptsw->out_one_wind["AWGNS"]);
+    ui->Out1DS->setNum(m_psolve->m_ptsw->out_one_wind["DS"]);
+    ui->Out1ECA->setNum(m_psolve->m_ptsw->out_one_wind["ECA"]);
+    ui->Out1JS->setNum(m_psolve->m_ptsw->out_one_wind["JS"]);
+    ui->Out1OD->setNum(m_psolve->m_ptsw->out_one_wind["OD"]);
+    ui->Out1NTL->setNum(m_psolve->m_ptsw->out_one_wind["NTL"]);
+    ui->Out1LN->setNum(m_psolve->m_ptsw->out_one_wind["LN"]);
 
+    ui->Out2ISMax->setNum(m_psolve->m_ptsw->out_two_wind["JSP"]);
+    ui->Out2ISRMS->setNum(m_psolve->m_ptsw->out_two_wind["JSRMS"]);
+    ui->Out2NSec->setNum(m_psolve->m_ptsw->out_two_wind["NSEC"]);
+    ui->Out2ANS->setNum(m_psolve->m_ptsw->out_two_wind["ANS"]);
+    ui->Out2AWGNS->setNum(m_psolve->m_ptsw->out_two_wind["AWGNS"]);
+    ui->Out2DS->setNum(m_psolve->m_ptsw->out_two_wind["DS"]);
+    ui->Out2ECA->setNum(m_psolve->m_ptsw->out_two_wind["ECA"]);
+    ui->Out2JS->setNum(m_psolve->m_ptsw->out_two_wind["JS"]);
+    ui->Out2OD->setNum(m_psolve->m_ptsw->out_two_wind["OD"]);
+    ui->Out2NTL->setNum(m_psolve->m_ptsw->out_two_wind["NTL"]);
+    ui->Out2LN->setNum(m_psolve->m_ptsw->out_two_wind["LN"]);
+
+    ui->Out3ISMax->setNum(m_psolve->m_ptsw->out_three_wind["JSP"]);
+    ui->Out3ISRMS->setNum(m_psolve->m_ptsw->out_three_wind["JSRMS"]);
+    ui->Out3NSec->setNum(m_psolve->m_ptsw->out_three_wind["NSEC"]);
+    ui->Out3ANS->setNum(m_psolve->m_ptsw->out_three_wind["ANS"]);
+    ui->Out3AWGNS->setNum(m_psolve->m_ptsw->out_three_wind["AWGNS"]);
+    ui->Out3DS->setNum(m_psolve->m_ptsw->out_three_wind["DS"]);
+    ui->Out3ECA->setNum(m_psolve->m_ptsw->out_three_wind["ECA"]);
+    ui->Out3JS->setNum(m_psolve->m_ptsw->out_three_wind["JS"]);
+    ui->Out3OD->setNum(m_psolve->m_ptsw->out_three_wind["OD"]);
+    ui->Out3NTL->setNum(m_psolve->m_ptsw->out_three_wind["NTL"]);
+    ui->Out3LN->setNum(m_psolve->m_ptsw->out_three_wind["LN"]);
+
+    ui->Out4ISMax->setNum(m_psolve->m_ptsw->out_four_wind["JSP"]);
+    ui->Out4ISRMS->setNum(m_psolve->m_ptsw->out_four_wind["JSRMS"]);
+    ui->Out4NSec->setNum(m_psolve->m_ptsw->out_four_wind["NSEC"]);
+    ui->Out4ANS->setNum(m_psolve->m_ptsw->out_four_wind["ANS"]);
+    ui->Out4AWGNS->setNum(m_psolve->m_ptsw->out_four_wind["AWGNS"]);
+    ui->Out4DS->setNum(m_psolve->m_ptsw->out_four_wind["DS"]);
+    ui->Out4ECA->setNum(m_psolve->m_ptsw->out_four_wind["ECA"]);
+    ui->Out4JS->setNum(m_psolve->m_ptsw->out_four_wind["JS"]);
+    ui->Out4OD->setNum(m_psolve->m_ptsw->out_four_wind["OD"]);
+    ui->Out4NTL->setNum(m_psolve->m_ptsw->out_four_wind["NTL"]);
+    ui->Out4LN->setNum(m_psolve->m_ptsw->out_four_wind["LN"]);
+
+    ui->AuxN->setNum(m_psolve->m_ptsw->out_aux_wind["NSEC"]);
+    ui->AuxAN->setNum(m_psolve->m_ptsw->out_aux_wind["ANS"]);
+    ui->AuxAWGN->setNum(m_psolve->m_ptsw->out_aux_wind["AWGNS"]);
+    ui->AuxD->setNum(m_psolve->m_ptsw->out_aux_wind["DS"]);
+    ui->AuxECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
+    ui->AuxOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
+    ui->AuxNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
+
+    ui->PrimAP->setNum(m_psolve->m_ptsw->out_aux_wind["AP"]);
+    ui->PrimAWGP->setNum(m_psolve->m_ptsw->out_aux_wind["AWGP"]);
+    ui->PrimDP->setNum(m_psolve->m_ptsw->out_aux_wind["DP"]);
+    ui->PrimECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
+    ui->PrimJP->setNum(m_psolve->m_ptsw->out_aux_wind["JP"]);
+    ui->PrimOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
+    ui->PrimNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
+    ui->PrimLN->setNum(m_psolve->m_ptsw->out_aux_wind["LN"]);
 }
 
 void FLySMPS::initMosfetValues()
