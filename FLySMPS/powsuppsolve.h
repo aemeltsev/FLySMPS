@@ -5,7 +5,7 @@
 #include <QScopedPointer>
 #include <QMutex>
 #include <QVector>
-#include <QPair>
+//#include <QPair>
 #include <QHash>
 #include <QtMath>
 #include "diodebridge.h"
