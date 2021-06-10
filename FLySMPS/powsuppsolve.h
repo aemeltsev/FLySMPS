@@ -347,7 +347,7 @@ public:
     TransWired m_psw;
     MosfetProp m_mospr;
     ClampCSProp m_ccsp;
-    CapOutProp m_cop;
+    QVector<CapOutProp> m_cop;
     SSMPreDesign m_ssm;
     PS_MODE m_psm;
     FCPreDesign m_fc;

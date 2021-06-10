@@ -465,6 +465,17 @@ void PowSuppSolve::calcOtputNetwork()
         emit calcCanceled();
         return;
     }
+    /**Todo using this lambda in parameters ctors
+    auto turnRatio = [=](int16_t, int16_t)
+    {
+
+    };
+
+    auto outPwr = [=](int16_t out_volt, int16_t out_curr)
+    {
+        return out_volt * out_curr;
+    };
+    */
 
     //Construct output diode objects
     QScopedPointer<DiodeOut> d_out_one(new DiodeOut((m_indata.curr_out_one * m_indata.volt_out_one), m_indata.volt_out_one,
@@ -484,11 +495,11 @@ void PowSuppSolve::calcOtputNetwork()
     qDebug() << "Start calculate output diode in Thread " << thread()->currentThreadId();
 
     //Construct output capacitor objects
-    QScopedPointer<CapOut> c_out_one(new CapOut(m_cop));
-    QScopedPointer<CapOut> c_out_two(new CapOut(m_cop));
-    QScopedPointer<CapOut> c_out_three(new CapOut(m_cop));
-    QScopedPointer<CapOut> c_out_four(new CapOut(m_cop));
-    QScopedPointer<CapOut> c_out_aux(new CapOut(m_cop));
+    QScopedPointer<CapOut> c_out_one(new CapOut(m_cop[0]));
+    QScopedPointer<CapOut> c_out_two(new CapOut(m_cop[1]));
+    QScopedPointer<CapOut> c_out_three(new CapOut(m_cop[2]));
+    QScopedPointer<CapOut> c_out_four(new CapOut(m_cop[3]));
+    QScopedPointer<CapOut> c_out_aux(new CapOut(m_cop[4]));
 
     qDebug() << "Start calculate output capacitor in Thread " << thread()->currentThreadId();
 
