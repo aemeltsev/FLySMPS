@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>6</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -3108,7 +3108,7 @@
         </widget>
        </item>
        <item row="6" column="3">
-        <widget class="QLabel" name="Out3RT">
+        <widget class="QLabel" name="Out3TR">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -3118,7 +3118,7 @@
         </widget>
        </item>
        <item row="7" column="3">
-        <widget class="QLabel" name="Out4RT">
+        <widget class="QLabel" name="Out4TR">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -3128,7 +3128,7 @@
         </widget>
        </item>
        <item row="8" column="3">
-        <widget class="QLabel" name="AuxRT">
+        <widget class="QLabel" name="AuxTR">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -3791,7 +3791,7 @@
        <string>Frq [Hz]</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_618">
+     <widget class="QLineEdit" name="LCF_Freq">
       <property name="geometry">
        <rect>
         <x>80</x>
@@ -3814,7 +3814,7 @@
        <string>Res. Load [R]</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_619">
+     <widget class="QLineEdit" name="LCF_ResLoad">
       <property name="geometry">
        <rect>
         <x>230</x>
