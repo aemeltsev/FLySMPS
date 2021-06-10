@@ -74,7 +74,7 @@ double SwMosfet::swMosfetRiseTime(const MosfetProp &mp) const
  */
 double SwMosfet::swMosfetConductLoss(const MosfetProp &mp) const
 {
-    return std::pow(curr_primary_rms, 2) * mp.m_rdson;
+    return qPow(curr_primary_rms, 2) * mp.m_rdson;
 }
 
 /**
@@ -83,7 +83,7 @@ double SwMosfet::swMosfetConductLoss(const MosfetProp &mp) const
  */
 double SwMosfet::swMosfetDriveLoss(const MosfetProp &mp) const
 {
-    return mp.m_vds * mp.m_qg * freq_switch;
+    return mp.m_vgs * mp.m_qg * freq_switch;
 }
 
 /**

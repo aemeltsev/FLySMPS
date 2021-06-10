@@ -23,7 +23,7 @@
 
 struct MosfetProp
 {
-    int16_t m_vds;//Drain-Source voltage
+    int16_t m_vgs;//Gate-Source voltage
     int16_t m_idr;//Continuous drain current
     double m_qg;//Total gate charge
     double m_coss;//Output capacitance
@@ -42,7 +42,10 @@ class SwMosfet
 {
 public:
     /**
-     * @brief SwMosfet - class for power switch
+     * @brief SwMosfet - class for power switch.
+     *        For losses calculation see more:
+     *        Lakkas G.-MOSFET power losses and how they affect power-supply efficiency
+     *        Balogh L.-Design And Application Guide For High Speed MOSFET Gate Drive Circuits
      * @param vmaxrmsin - maximum rms input voltage
      * @param vminrmsin - minimum rms input voltage
      * @param vref - actual reflected voltage pr. side
