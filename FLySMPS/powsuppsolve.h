@@ -238,7 +238,7 @@ private:
          double damping;
          double cut_freq;
          double out_ripp_voltage;
-         QVector<int32_t> of_freq_array;
+         QVector<double> of_freq_array;
          QVector<double> of_magnitude_array;
          QVector<double> of_phase_array;
      };
@@ -252,7 +252,7 @@ private:
         double ps_ccm_zero_two;
         double ps_ccm_pole_two;
         double ps_gain_cmc_mod;
-        QVector<int32_t> ps_freq_array;
+        QVector<double> ps_freq_array;
         QVector<double> ps_magnitude_array;
         QVector<double> ps_phase_array;
     };
@@ -271,7 +271,7 @@ private:
         double of_cap_opto;
         double of_res_err_amp;
         double of_cap_err_amp;
-        QVector<int32_t> of_freq_array;
+        QVector<double> of_freq_array;
         QVector<double> of_magnitude_array;
         QVector<double> of_phase_array;
     };
