@@ -84,7 +84,7 @@ public:
          * @param end - end frequency point
          * @param step - frequency step
          */
-        void ofPlotArray(QVector<int32_t> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
+        void ofPlotArray(QVector<double> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
         {
             for(int32_t ind=begin; ind<end; ind+=step)
             {
@@ -94,7 +94,7 @@ public:
             }
         }
 private:
-        inline double ofTFMagnitude(int16_t freq)
+        inline double ofTFMagnitude(double freq)
         {
             double omega = (2*M_PI*freq)/ofAngularCutFreq();
             double first_denom = 1-qPow(omega, 2);
@@ -102,12 +102,12 @@ private:
             return 1./(first_denom+second_denom);
         }
 
-        inline double ofTFMagnitudeGain(int16_t freq)
+        inline double ofTFMagnitudeGain(double freq)
         {
             return 20*std::log10(ofTFMagnitude(freq));
         }
 
-        inline double ofTFphase(int16_t freq)
+        inline double ofTFphase(double freq)
         {
             double omega = (2*M_PI*freq)/ofAngularCutFreq();
             double numerator = (1/ofQualityFactor())*omega;
