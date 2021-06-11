@@ -57,9 +57,7 @@ private slots:
     void initMosfetValues();
     void setSolveMosfet();
 
-    void initOutDiodeValues();
     void setSolveOutDiode();
-
     void initOutCapValues();
     void setOutCap();
 
@@ -83,6 +81,19 @@ private:
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
+
+    QList<QLabel*> d_out_one;
+    QList<QLabel*> d_out_two;
+    QList<QLabel*> d_out_three;
+    QList<QLabel*> d_out_four;
+    QList<QLabel*> d_out_aux;
+
+    QList<QLabel*> cap_out_one;
+    QList<QLabel*> cap_out_two;
+    QList<QLabel*> cap_out_three;
+    QList<QLabel*> cap_out_four;
+    QList<QLabel*> cap_out_aux;
+
 
     QThread *m_psworker;
 };
