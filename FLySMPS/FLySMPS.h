@@ -63,16 +63,16 @@ private slots:
 
     void initOutFilter();
     void setSolveLCFilter();
+    void setLCPlot();
 
-    void setLCPlotMag();
-    void setLCPlotPhase();
-
+    void initPowerStageModel();
     void setPowerStageModel();
-    void setPowerStageMag();
-    void setPowerStagePhase();
+    void setPowerStagePlot();
+
+    void initOptoFeedbStage();
     void setOptoFeedbStage();
-    void setOptoFeedbMag();
-    void setOptoFeedbPhase();
+    void setOptoFeedbPlot();
+
     void setUpdateInputValues();
 
 private:

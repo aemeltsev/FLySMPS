@@ -479,14 +479,89 @@ void FLySMPS::initOutFilter()
 
 void FLySMPS::setSolveLCFilter()
 {
-    /**ui->LCAngCutFreq->setNum(1);
+    ui->LCAngCutFreq->setNum(1);
     ui->LCInd->setNum(1);
     ui->LCCap->setNum(1);
     ui->LCQual->setNum(1);
     ui->LCDamp->setNum(1);
     ui->LCCutFreq->setNum(1);
-    ui->LCOutRippVolt->setNum(1);*/
+    ui->LCOutRippVolt->setNum(1);
+}
 
+void FLySMPS::setLCPlot()
+{
+    //add two new graphs and set their look:
+    ui->PSMFilterGraph->clearGraphs();
+
+    ui->PSMFilterGraph->addGraph(ui->PSMFilterGraph->xAxis, ui->PSMFilterGraph->yAxis);
+    ui->PSMFilterGraph->graph(0)->setPen(QPen(Qt::blue));
+
+    ui->PSMFilterGraph->addGraph(ui->PSMFilterGraph->xAxis2, ui->PSMFilterGraph->yAxis2);
+    ui->PSMFilterGraph->graph(1)->setPen(QPen(Qt::red));
+
+    //configure right and top axis to show ticks but no labels:
+    ui->PSMFilterGraph->xAxis2->setVisible(true);
+    ui->PSMFilterGraph->yAxis2->setVisible(true);
+
+    //pass data points to graphs:
+    ui->PSMFilterGraph->graph(0)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_magnitude_array);
+    ui->PSMFilterGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_phase_array);
+    ui->PSMFilterGraph->replot();
+
+    //give the axis some labels:
+    ui->PSMFilterGraph->xAxis->setLabel("Freq. Hz");
+    ui->PSMFilterGraph->yAxis->setLabel("Mag. dB");
+    ui->PSMFilterGraph->yAxis2->setLabel("Deg. ");
+
+    //set axes ranges, so we see all data:
+    ui->PSMFilterGraph->yAxis->setRange(-27, 3);
+    ui->PSMFilterGraph->xAxis->setRange(0, 1000000);
+    ui->PSMFilterGraph->yAxis2->setRange(0, -90);
+    ui->PSMFilterGraph->xAxis2->setRange(0, 1000000);
+
+    //
+    m_psolve->m_of->of_freq_array.clear();
+    m_psolve->m_of->of_magnitude_array.clear();
+    m_psolve->m_of->of_phase_array.clear();
+}
+
+void FLySMPS::initPowerStageModel()
+{
+    m_psolve->m_ssm;
+}
+
+void FLySMPS::setPowerStageModel()
+{
+    ui;
+    m_psolve->m_pssm;
+}
+
+void FLySMPS::setPowerStagePlot()
+{
+    ui->PSMFilterGraph;
+}
+
+void FLySMPS::initOptoFeedbStage()
+{
+    m_psolve->m_fc;
+    m_psolve->m_rs;
+    m_psolve->m_lc;
+}
+
+void FLySMPS::setOptoFeedbStage()
+{
+    ui;
+    m_psolve->m_ofs;
+}
+
+void FLySMPS::setOptoFeedbPlot()
+{
+    ui;
+}
+
+void FLySMPS::setUpdateInputValues()
+{
+    //todo
 }
 
 double FLySMPS::convertToValues(const QString &input)
