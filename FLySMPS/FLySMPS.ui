@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>7</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -3885,7 +3885,7 @@
        <item row="0" column="5">
         <widget class="QLabel" name="label_790">
          <property name="text">
-          <string>Fz2_ccm [Hz]</string>
+          <string>Fp2_ccm [Hz]</string>
          </property>
         </widget>
        </item>
@@ -3968,7 +3968,7 @@
         </widget>
        </item>
        <item row="1" column="5">
-        <widget class="QLabel" name="PSMFz2ccm_2">
+        <widget class="QLabel" name="PSMFp2ccm">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -3989,7 +3989,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QCustomPlot" name="PSMFilterGraph" native="true">
+     <widget class="QCustomPlot" name="PSMGraph" native="true">
       <property name="geometry">
        <rect>
         <x>20</x>
