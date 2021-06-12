@@ -315,6 +315,8 @@ void FLySMPS::initMosfetValues()
 
     m_psolve->m_ccsp.cl_first_out_volt = m_psolve->m_indata.volt_out_one;
 
+    // Determine the turns ratio
+    // See Ayachit A.-Magnetising inductance of multiple-output flyback dc–dc convertor for dcm.
     auto commTR =
             [=](double amdc, int32_t nump)
     {
@@ -479,6 +481,7 @@ void FLySMPS::initOutFilter()
 
 void FLySMPS::setSolveLCFilter()
 {
+    //todo
     ui->LCAngCutFreq->setNum(1);
     ui->LCInd->setNum(1);
     ui->LCCap->setNum(1);
@@ -491,33 +494,33 @@ void FLySMPS::setSolveLCFilter()
 void FLySMPS::setLCPlot()
 {
     //add two new graphs and set their look:
-    ui->PSMFilterGraph->clearGraphs();
+    ui->LCFilterGraph->clearGraphs();
 
-    ui->PSMFilterGraph->addGraph(ui->PSMFilterGraph->xAxis, ui->PSMFilterGraph->yAxis);
-    ui->PSMFilterGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis, ui->LCFilterGraph->yAxis);
+    ui->LCFilterGraph->graph(0)->setPen(QPen(Qt::blue));
 
-    ui->PSMFilterGraph->addGraph(ui->PSMFilterGraph->xAxis2, ui->PSMFilterGraph->yAxis2);
-    ui->PSMFilterGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis2, ui->LCFilterGraph->yAxis2);
+    ui->LCFilterGraph->graph(1)->setPen(QPen(Qt::red));
 
     //configure right and top axis to show ticks but no labels:
-    ui->PSMFilterGraph->xAxis2->setVisible(true);
-    ui->PSMFilterGraph->yAxis2->setVisible(true);
+    ui->LCFilterGraph->xAxis2->setVisible(true);
+    ui->LCFilterGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->PSMFilterGraph->graph(0)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_magnitude_array);
-    ui->PSMFilterGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_phase_array);
-    ui->PSMFilterGraph->replot();
+    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_magnitude_array);
+    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_phase_array);
+    ui->LCFilterGraph->replot();
 
     //give the axis some labels:
-    ui->PSMFilterGraph->xAxis->setLabel("Freq. Hz");
-    ui->PSMFilterGraph->yAxis->setLabel("Mag. dB");
-    ui->PSMFilterGraph->yAxis2->setLabel("Deg. ");
+    ui->LCFilterGraph->xAxis->setLabel("Freq. Hz");
+    ui->LCFilterGraph->yAxis->setLabel("Mag. dB");
+    ui->LCFilterGraph->yAxis2->setLabel("Deg. ");
 
     //set axes ranges, so we see all data:
-    ui->PSMFilterGraph->yAxis->setRange(-27, 3);
-    ui->PSMFilterGraph->xAxis->setRange(0, 1000000);
-    ui->PSMFilterGraph->yAxis2->setRange(0, -90);
-    ui->PSMFilterGraph->xAxis2->setRange(0, 1000000);
+    ui->LCFilterGraph->yAxis->setRange(-27, 3);
+    ui->LCFilterGraph->xAxis->setRange(0, 1000000);
+    ui->LCFilterGraph->yAxis2->setRange(0, -90);
+    ui->LCFilterGraph->xAxis2->setRange(0, 1000000);
 
     //
     m_psolve->m_of->of_freq_array.clear();
@@ -527,24 +530,96 @@ void FLySMPS::setLCPlot()
 
 void FLySMPS::initPowerStageModel()
 {
-    m_psolve->m_ssm;
+    // External ramp slope compensation(S_e)
+    // Basso C.-The TL431 in Switch-Mode Power Supplies loops: part V
+    auto rsc = [=](int16_t p_vout, float p_diode_drop, float p_rsense,
+                     float p_turns_ratio, double p_prim_ind)
+
+    {
+        return 0.5 * ((p_vout + p_diode_drop)/(p_turns_ratio * p_prim_ind) * p_rsense);
+    };
+
+    // Determine the turns ratio
+    // See Ayachit A.-Magnetising inductance of multiple-output flyback dc–dc convertor for dcm.
+    auto commTR =
+            [=](double amdc, int32_t nump)
+    {
+        double n_frst = amdc/((1-amdc)*(m_psolve->m_indata.volt_out_one/
+                                       (M_SQRT2*m_psolve->m_indata.input_volt_ac_min)));
+        return static_cast<float>(nump/n_frst);
+    };
+
+    m_psolve->m_ssm.input_voltage = m_psolve->m_indata.input_volt_ac_min;
+    m_psolve->m_ssm.freq_switch = m_psolve->m_indata.freq_switch;
+    m_psolve->m_ssm.actual_duty = m_psolve->m_ptpe->actual_max_duty_cycle;
+    m_psolve->m_ssm.primary_ind = m_psolve->m_ptpe->primary_induct;
+    m_psolve->m_ssm.res_sense = m_psolve->m_pm->curr_sense_res;
+    m_psolve->m_ssm.output_voltage = m_psolve->m_indata.volt_out_one;
+    m_psolve->m_ssm.output_full_load_res = m_psolve->m_indata.volt_out_one/m_psolve->m_indata.curr_out_one;
+    m_psolve->m_ssm.turn_ratio = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary);
+    m_psolve->m_ssm.output_cap = m_psolve->m_foc->out_cap_first["CVO"];
+    m_psolve->m_ssm.output_cap_esr = m_psolve->m_foc->out_cap_first["CESRO"];
+    m_psolve->m_ssm.sawvolt = rsc(m_psolve->m_indata.volt_out_one,
+                                  m_psolve->m_indata.volt_diode_drop_sec,
+                                  m_psolve->m_pm->curr_sense_res,
+                                  commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary),
+                                  m_psolve->m_ptpe->primary_induct);
 }
 
 void FLySMPS::setPowerStageModel()
 {
-    ui;
-    m_psolve->m_pssm;
+    ui->PSMFz1->setNum(m_psolve->m_pssm->ps_zero_one);
+    ui->PSMFp1->setNum(m_psolve->m_pssm->ps_pole_one);
+    ui->PSMFz2dcm->setNum(m_psolve->m_pssm->ps_dcm_zero_two);
+    ui->PSMFp2dcm->setNum(m_psolve->m_pssm->ps_dcm_pole_two);
+    ui->PSMFz2ccm->setNum(m_psolve->m_pssm->ps_ccm_zero_two);
+    ui->PSMFp2ccm->setNum(m_psolve->m_pssm->ps_ccm_pole_two);
+    ui->PSMGf->setNum(m_psolve->m_pssm->ps_gain_cmc_mod);
 }
 
 void FLySMPS::setPowerStagePlot()
 {
-    ui->PSMFilterGraph;
+    ui->PSMGraph->clearGraphs();
+
+    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis, ui->PSMGraph->yAxis);
+    ui->PSMGraph->graph(0)->setPen(QPen(Qt::blue));
+
+    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis2, ui->PSMGraph->yAxis2);
+    ui->PSMGraph->graph(1)->setPen(QPen(Qt::red));
+
+    //configure right and top axis to show ticks but no labels:
+    ui->PSMGraph->xAxis2->setVisible(true);
+    ui->PSMGraph->yAxis2->setVisible(true);
+
+    //pass data points to graphs:
+    ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_magnitude_array);
+    ui->PSMGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_pssm->ps_phase_array);
+    ui->PSMGraph->replot();
+
+    //give the axis some labels:
+    ui->PSMGraph->xAxis->setLabel("Freq. Hz");
+    ui->PSMGraph->yAxis->setLabel("Mag. dB");
+    ui->PSMGraph->yAxis2->setLabel("Deg. ");
+
+    //set axes ranges, so we see all data:
+    ui->PSMGraph->yAxis->setRange(-27, 3);
+    ui->PSMGraph->xAxis->setRange(0, 1000000);
+    ui->PSMGraph->yAxis2->setRange(0, -90);
+    ui->PSMGraph->xAxis2->setRange(0, 1000000);
+
+    //
+    m_psolve->m_pssm->ps_freq_array.clear();
+    m_psolve->m_pssm->ps_magnitude_array.clear();
+    m_psolve->m_pssm->ps_phase_array.clear();
+
 }
 
 void FLySMPS::initOptoFeedbStage()
 {
     m_psolve->m_fc;
+
     m_psolve->m_rs;
+
     m_psolve->m_lc;
 }
 
