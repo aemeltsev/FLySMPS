@@ -111,7 +111,7 @@ inline double PCSSM::coGainCurrModeContrModulator() const
  * @param freq
  * @return
  */
-double PCSSM::coMagDutyToOutTrasfFunct(int32_t freq)
+double PCSSM::coMagDutyToOutTrasfFunct(double freq)
 {
     double result = 0.0;
     double num1 = 0.0;
@@ -145,7 +145,7 @@ double PCSSM::coMagDutyToOutTrasfFunct(int32_t freq)
  * @param freq
  * @return
  */
-double PCSSM::coPhsDutyToOutTrasfFunct(int32_t freq)
+double PCSSM::coPhsDutyToOutTrasfFunct(double freq)
 {
     double result = 0.0;
     double farg = qAtan(freq/coCCMZeroTwoAngFreq());
@@ -169,7 +169,7 @@ double PCSSM::coPhsDutyToOutTrasfFunct(int32_t freq)
  * @param s
  * @return
  */
-double PCSSM::coMagControlToOutTransfFunct(int32_t freq)
+double PCSSM::coMagControlToOutTransfFunct(double freq)
 {
     double result = 0.0;
     double dnm = 0.0;
@@ -186,7 +186,7 @@ double PCSSM::coMagControlToOutTransfFunct(int32_t freq)
 
 }
 
-double PCSSM::coPhsControlToOutTransfFunct(int32_t freq)
+double PCSSM::coPhsControlToOutTransfFunct(double freq)
 {
     double result = 0.0;
     double dnm = 0.0;
@@ -278,7 +278,7 @@ inline double PCSSM::coCCMQualityFact() const
  * @param freq
  * @return
  */
-double PCSSM::coMagCCMDutyToInductCurrTrasfFunct(int32_t freq)
+double PCSSM::coMagCCMDutyToInductCurrTrasfFunct(double freq)
 {
     double num = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
 
@@ -292,7 +292,7 @@ double PCSSM::coMagCCMDutyToInductCurrTrasfFunct(int32_t freq)
  * @param freq
  * @return
  */
-double PCSSM::coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq)
+double PCSSM::coPhsCCMDutyToInductCurrTrasfFunct(double freq)
 {
     double farg = qAtan(freq/coPoleOneAngFreq());
     double sarg = qAtan(
@@ -302,7 +302,7 @@ double PCSSM::coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq)
     return farg - sarg;
 }
 
-void PCSSM::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag)
+void PCSSM::coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag)
 {
     auto itr_freq = in_freq.begin();
     out_mag.reserve(in_freq.size());
@@ -317,7 +317,7 @@ void PCSSM::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double>
     }
 }
 
-void PCSSM::coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase)
+void PCSSM::coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase)
 {
     auto itr_freq = in_freq.begin();
     out_phase.reserve(in_freq.size());
@@ -550,7 +550,7 @@ inline double FCCD::coTransfPoleOne() const
  * @param s
  * @return
  */
-inline double FCCD::coMagLCTransfFunc(int32_t freq) const
+inline double FCCD::coMagLCTransfFunc(double freq) const
 {
     double qual = qPow((freq/coQualityLC() * coTransfLCZero()), 2);
     double zero = qPow(1 - qPow((freq/coTransfLCZero()), 2), 2);
@@ -565,7 +565,7 @@ inline double FCCD::coMagLCTransfFunc(int32_t freq) const
  * @param s
  * @return
  */
-inline double FCCD::coMagOptoFeedbTransfFunc(int32_t freq) const
+inline double FCCD::coMagOptoFeedbTransfFunc(double freq) const
 {
     double zero_one = qSqrt(1 + qPow((freq/coTransfZero()), 2));
     double pole_one = qSqrt(1 + qPow((freq/coTransfPoleOne()), 2));
@@ -574,12 +574,12 @@ inline double FCCD::coMagOptoFeedbTransfFunc(int32_t freq) const
     return g_0 * (zero_one/pole_one) * coMagLCTransfFunc(freq);
 }
 
-inline double FCCD::coPhsLCTransfFunc(int32_t freq) const
+inline double FCCD::coPhsLCTransfFunc(double freq) const
 {
     return qAtan((freq/(coTransfLCZero() * coQualityLC())) * (1/(1 - qPow((freq/coTransfLCZero()), 2))));
 }
 
-inline double FCCD::coPhsOptoFeedbTransfFunc(int32_t freq) const
+inline double FCCD::coPhsOptoFeedbTransfFunc(double freq) const
 {
     return qAtan(freq/coTransfZero())-qAtan(freq/coTransfPoleOne());
 }
@@ -589,7 +589,7 @@ inline double FCCD::coPhsOptoFeedbTransfFunc(int32_t freq) const
  * @param freq
  * @return
  */
-void FCCD::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag)
+void FCCD::coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag)
 {
     auto itr_freq = in_freq.begin();
     out_mag.reserve(in_freq.size());
@@ -609,7 +609,7 @@ void FCCD::coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> 
  * @param freq
  * @return
  */
-void FCCD::coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase)
+void FCCD::coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase)
 {
     auto itr_freq = in_freq.begin();
     out_phase.reserve(in_freq.size());

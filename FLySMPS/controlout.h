@@ -120,17 +120,17 @@ public:
     inline double coCCMVoltGainCoeff() const; //K_{vd}
     inline double coCCMCurrGainCoeff() const; //K_{id}
     inline double coCCMQualityFact() const; //Q
-    double coMagCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
-    double coPhsCCMDutyToInductCurrTrasfFunct(int32_t freq); //G_{id}(s)
+    double coMagCCMDutyToInductCurrTrasfFunct(double freq); //G_{id}(s)
+    double coPhsCCMDutyToInductCurrTrasfFunct(double freq); //G_{id}(s)
     inline double coCurrDetectSlopeVolt() const; //S_{n}
     inline double coTimeConst() const; //\tau_{L}
     inline double coGainCurrModeContrModulator() const; //F_{m}
-    double coMagDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
-    double coPhsDutyToOutTrasfFunct(int32_t freq); //G_{vd}(s)
-    double coMagControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
-    double coPhsControlToOutTransfFunct(int32_t freq); //G_{vc}(s)
-    void coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag);
-    void coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase);
+    double coMagDutyToOutTrasfFunct(double freq); //G_{vd}(s)
+    double coPhsDutyToOutTrasfFunct(double freq); //G_{vd}(s)
+    double coMagControlToOutTransfFunct(double freq); //G_{vc}(s)
+    double coPhsControlToOutTransfFunct(double freq); //G_{vc}(s)
+    void coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag);
+    void coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase);
 private:
     SSMPreDesign m_ssmvar;
     PS_MODE m_mode;
@@ -208,13 +208,13 @@ public:
     inline double coCapZero() const; //C_{f} or C_{zero}
     inline double coCapPoleOpto() const; //C_{opto} - pulldown capacitor in hight optocoupler side
     //6.
-    inline double coMagLCTransfFunc(int32_t freq) const; //H_{lc}(s)
-    inline double coMagOptoFeedbTransfFunc(int32_t freq) const; //H(s)
-    inline double coPhsLCTransfFunc(int32_t freq) const;
-    inline double coPhsOptoFeedbTransfFunc(int32_t freq) const;
+    inline double coMagLCTransfFunc(double freq) const; //H_{lc}(s)
+    inline double coMagOptoFeedbTransfFunc(double freq) const; //H(s)
+    inline double coPhsLCTransfFunc(double freq) const;
+    inline double coPhsOptoFeedbTransfFunc(double freq) const;
     //7.
-    void coGainOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_mag);
-    void coPhaseOptoFeedbTransfFunc(QVector<int32_t> &in_freq, QVector<double> &out_phase);
+    void coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag);
+    void coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase);
 
 private:
     FCPreDesign m_fcvar;
