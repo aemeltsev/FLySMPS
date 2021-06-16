@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/control_opto_circuit">
+        <file>opto-res.png</file>
+    </qresource>
+</RCC>
