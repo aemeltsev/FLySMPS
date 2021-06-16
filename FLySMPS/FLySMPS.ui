@@ -4424,7 +4424,7 @@
         <string>Res zero</string>
        </property>
       </widget>
-      <widget class="QLabel" name="CapPole">
+      <widget class="QLabel" name="CapZero">
        <property name="geometry">
         <rect>
          <x>320</x>
