@@ -616,22 +616,81 @@ void FLySMPS::setPowerStagePlot()
 
 void FLySMPS::initOptoFeedbStage()
 {
-    m_psolve->m_fc;
+    m_psolve->m_fc.out_voltage = m_psolve->m_indata.volt_out_one;
+    m_psolve->m_fc.out_current = m_psolve->m_indata.curr_out_one;
+    m_psolve->m_fc.res_pull_up = convertToValues(static_cast<QString>(ui->ResPullUp->text()));
+    m_psolve->m_fc.res_down = convertToValues(static_cast<QString>(ui->ResDown->text()));
+    m_psolve->m_fc.phase_shift = convertToValues(static_cast<QString>(ui->PhaseMarg->text()));
+    m_psolve->m_fc.amp_gaim_marg = convertToValues(static_cast<QString>(ui->GainMarg->text()));
+    m_psolve->m_fc.opto_ctr = convertToValues(static_cast<QString>(ui->OptoCTR->text()));
+    m_psolve->m_fc.freq_sw = m_psolve->m_indata.freq_switch;
+    m_psolve->m_fc.opto_inner_cap = convertToValues(static_cast<QString>(ui->OptoInnerCap->text()));
 
-    m_psolve->m_rs;
+    m_psolve->m_rs.inp_voltage = m_psolve->m_indata.input_volt_ac_min;
+    m_psolve->m_rs.prim_turns = m_psolve->m_ptpe->actual_num_primary;
+    m_psolve->m_rs.sec_turns_to_control = m_psolve->m_ptsw->out_one_wind["NSEC"];
+    m_psolve->m_rs.actual_duty = m_psolve->m_ptpe->actual_max_duty_cycle;
+    m_psolve->m_rs.out_pwr_tot = m_psolve->m_indata.power_out_max;
+    m_psolve->m_rs.primary_ind = m_psolve->m_ptpe->primary_induct;
+    m_psolve->m_rs.res_sense = m_psolve->m_pm->curr_sense_res;
 
-    m_psolve->m_lc;
+    m_psolve->m_lc.lcf_ind = m_psolve->m_of->inductor;
+    m_psolve->m_lc.lcf_cap = m_psolve->m_of->capacitor;
+    m_psolve->m_lc.lcf_cap_esr = convertToValues(static_cast<QString>(ui->CapFilterESR->text()));
 }
 
 void FLySMPS::setOptoFeedbStage()
 {
-    ui;
-    m_psolve->m_ofs;
+    ui->ResLed->setNum(m_psolve->m_ofs->of_opto_led_res);
+    ui->ResBias->setNum(m_psolve->m_ofs->of_opto_bias_res);
+    ui->ResUp->setNum(m_psolve->m_ofs->of_up_divide_res);
+
+    ui->Quality->setNum(m_psolve->m_ofs->of_quality);
+    ui->SE->setNum(m_psolve->m_ofs->of_ext_ramp_slope);
+    ui->SN->setNum(m_psolve->m_ofs->of_ind_on_slope);
+    ui->FCross->setNum(m_psolve->m_ofs->of_freq_cross_sect);
+    ui->Fzero->setNum(m_psolve->m_ofs->of_zero);
+    ui->Fpole->setNum(m_psolve->m_ofs->of_pole);
+
+    ui->CapOpto->setNum(m_psolve->m_ofs->of_cap_opto);
+    ui->ResZero->setNum(m_psolve->m_ofs->of_res_err_amp);
+    ui->CapZero->setNum(m_psolve->m_ofs->of_cap_err_amp);
 }
 
 void FLySMPS::setOptoFeedbPlot()
 {
-    ui;
+    ui->OptoGraph->clearGraphs();
+
+    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis, ui->OptoGraph->yAxis);
+    ui->OptoGraph->graph(0)->setPen(QPen(Qt::blue));
+
+    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis2, ui->OptoGraph->yAxis2);
+    ui->OptoGraph->graph(1)->setPen(QPen(Qt::red));
+
+    //configure right and top axis to show ticks but no labels:
+    ui->OptoGraph->xAxis2->setVisible(true);
+    ui->OptoGraph->yAxis2->setVisible(true);
+
+    //pass data points to graphs:
+    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_magnitude_array);
+    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_phase_array);
+    ui->OptoGraph->replot();
+
+    //give the axis some labels:
+    ui->OptoGraph->xAxis->setLabel("Freq. Hz");
+    ui->OptoGraph->yAxis->setLabel("Mag. dB");
+    ui->OptoGraph->yAxis2->setLabel("Deg. ");
+
+    //set axes ranges, so we see all data:
+    ui->OptoGraph->yAxis->setRange(-27, 3);
+    ui->OptoGraph->xAxis->setRange(0, 1000000);
+    ui->OptoGraph->yAxis2->setRange(0, -90);
+    ui->OptoGraph->xAxis2->setRange(0, 1000000);
+
+    //
+    m_psolve->m_ofs->of_freq_array.clear();
+    m_psolve->m_ofs->of_magnitude_array.clear();
+    m_psolve->m_ofs->of_phase_array.clear();
 }
 
 void FLySMPS::setUpdateInputValues()
