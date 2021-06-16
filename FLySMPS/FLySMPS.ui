@@ -4055,13 +4055,40 @@
         <x>450</x>
         <y>20</y>
         <width>401</width>
-        <height>111</height>
+        <height>131</height>
        </rect>
       </property>
       <property name="title">
        <string>Input Pre-Design</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_15">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_802">
+         <property name="text">
+          <string>Cap Filter ESR</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_795">
+         <property name="text">
+          <string>Down Res</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="GainMarg"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="ResPullUp"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="OptoInnerCap">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_796">
          <property name="text">
@@ -4076,17 +4103,23 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="PhaseMarg"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_797">
+         <property name="text">
+          <string>Phase Marg</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="OptoCTR"/>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_800">
          <property name="text">
           <string>CTR</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_795">
-         <property name="text">
-          <string>Down Res</string>
          </property>
         </widget>
        </item>
@@ -4097,34 +4130,11 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_797">
-         <property name="text">
-          <string>Phase Marg</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="ResPullUp"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="OptoCTR"/>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="PhaseMarg"/>
-       </item>
        <item row="0" column="3">
         <widget class="QLineEdit" name="ResDown"/>
        </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="OptoInnerCap">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="GainMarg"/>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="CapFilterESR"/>
        </item>
       </layout>
      </widget>
@@ -4132,9 +4142,9 @@
       <property name="geometry">
        <rect>
         <x>450</x>
-        <y>140</y>
+        <y>160</y>
         <width>401</width>
-        <height>231</height>
+        <height>211</height>
        </rect>
       </property>
       <property name="title">
