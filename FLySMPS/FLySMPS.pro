@@ -31,8 +31,8 @@ SOURCES += \
     controlout.cpp \
     diodeout.cpp \
     fbptransformer.cpp \
-        main.cpp \
-        FLySMPS.cpp \
+    main.cpp \
+    FLySMPS.cpp \
     diodebridge.cpp \
     bulkcap.cpp \
     outfilter.cpp \
@@ -41,7 +41,7 @@ SOURCES += \
     swmosfet.cpp
 
 HEADERS += \
-        FLySMPS.h \
+    FLySMPS.h \
     logfilewriter.h \
     loggercategories.h \
     capout.h \

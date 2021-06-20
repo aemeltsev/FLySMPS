@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QScopedPointer>
+#include <QSharedPointer>
 #include <QMutex>
 #include <QVector>
 #include <QHash>
@@ -332,8 +333,8 @@ private:
     bool m_isSolveAbort;
     QMutex m_mutex;
     QScopedPointer<FBPTCore> m_core;
-    QVector<QScopedPointer<FBPTSecondary>> m_sec;
-    QVector<QScopedPointer<FBPTWinding>> m_wind;
+    QVector<QSharedPointer<FBPTSecondary>> m_sec;
+    QVector<QSharedPointer<FBPTWinding>> m_wind;
     QScopedPointer<PCSSM> m_pcssm;
     QScopedPointer<FCCD> m_fccd;
 
@@ -354,8 +355,8 @@ public:
     RampSlopePreDesign m_rs;
     LCSecondStage m_lc;
 
-    QScopedPointer<DBridge> m_db;
     QScopedPointer<BCap> m_bc;
+    QScopedPointer<DBridge> m_db;
     QScopedPointer<PMosfet> m_pm;
     QScopedPointer<PulseTransPrimaryElectr> m_ptpe;
     QScopedPointer<PulseTransWires> m_ptsw;

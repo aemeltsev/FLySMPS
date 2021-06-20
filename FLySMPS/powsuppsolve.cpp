@@ -22,8 +22,8 @@
 PowSuppSolve::PowSuppSolve(QObject *parent)
     :QObject(parent)
 {
+    //m_bc.reset(new BCap);
     m_db.reset(new DBridge);
-    m_bc.reset(new BCap);
     m_pm.reset(new PMosfet);
     m_ptpe.reset(new PulseTransPrimaryElectr());
     m_ptsw.reset(new PulseTransWires());
@@ -211,7 +211,7 @@ void PowSuppSolve::calcElectroMagProperties()
     m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs, m_ptpe->actual_num_primary,
                                                                 m_ptpe->curr_primary_peak,
                                                                 m_ptpe->fring_flux_fact);
-    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc->input_dc_min_voltage,
+    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc.input_dc_min_voltage,
                                                          m_indata.freq_switch, m_ptpe->primary_induct);
     m_ptpe->actual_volt_reflected = m_core->actReflVoltage(m_ptpe->actual_max_duty_cycle, m_indata.power_out_max,
                                                            m_ptpe->primary_induct, m_indata.freq_switch);
@@ -232,30 +232,30 @@ void PowSuppSolve::calcTransformerWired()
         return;
     }
     // Make secondary side objects
-    QScopedPointer<FBPTSecondary> sec_one(new FBPTSecondary(m_indata.curr_out_one, m_indata.volt_out_one,
-                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                            m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_one = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_one, m_indata.volt_out_one,
+                                               m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                               m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                               m_indata.volt_diode_drop_sec));
 
-    QScopedPointer<FBPTSecondary> sec_two(new FBPTSecondary(m_indata.volt_out_two, m_indata.curr_out_two,
-                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                            m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_two = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_two, m_indata.curr_out_two,
+                                                m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                m_indata.volt_diode_drop_sec));
 
-    QScopedPointer<FBPTSecondary> sec_three(new FBPTSecondary(m_indata.volt_out_three, m_indata.curr_out_three,
-                                                              m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                              m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                              m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_three = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_three, m_indata.curr_out_three,
+                                                  m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                  m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                  m_indata.volt_diode_drop_sec));
 
-    QScopedPointer<FBPTSecondary> sec_four(new FBPTSecondary(m_indata.volt_out_four, m_indata.curr_out_four,
-                                                             m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                             m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                             m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_four = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_four, m_indata.curr_out_four,
+                                                 m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                 m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                 m_indata.volt_diode_drop_sec));
 
-    QScopedPointer<FBPTSecondary> aux_out(new FBPTSecondary(m_indata.volt_out_aux, m_indata.curr_out_aux,
-                                                            m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                            m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                            m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> aux_out = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_aux, m_indata.curr_out_aux,
+                                                m_ptpe->actual_volt_reflected, m_indata.power_out_max,
+                                                m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
+                                                m_indata.volt_diode_drop_sec));
 
     qDebug() << "Make secondary side objects in Thread " << thread()->currentThreadId();
 
@@ -269,29 +269,29 @@ void PowSuppSolve::calcTransformerWired()
 
 
     // Make winding objects
-    QScopedPointer<FBPTWinding> wind_prim(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                          m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                          m_psw.m_fcu, m_psw.m_ins[0]));
+    QSharedPointer<FBPTWinding> wind_prim = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                              m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                              m_psw.m_fcu, m_psw.m_ins[0]));
 
-    QScopedPointer<FBPTWinding> wind_sec_one(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                             m_psw.m_fcu, m_psw.m_ins[1]));
+    QSharedPointer<FBPTWinding> wind_sec_one = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                 m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                 m_psw.m_fcu, m_psw.m_ins[1]));
 
-    QScopedPointer<FBPTWinding> wind_sec_two(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                             m_psw.m_fcu, m_psw.m_ins[2]));
+    QSharedPointer<FBPTWinding> wind_sec_two = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                 m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                 m_psw.m_fcu, m_psw.m_ins[2]));
 
-    QScopedPointer<FBPTWinding> wind_sec_three(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                               m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                               m_psw.m_fcu, m_psw.m_ins[3]));
+    QSharedPointer<FBPTWinding> wind_sec_three = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                   m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                   m_psw.m_fcu, m_psw.m_ins[3]));
 
-    QScopedPointer<FBPTWinding> wind_sec_four(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                              m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                              m_psw.m_fcu, m_psw.m_ins[4]));
+    QSharedPointer<FBPTWinding> wind_sec_four = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                                  m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                                  m_psw.m_fcu, m_psw.m_ins[4]));
 
-    QScopedPointer<FBPTWinding> wind_aux(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                         m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                         m_psw.m_fcu, m_psw.m_ins[5]));
+    QSharedPointer<FBPTWinding> wind_aux = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
+                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
+                                             m_psw.m_fcu, m_psw.m_ins[5]));
 
     qDebug() << "Make winding objects in Thread " << thread()->currentThreadId();
 
