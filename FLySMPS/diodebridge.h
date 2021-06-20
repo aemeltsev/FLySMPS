@@ -35,11 +35,14 @@ public:
      */
     DiodeBridge(int16_t max_volt, int16_t min_volt,
                 float eff, float pout,
-                float fl = 50.0f):
-        ac_inp_volt_max(max_volt), ac_inp_volt_min(min_volt),
-        efficiency(eff), pow_max_out(pout),
-        freq_line(fl)
+                float fl = 50.0f)
+        :ac_inp_volt_max(max_volt)
+        ,ac_inp_volt_min(min_volt)
+        ,efficiency(eff)
+        ,pow_max_out(pout)
+        ,freq_line(fl)
     {}
+
     ~DiodeBridge(){}
     /**
      * @brief setBcapParam
@@ -49,16 +52,90 @@ public:
     void setBcapParam(float bcpc, double ct)
     {
         cap_peak_curr = bcpc;
-        cap_char_time = ct;}
-    inline double IDiodePeak() const;
-    inline double DiodeCurrentSlope() const;
-    inline double DiodeConductTime() const;
-    inline double ILoadAVG() const;
-    inline double IDiodeAVG() const;
-    inline double IDiodeRMS() const;
-    inline double IDiodeRMSTot() const;
-    inline double MinPeakInVoltage() const;
-    inline double MaxPeakInVoltage() const;
+        cap_char_time = ct;
+    }
+
+    /**
+     * @brief IDiodePeak - Calculate the diode peak current
+     * @return diode peak current
+     */
+    inline double IDiodePeak() const
+    {
+        return static_cast<double>(cap_peak_curr)+cur_max_load;
+    }
+
+    /**
+     * @brief DiodeCurrentSlope - Diode current down slope from the peak value to total charging time
+     * @return Diode current down slope, in A/s
+     */
+    inline double DiodeCurrentSlope() const
+    {
+        return (IDiodePeak()-cur_min_load)/cap_char_time;
+    }
+
+    /**
+     * @brief DiodeConductTime - The diode total conduction time
+     * @return total conduction time for diode
+     */
+    double DiodeConductTime() const
+    {
+        return IDiodePeak()/DiodeCurrentSlope();
+    }
+
+    /**
+     * @brief ILoadAVG - Calculate the average dc current
+     * @param  frline - frequency in power line
+     * @return average dc current
+     */
+    double ILoadAVG() const
+    {
+        return IDiodePeak()*static_cast<double>(freq_line)*DiodeConductTime();
+    }
+
+    /**
+     * @brief IDiodeAVG - Calculate diode average current
+     * @return average current value
+     */
+    double IDiodeAVG() const
+    {
+        return ILoadAVG()/2.;
+    }
+
+    /**
+     * @brief IDiodeRMS - Root mean square value of current diode
+     * @return rms current diode
+     */
+    double IDiodeRMS() const
+    {
+        return ILoadAVG()/(qSqrt(3.* static_cast<double>(freq_line)*DiodeConductTime()));
+    }
+
+    /**
+     * @brief IDiodeRMSTot - Total root mean square value of current diode
+     * @return total rms current diode
+     */
+    double IDiodeRMSTot() const
+    {
+        return (ILoadAVG()*qSqrt(2.))/(qSqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
+    }
+
+    /**
+     * @brief MinPeakInVoltage - Solve minimum peak value
+     * @return minimum peak value
+     */
+    double MinPeakInVoltage() const
+    {
+        return ac_inp_volt_min*qSqrt(2.);
+    }
+
+    /**
+     * @brief MaxPeakInVoltage - Solve maximum peak value
+     * @return maximum peak value
+     */
+    double MaxPeakInVoltage() const
+    {
+        return  ac_inp_volt_max*qSqrt(2.);
+    }
 
 private:
     int16_t ac_inp_volt_max;
@@ -74,5 +151,4 @@ private:
     double cur_min_load = static_cast<double>(pow_max_out)/static_cast<double>((efficiency*ac_inp_volt_max)); // load minimum current
 
 };
-
 #endif // DIODEBRIDGE_H
