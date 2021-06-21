@@ -5,10 +5,10 @@
 #include "logfilewriter.h"
 
 LogFileWriter::LogFileWriter(QString prefix, qint64 maxsize, QObject *parent)
-    : QObject(parent),
-      m_prefix(prefix),
-      m_max_file_size(maxsize),
-      m_abort(false)
+    :QObject(parent)
+    ,m_prefix(prefix)
+    ,m_max_file_size(maxsize)
+    ,m_abort(false)
 {}
 
 LogFileWriter::~LogFileWriter()
