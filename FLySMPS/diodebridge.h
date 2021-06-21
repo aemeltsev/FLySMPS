@@ -43,7 +43,6 @@ public:
         ,freq_line(fl)
     {}
 
-    ~DiodeBridge(){}
     /**
      * @brief setBcapParam
      * @param bcpc - bulk capacitor peak current

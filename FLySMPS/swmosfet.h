@@ -40,6 +40,20 @@ struct ClampCSProp
 
 class SwMosfet
 {
+private:
+    int16_t in_max_pk_voltage;
+    int16_t in_min_pk_voltage;
+    int16_t actual_volt_reflected;
+    int16_t voltage_spike;
+    int16_t freq_switch;
+    float efficiency;
+    float power_out_max;
+    float actual_max_duty_cycle;
+    double leakage_induct;
+
+    float curr_primary_rms;
+    float curr_primary_peak;
+
 public:
     /**
      * @brief SwMosfet - class for power switch.
@@ -58,47 +72,183 @@ public:
     SwMosfet(int16_t vmaxrmsin, int16_t vminrmsin,
              int16_t vref, int16_t spv,
              float eff, float pout,
-             int16_t fsw, float mdc, double leakind):
-        in_max_pk_voltage(vmaxrmsin),in_min_pk_voltage(vminrmsin),
-        actual_volt_reflected(vref), voltage_spike(spv),
-        freq_switch(fsw), efficiency(eff),
-        power_out_max(pout), actual_max_duty_cycle(mdc),
-        leakage_induct(leakind)
+             int16_t fsw, float mdc, double leakind)
+        :in_max_pk_voltage(vmaxrmsin)
+        ,in_min_pk_voltage(vminrmsin)
+        ,actual_volt_reflected(vref)
+        ,voltage_spike(spv)
+        ,freq_switch(fsw)
+        ,efficiency(eff)
+        ,power_out_max(pout)
+        ,actual_max_duty_cycle(mdc)
+        ,leakage_induct(leakind)
     {}
-    inline double swMosfetVoltageMax() const;
-    inline double swMosfetVoltageNom() const;
-    inline double swMosfetCurrent() const;
-    inline double swMosfetTotPeriod() const {return 1./freq_switch;}
-    inline double swMosfetOnTime(double primary_induct, double in_volt_rms) const;
-    inline double swMosfetOffTime(double sw_on_time);
-    inline double swMosfetRiseTime(const MosfetProp &mp) const;
-    inline double swMosfetConductLoss(const MosfetProp &mp) const;
-    inline double swMosfetDriveLoss(const MosfetProp &mp) const;
-    inline double swMosfetSwitchLoss(const MosfetProp &mp) const;
-    inline double swMosfetCapacitLoss(const MosfetProp &mp) const;
-    inline double swMosfetTotalLoss(const MosfetProp &mp) const;
 
-    void setCurrValues(float rmscp, float pkcp);
-    inline double clVoltageMax() const;
-    inline double clPowerDiss(const ClampCSProp &ccsp) const;
-    inline double clResValue(const ClampCSProp &ccsp) const;
-    inline double clCapValue(const ClampCSProp &ccsp) const;
+    /**
+     * @brief swMosfetVoltageMax - estimated voltage stress of switch
+     * @return max voltage value
+     */
+    double swMosfetVoltageMax() const
+    {
+        return swMosfetVoltageNom() + voltage_spike;
+    }
 
-    inline double csCurrRes(const ClampCSProp &ccsp) const;
-    inline double csCurrResLoss(const ClampCSProp &ccsp) const;
-private:
-    int16_t in_max_pk_voltage;
-    int16_t in_min_pk_voltage;
-    int16_t actual_volt_reflected;
-    int16_t voltage_spike;
-    int16_t freq_switch;
-    float efficiency;
-    float power_out_max;
-    float actual_max_duty_cycle;
-    double leakage_induct;
+    /**
+     * @brief swMosfetVoltageNom - estimated voltage of switch not considering spike
+     * @return nom voltage value
+     */
+    double swMosfetVoltageNom() const
+    {
+        return in_max_pk_voltage + actual_volt_reflected;
+    }
 
-    float curr_primary_rms;
-    float curr_primary_peak;
+    /**
+     * @brief swMosfetCurrent - estimated current in switch
+     * @param leakage_induct - leakage perc
+     * @param primary_induct - calculated induct primary size
+     * @return switch current
+     */
+    double swMosfetCurrent() const
+    {
+        double time_switch = (1/freq_switch);
+        return (static_cast<double>(power_out_max)/static_cast<double>(efficiency * in_min_pk_voltage * actual_max_duty_cycle)) + ((static_cast<double>(in_min_pk_voltage * actual_max_duty_cycle) * time_switch)/leakage_induct);
+    }
+
+    inline double swMosfetTotPeriod() const
+    {
+        return 1./freq_switch;
+    }
+
+    inline double swMosfetOnTime(double primary_induct, double in_volt_rms) const
+    {
+        return (primary_induct * static_cast<double>(power_out_max))/(static_cast<double>(efficiency * actual_max_duty_cycle) * qPow(in_volt_rms, 2));
+    }
+
+    inline double swMosfetOffTime(double sw_on_time)
+    {
+        return (static_cast<double>(actual_max_duty_cycle) * sw_on_time) - sw_on_time;
+    }
+
+    /**
+     * @brief swMosfetRiseTime - estimated fet vds rise and fall time
+     * @return rise time
+     */
+    double swMosfetRiseTime(const MosfetProp &mp) const
+    {
+        return mp.m_qg * (2./mp.m_idr);
+    }
+
+    /**
+     * @brief swMosfetConductLoss - estimated of conduction losses
+     * @retval conduction losses
+     */
+    double swMosfetConductLoss(const MosfetProp &mp) const
+    {
+        return qPow(static_cast<double>(curr_primary_rms), 2) * static_cast<double>(mp.m_rdson);
+    }
+
+    /**
+     * @brief swMosfetDriveLoss - estimated fet power loss by driving the fet’s gate
+     * @return loss by driving the gate
+     */
+    double swMosfetDriveLoss(const MosfetProp &mp) const
+    {
+        return mp.m_vgs * mp.m_qg * freq_switch;
+    }
+
+    /**
+     * @brief swMosfetSwitchLoss - estimated fet average switching loss
+     * @return switching loss
+     */
+    double swMosfetSwitchLoss(const MosfetProp &mp) const
+    {
+        return ((mp.m_coss*qPow(swMosfetVoltageMax(), 2)*freq_switch)/2.) + (swMosfetVoltageMax()*static_cast<double>(curr_primary_peak)*swMosfetRiseTime(mp)*freq_switch);
+    }
+
+    /**
+     * @brief swMosfetCapacitLoss - estimated fet coss power dissipation
+     * @return coss power dissipation
+     */
+    double swMosfetCapacitLoss(const MosfetProp &mp) const
+    {
+        return (mp.m_coss*std::pow(swMosfetVoltageMax(), 2)*freq_switch)/2.;
+    }
+
+    /**
+     * @brief swMosfetTotalLoss - multiply of all losses values
+     * @return total losses
+     */
+    double swMosfetTotalLoss(const MosfetProp &mp) const
+    {
+        return swMosfetConductLoss(mp)*swMosfetDriveLoss(mp)*swMosfetSwitchLoss(mp)*swMosfetCapacitLoss(mp);
+    }
+
+    /**
+     * @brief setCurrValues -
+     * @param rmscp
+     * @param pkcp
+     */
+    void setCurrValues(float rmscp, float pkcp)
+    {
+        curr_primary_rms = rmscp;
+        curr_primary_peak = pkcp;
+    }
+
+    /**
+     * @brief clVoltageMax - calculate snubber capacitor voltage
+     * @return snubber voltage
+     */
+    double clVoltageMax() const
+    {
+        return swMosfetVoltageMax() - in_max_pk_voltage - actual_volt_reflected;
+    }
+
+    /**
+     * @brief SwMosfet::clPowerDiss - the power dissipated in the snubber circuit
+     * @return power diss val
+     */
+    double clPowerDiss(const ClampCSProp &ccsp) const
+    {
+        /**< the on-time (tSn) of the snubber diode */
+        auto clCurTsPk = (leakage_induct / (static_cast<double>(ccsp.cl_turn_rat * ccsp.cl_first_out_volt))) * static_cast<double>(curr_primary_peak);
+        return ((clVoltageMax() * static_cast<double>(curr_primary_peak) * clCurTsPk * freq_switch)/2.);
+    }
+
+    /**
+     * @brief clResValue - the snubber resistor value
+     * @return resistor value
+     */
+    double clResValue(const ClampCSProp &ccsp) const
+    {
+        return std::pow(clVoltageMax(), 2)/clPowerDiss(ccsp);
+    }
+
+    /**
+     * @brief clCapValue - the snubber capacitance value
+     * @return capacitance value
+     */
+    double clCapValue(const ClampCSProp &ccsp) const
+    {
+        return clVoltageMax()/(ccsp.cl_vol_rip * clResValue(ccsp) * freq_switch);
+    }
+
+    /**
+     * @brief csCurrRes - the value of current resistor
+     * @return the res value
+     */
+    double csCurrRes(const ClampCSProp &ccsp) const
+    {
+        return ccsp.cs_volt/static_cast<double>(curr_primary_peak);
+    }
+
+    /**
+     * @brief SwMosfet::csCurrResLoss - the current sense resistor loss
+     * @return the sense resistor loss
+     */
+    double csCurrResLoss(const ClampCSProp &ccsp) const
+    {
+        return std::pow(curr_primary_rms, 2) * csCurrRes(ccsp);
+    }
 };
 
 #endif // SWMOSFET_H

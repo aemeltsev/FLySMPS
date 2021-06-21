@@ -55,6 +55,10 @@ struct SSMPreDesign
 
 class PCSSM
 {
+private:
+    SSMPreDesign m_ssmvar;
+    PS_MODE m_mode;
+
 public:
     /**
      *                               ccm
@@ -108,32 +112,332 @@ public:
         qSwap(m_ssmvar, ssmvar);
         m_mode = mode;
     }
-    inline double coZeroOneAngFreq() const; //f_{zc}
-    inline double coPoleOneAngFreq() const; //f_{rc}
-    /************DCM***********/
-    inline double coDCMZeroTwoAngFreq() const; //f_{zrhp}
-    inline double coDCMPoleTwoAngFreq() const; //f_{p2}
-    inline double coDCMCriticValue() const; //K_{vd}
-    /************CCM***********/
-    inline double coCCMZeroTwoAngFreq() const; //f_{zrhp}
-    inline double coCCMPoleTwoAngFreq() const; //f_{o}
-    inline double coCCMVoltGainCoeff() const; //K_{vd}
-    inline double coCCMCurrGainCoeff() const; //K_{id}
-    inline double coCCMQualityFact() const; //Q
-    double coMagCCMDutyToInductCurrTrasfFunct(double freq); //G_{id}(s)
-    double coPhsCCMDutyToInductCurrTrasfFunct(double freq); //G_{id}(s)
-    inline double coCurrDetectSlopeVolt() const; //S_{n}
-    inline double coTimeConst() const; //\tau_{L}
-    inline double coGainCurrModeContrModulator() const; //F_{m}
-    double coMagDutyToOutTrasfFunct(double freq); //G_{vd}(s)
-    double coPhsDutyToOutTrasfFunct(double freq); //G_{vd}(s)
-    double coMagControlToOutTransfFunct(double freq); //G_{vc}(s)
-    double coPhsControlToOutTransfFunct(double freq); //G_{vc}(s)
-    void coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag);
-    void coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase);
-private:
-    SSMPreDesign m_ssmvar;
-    PS_MODE m_mode;
+
+    /********************COM*************************/
+
+    /**
+     * @brief coZeroOneAngFreq - $\f_{zc}$ - esr zero, lhp
+     * @return esr zero value, angular frequency
+     */
+    inline double coZeroOneAngFreq() const
+    {
+        return 1/(2 * M_PI * m_ssmvar.output_cap * m_ssmvar.output_cap_esr);
+    }
+
+    /**
+     * @brief coPoleOneAngFreq - $\f_{rc}$ the dominant pole
+     * @return
+     */
+    inline double coPoleOneAngFreq() const
+    {
+        return 2/(2 * M_PI * static_cast<double>(m_ssmvar.output_full_load_res) * m_ssmvar.output_cap);
+    }
+
+    /********************COM*************************/
+    /********************DCM*************************/
+
+    /**
+     * @brief coZeroTwoAngFreq - $\f_{zrhp}$ - rhp zero
+     * @return
+     */
+    inline double coDCMZeroTwoAngFreq() const
+    {
+        double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
+        double tmp = qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res);
+
+        return tmp/(2 * M_PI * m_ssmvar.primary_ind * voltrat*(voltrat+1));
+    }
+
+    /**
+     * @brief coPoleTwoAngFreq - $\f_{p2}$ - pole
+     * @return
+     */
+    inline double coDCMPoleTwoAngFreq() const
+    {
+        double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
+
+        return (qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res))
+                /(2 * M_PI * m_ssmvar.primary_ind * qPow((voltrat+1),2));
+    }
+
+    /**
+     * @brief coDCMCriticValue - $K_{vd}$ -
+     * @return
+     */
+    inline double coDCMCriticValue() const
+    {
+        double ktmp = (2. * m_ssmvar.primary_ind * static_cast<double>(m_ssmvar.freq_switch))
+                /static_cast<double>(m_ssmvar.output_full_load_res);
+
+        return static_cast<double>(m_ssmvar.input_voltage)
+                /(static_cast<double>(m_ssmvar.turn_ratio) * qSqrt(ktmp));
+    }
+
+    /********************DCM*************************/
+    /********************CCM*************************/
+
+    /**
+     * @brief coCCMZeroTwoAngFreq - $f_{zrhp}$
+     * @return
+     */
+    inline double coCCMZeroTwoAngFreq() const
+    {
+        double tmp = qPow(m_ssmvar.turn_ratio, 2) * qPow((1-m_ssmvar.actual_duty), 2)
+                * static_cast<double>(m_ssmvar.output_full_load_res);
+
+        return tmp/(2 * M_PI * m_ssmvar.actual_duty * m_ssmvar.primary_ind);
+    }
+
+    /**
+     * @brief coCCMPoleTwoAngFreq - $f_{o}$
+     * @return
+     */
+    inline double coCCMPoleTwoAngFreq() const
+    {
+        double tmp = static_cast<double>(m_ssmvar.turn_ratio)
+                /(2 * M_PI * qSqrt(m_ssmvar.output_cap * m_ssmvar.primary_ind));
+
+        double num = qPow((1-m_ssmvar.actual_duty), 2);
+
+        double ld = qSqrt((num*static_cast<double>(m_ssmvar.output_full_load_res))
+                          /(static_cast<double>(m_ssmvar.output_full_load_res)+m_ssmvar.output_cap_esr));
+        return tmp*ld;
+    }
+
+    /**
+     * @brief coDCMVoltGainCoeff - $K_{vd}$
+     * @return
+     */
+    inline double coCCMVoltGainCoeff() const
+    {
+        return static_cast<double>(m_ssmvar.input_voltage)
+                /(static_cast<double>(m_ssmvar.turn_ratio) * (qPow((1-m_ssmvar.actual_duty),2)));
+    }
+
+    /**
+     * @brief coDCMCurrGainCoeff - $K_{id}$
+     * @return
+     */
+    inline double coCCMCurrGainCoeff() const
+    {
+        double tmp = 1+(2*m_ssmvar.actual_duty/(1-m_ssmvar.actual_duty));
+
+        double dnm = qPow((1-m_ssmvar.actual_duty), 2);
+
+        double mult = m_ssmvar.input_voltage
+                /(static_cast<double>(m_ssmvar.turn_ratio) * dnm * static_cast<double>(m_ssmvar.output_full_load_res));
+
+        return tmp*mult;
+    }
+
+    /**
+     * @brief coDCMQualityFact - $Q$
+     * @return
+     */
+    inline double coCCMQualityFact() const
+    {
+        double dnm1 = m_ssmvar.primary_ind
+                /(qPow(static_cast<double>(m_ssmvar.turn_ratio), 2)
+                * qPow((1-m_ssmvar.actual_duty), 2) * static_cast<double>(m_ssmvar.output_full_load_res));
+
+        double dnm2 = m_ssmvar.output_cap_esr * static_cast<double>(m_ssmvar.output_full_load_res);
+
+        return 1/(coCCMPoleTwoAngFreq()*(dnm1+dnm2));
+    }
+
+    /**
+     * @brief coDCMDutyToInductCurrTrasfFunct - $G_{id}(s) magnitude value for current frequency$
+     * @param freq
+     * @return
+     */
+    double coMagCCMDutyToInductCurrTrasfFunct(double freq)
+    {
+        double num = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
+
+        double dnm = qSqrt(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2) + qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2));
+
+        return coCCMCurrGainCoeff() * (num/dnm);
+    }
+
+    /**
+     * @brief coPhsCCMDutyToInductCurrTrasfFunct - $G_{id}(s) phase value of current frequency$
+     * @param freq
+     * @return
+     */
+    double coPhsCCMDutyToInductCurrTrasfFunct(double freq)
+    {
+        double farg = qAtan(freq/coPoleOneAngFreq());
+        double sarg = qAtan(
+                            (freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())) *
+                            (1/(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2)))
+                           );
+        return farg - sarg;
+    }
+
+    /********************CCM*************************/
+    /********************F_m*************************/
+
+    /**
+     * @brief coCurrDetectSlopeVolt - $S_{n}$ - the voltage slope when the primary-side current is detected on RS_s
+     *        The inductor rising slope.
+     * @return
+     */
+    inline double coCurrDetectSlopeVolt() const
+    {
+        return (m_ssmvar.input_voltage * m_ssmvar.res_sense)
+                / m_ssmvar.primary_ind;
+    }
+
+    /**
+     * @brief coTimeConst - $\tau_{L}$ - switching period
+     * @return
+     */
+    inline double coTimeConst() const
+    {
+        return (2 * m_ssmvar.primary_ind * static_cast<double>(m_ssmvar.freq_switch))
+                /(qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res));
+    }
+
+    /**
+     * @brief coGainCurrModeContrModulator - $F_{m}$ - the PWM modulator gain
+     * @return
+     */
+    inline double coGainCurrModeContrModulator() const
+    {
+        return 1/((coCurrDetectSlopeVolt()+m_ssmvar.sawvolt)*coTimeConst());
+    }
+
+    /********************F_m*************************/
+    /********************OUT*************************/
+
+    /**
+     * @brief coMagDutyToOutTrasfFunct - $G_{vd}(s)$ -
+     * @param freq
+     * @return
+     */
+    double coMagDutyToOutTrasfFunct(double freq)
+    {
+        double result = 0.0;
+        double num1 = 0.0;
+        double num2 = 0.0;
+        double dnm1 = 0.0;
+        double dnm2 = 0.0;
+        if(m_mode == DCM_MODE)
+        {
+            num1 = qSqrt(1 + qPow((freq/coZeroOneAngFreq()), 2));
+            num2 = qSqrt(1 + qPow((freq/coDCMZeroTwoAngFreq()), 2));
+            dnm1 = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
+            dnm2 = qSqrt(1 + qPow((freq/coDCMPoleTwoAngFreq()), 2));
+            result = 20 * log10(coDCMCriticValue()*((num1*num2)/(dnm1*dnm2)));
+        }
+        else if(m_mode == CCM_MODE)
+        {
+            num1 = qSqrt(1 + qPow((freq/coCCMZeroTwoAngFreq()), 2));
+            num2 = qSqrt(1 + qPow((freq/coZeroOneAngFreq()), 2));
+            dnm1 = qSqrt(
+                        qPow(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2), 2) +
+                        qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2)
+                        );
+
+            result = 20 * log10(coCCMVoltGainCoeff()*((num1*num2)/(dnm1)));
+        }
+        return result;
+    }
+
+    /**
+     * @brief coPhsDutyToOutTrasfFunct - $G_{vd}(s)$ -
+     * @param freq
+     * @return
+     */
+    double coPhsDutyToOutTrasfFunct(double freq)
+    {
+        double result = 0.0;
+        double farg = qAtan(freq/coCCMZeroTwoAngFreq());
+        double sarg = qAtan(freq/coZeroOneAngFreq());
+        double targ = 0.;
+        if(m_mode == DCM_MODE)
+        {
+            targ = qAtan(freq/coPoleOneAngFreq());
+            result = farg + sarg - targ + qAtan(freq/coDCMPoleTwoAngFreq());
+        }
+        else if(m_mode == CCM_MODE)
+        {
+            targ = qAtan((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())) * (1/(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2))));
+            result = farg + sarg - targ;
+        }
+        return result;
+    }
+
+    /**
+     * @brief coMagControlToOutTransfFunct - $G_{vc}(s)$ - The control-to-output transfer function
+     * @param freq
+     * @return
+     */
+    double coMagControlToOutTransfFunct(double freq)
+    {
+        double result = 0.0;
+        double dnm = 0.0;
+        if(m_mode == DCM_MODE)
+        {
+            result = coMagDutyToOutTrasfFunct(freq) * (20 * log10(coGainCurrModeContrModulator()));
+        }
+        else if(m_mode == CCM_MODE)
+        {
+            dnm = 20 * log10(coGainCurrModeContrModulator() * m_ssmvar.res_sense) * coMagCCMDutyToInductCurrTrasfFunct(freq);
+            result = ( 20 * log10(coGainCurrModeContrModulator()) * coMagDutyToOutTrasfFunct(freq))/(1+dnm);
+        }
+        return result;
+
+    }
+
+    double coPhsControlToOutTransfFunct(double freq)
+    {
+        double result = 0.0;
+        double dnm = 0.0;
+        if(m_mode == DCM_MODE)
+        {
+            result = coPhsDutyToOutTrasfFunct(freq) * qAtan(coGainCurrModeContrModulator());
+        }
+        else if(m_mode == CCM_MODE)
+        {
+            dnm = qAtan(coGainCurrModeContrModulator() * m_ssmvar.res_sense) * coMagCCMDutyToInductCurrTrasfFunct(freq);
+            result = (qAtan(coGainCurrModeContrModulator()) * coMagDutyToOutTrasfFunct(freq))/(1+dnm);
+        }
+        return result;
+
+    }
+
+    void coGainControlToOutTransfFunct(QVector<double> &in_freq, QVector<double> &out_mag)
+    {
+        auto itr_freq = in_freq.begin();
+        out_mag.reserve(in_freq.size());
+        double frq = 0., result = 0.;
+
+        while(itr_freq != in_freq.end())
+        {
+            frq = *itr_freq;
+            result = coMagControlToOutTransfFunct(frq);
+            out_mag.push_back(result);
+            itr_freq++;
+        }
+    }
+
+    void coPhaseControlToOutTransfFunct(QVector<double> &in_freq, QVector<double> &out_phase)
+    {
+        auto itr_freq = in_freq.begin();
+        out_phase.reserve(in_freq.size());
+        double frq = 0., result = 0.;
+
+        while(itr_freq != in_freq.end())
+        {
+            frq = *itr_freq;
+            result = coPhsControlToOutTransfFunct(frq);
+            out_phase.push_back(result);
+            itr_freq++;
+        }
+    }
+
+    /********************OUT*************************/
 };
 
 struct FCPreDesign
@@ -164,11 +468,76 @@ struct LCSecondStage
 {
     double lcf_ind;
     double lcf_cap;
-    float lcf_cap_esr;
+    double lcf_cap_esr;
 };
 
 class FCCD
 {
+private:
+    FCPreDesign m_fcvar;
+    RampSlopePreDesign m_rsvar;
+    LCSecondStage m_lcfvar;
+    PS_MODE m_mode;
+
+    /**
+     * @brief coInvDutyCycle - D^{`}
+     * @return
+     */
+    inline float coInvDutyCycle()
+    {
+        return 1 - m_rsvar.actual_duty;
+    }
+
+    /**
+     * @brief coBoost - Boost
+     * @return
+     */
+    inline int16_t coBoost() const
+    {
+        return m_fcvar.amp_gaim_marg - m_fcvar.phase_shift - 90;
+    }
+
+    /**
+     * @brief coTransfZero - $\f_{z}$
+     * @return
+     */
+    inline double coTransfZero() const
+    {
+        return 1/(coResZero() * coCapZero());
+    }
+
+    /**
+     * @brief coTransfPoleOne - $\f_{p1}$
+     * @return
+     */
+    inline double coTransfPoleOne() const
+    {
+        return 1/(m_fcvar.res_pull_up * coCapPoleOpto());
+    }
+
+    /**
+     * @brief coTransfLCZero - \omega_{lc-z}
+     * @return
+     */
+    inline double coTransfLCZero() const
+    {
+        double lc_ratio = 1/qSqrt(m_lcfvar.lcf_ind * m_lcfvar.lcf_cap);
+        double load_ratio = qSqrt((m_fcvar.out_voltage/m_fcvar.out_current)/(m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current)));
+        return lc_ratio * load_ratio;
+    }
+
+    /**
+     * @brief coQualityLC - Q_{lc}
+     * @return
+     */
+    inline double coQualityLC() const
+    {
+        double num = m_lcfvar.lcf_ind * m_lcfvar.lcf_cap * coTransfLCZero() * (m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current));
+        double dnm = m_lcfvar.lcf_ind + m_lcfvar.lcf_cap * (m_lcfvar.lcf_cap_esr + (m_fcvar.out_voltage/m_fcvar.out_current));
+
+        return num/dnm;
+    }
+
 public:
     /**
      * @brief FCCD - Feedback compensation circuit design
@@ -187,47 +556,263 @@ public:
         qSwap(m_lcfvar, lcfvar);
         m_mode = mode;
     }
+
     //1.
-    inline int32_t coResOptoDiode() const; //R_{LED_max}
-    inline int32_t coResOptoBias() const; //R_{bias}
-    inline int32_t coResUp() const; //R_{1} or R_{up} in voltage divider K_{d}
-    inline double coVoltageDivideGain() const; //K_{d}
-    inline double coVoltageOptoGain() const; //K_{c} or G_{1} in Db 20*log10(K_{c})
+    /**
+     * @brief coResOptoDiode - R_{LED_max}
+     * @return
+     */
+    inline int32_t coResOptoDiode() const
+    {
+        double num = m_fcvar.out_voltage - S_OPTO_FORVARD_DROP - S_TL431_VREF;
+
+        double dnm = S_INT_BIAS_CONTR - S_OPTO_CE_SAT +
+                (S_TL431_CURR_CATH * m_fcvar.opto_ctr * m_fcvar.res_pull_up);
+
+        return static_cast<int16_t>((num/dnm)*0.15);//15% marg
+    }
+
+    /**
+     * @brief coResOptoBias - R_{bias}
+     * @return
+     */
+    inline int32_t coResOptoBias() const
+    {
+        double num = S_OPTO_FORVARD_DROP+(coResOptoDiode()*((S_INT_BIAS_CONTR-3)/
+                                                            (m_fcvar.opto_ctr * m_fcvar.res_pull_up)));
+        return static_cast<int16_t>(num / S_TL431_CURR_CATH);
+    }
+
+    /**
+     * @brief coResUp - R_{1} or R_{up} in voltage divider K_{d}
+     * @return
+     */
+    inline int32_t coResUp() const
+    {
+        return m_fcvar.res_down * static_cast<int16_t>((m_fcvar.out_voltage - S_TL431_VREF)/S_TL431_VREF);
+    }
+
+    /**
+     * @brief coVoltageDivideGain - K_{d}
+     * @return
+     */
+    inline double coVoltageDivideGain() const
+    {
+        return m_fcvar.res_down/(coResUp() + m_fcvar.res_down);
+    }
+
+    /**
+     * @brief coVoltageOptoGain - K_{c} or G_{1} in Db 20*log10(K_{c})
+     * @return
+     */
+    inline double coVoltageOptoGain() const
+    {
+        return (m_fcvar.res_pull_up/coResOptoDiode()) * m_fcvar.opto_ctr;
+    }
+
     //2.
-    inline double coExterRampSlope() const; //S_{e}
-    inline double coIndOnTimeSlope() const; //S_{n}
-    inline double coCompRamp() const; //M_{c}
-    inline double coQuality() const; //Q_{p}
+    /**
+     * @brief FCCD::coIndOnTimeSlope - S_{n}
+     * @return
+     */
+    inline double coIndOnTimeSlope() const
+    {
+        return (m_rsvar.inp_voltage * m_rsvar.res_sense)/m_rsvar.primary_ind;
+    }
+
+    /**
+     * @brief FCCD::coCompRamp - M_{c}
+     * @return
+     */
+    inline double coCompRamp() const
+    {
+        double coeff = m_rsvar.prim_turns/m_rsvar.sec_turns_to_control;
+
+        return (coeff * m_fcvar.out_voltage)/m_rsvar.inp_voltage;
+    }
+
+    /**
+     * @brief FCCD::coExterRampSlope - S_{e}
+     * @return
+     */
+    inline double coExterRampSlope() const
+    {
+        return (coCompRamp()-1)*coIndOnTimeSlope();
+    }
+
+    /**
+     * @brief FCCD::coQuality - Q_{p}
+     * @return
+     */
+    inline double coQuality() const
+    {
+        double inv_duty = 1 - m_rsvar.actual_duty;
+        return 1/(M_PI*(coCompRamp()*inv_duty-0.5));
+    }
+
     //3.
-    double coFreqCrossSection() const; //f_{cross}
+    /**
+     * @brief coFreqCrossSection - f_{cross}
+     * @return
+     */
+    inline double coFreqCrossSection() const
+    {
+        double ratio_factor = qPow((m_rsvar.prim_turns/m_rsvar.sec_turns_to_control), 2);
+
+        double coeff = 1/5;
+
+        double num = (qPow(m_fcvar.out_voltage, 2)/
+                      m_rsvar.out_pwr_tot) * qPow(m_rsvar.actual_duty, 2);
+
+        double dnm = 2 * M_PI * m_rsvar.primary_ind;
+
+        return (num/dnm)*ratio_factor*coeff;
+    }
+
     //4.
-    inline double coFreqPole() const; //f_{pole}
-    inline double coFreqZero() const; //f_{zero}
+    /**
+     * @brief coFreqPole - f_{pole}
+     * @return
+     */
+    inline double coFreqPole() const
+    {
+        return (qTan(coBoost()) + qSqrt(qPow(qTan(coBoost()), 2) + 1)) * coFreqCrossSection();
+    }
+
+    /**
+     * @brief coFreqZero - f_{zero}
+     * @return
+     */
+    inline double coFreqZero() const
+    {
+        return qPow(coFreqCrossSection(), 2)/coFreqPole();
+    }
+
     //5.
-    int32_t coResZero() const; //R_{f} or R_{zero}
-    inline double coCapZero() const; //C_{f} or C_{zero}
-    inline double coCapPoleOpto() const; //C_{opto} - pulldown capacitor in hight optocoupler side
+    /**
+     * @brief coResZero - R_{f} or R_{zero}
+     * @return
+     */
+    int32_t coResZero() const
+    {
+        double gplant = 0.;
+        double pz_ratio = coFreqPole()/coFreqZero();
+        double t_ratio = m_rsvar.sec_turns_to_control/m_rsvar.prim_turns;
+        double ind_coeff = m_rsvar.inp_voltage * m_rsvar.res_sense * m_rsvar.primary_ind;
+
+        if(m_mode == DCM_MODE){
+            gplant = pz_ratio * qSqrt((m_rsvar.primary_ind * m_fcvar.freq_sw * m_fcvar.out_voltage)/(8 * m_fcvar.out_current)) *
+                    ((m_rsvar.inp_voltage)/ind_coeff);
+        }
+        else if(m_mode == CCM_MODE){
+            gplant = pz_ratio * ((qPow(m_rsvar.inp_voltage, 2) * m_fcvar.out_voltage) /
+                              (2 * m_fcvar.out_current * (2 * m_rsvar.inp_voltage + t_ratio * m_fcvar.out_voltage) * ind_coeff));
+        }
+
+        double coeff = qSqrt(qPow((coFreqCrossSection()/coFreqPole()), 2) + 1)/
+                       qSqrt(qPow((coFreqZero()/coFreqCrossSection()), 2) + 1);
+
+        return gplant * coResUp() * coeff;
+
+    }
+
+    /**
+     * @brief coCapZero - C_{f} or C_{zero}
+     * @return
+     */
+    inline double coCapZero() const
+    {
+        return 1/(2 * M_PI * coFreqZero() * coResZero());
+    }
+
+    /**
+     * @brief coCapPoleOpto - C_{opto} - pulldown capacitor in hight optocoupler side
+     * @return
+     */
+    inline double coCapPoleOpto() const
+    {
+        return 1/(2 * M_PI * coFreqZero() * coResZero());
+    }
+
     //6.
-    inline double coMagLCTransfFunc(double freq) const; //H_{lc}(s)
-    inline double coMagOptoFeedbTransfFunc(double freq) const; //H(s)
-    inline double coPhsLCTransfFunc(double freq) const;
-    inline double coPhsOptoFeedbTransfFunc(double freq) const;
+    /**
+     * @brief coLCTransfFunc - H_{lc}(s)
+     * @param s
+     * @return
+     */
+    inline double coMagLCTransfFunc(double freq) const
+    {
+        double qual = qPow((freq/coQualityLC() * coTransfLCZero()), 2);
+        double zero = qPow(1 - qPow((freq/coTransfLCZero()), 2), 2);
+
+        double dnm = qSqrt(zero + qual);
+
+        return 1/dnm;
+    }
+
+    /**
+     * @brief coOptoFeedbTransfFunc - H(s)
+     * @param s
+     * @return
+     */
+    inline double coMagOptoFeedbTransfFunc(double freq) const
+    {
+        double zero_one = qSqrt(1 + qPow((freq/coTransfZero()), 2));
+        double pole_one = qSqrt(1 + qPow((freq/coTransfPoleOne()), 2));
+        double g_0 = coVoltageOptoGain() * coVoltageDivideGain() * (coResZero()/coResUp());
+
+        return g_0 * (zero_one/pole_one) * coMagLCTransfFunc(freq);
+    }
+
+    inline double coPhsLCTransfFunc(double freq) const
+    {
+        return qAtan((freq/(coTransfLCZero() * coQualityLC())) * (1/(1 - qPow((freq/coTransfLCZero()), 2))));
+    }
+
+    inline double coPhsOptoFeedbTransfFunc(double freq) const
+    {
+        return qAtan(freq/coTransfZero())-qAtan(freq/coTransfPoleOne());
+    }
+
     //7.
-    void coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag);
-    void coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase);
+    /**
+     * @brief coGainOptoFeedbTransfFunc -
+     * @param freq
+     * @return
+     */
+    void coGainOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_mag)
+    {
+        auto itr_freq = in_freq.begin();
+        out_mag.reserve(in_freq.size());
+        double frq = 0., result = 0.;
 
-private:
-    FCPreDesign m_fcvar;
-    RampSlopePreDesign m_rsvar;
-    LCSecondStage m_lcfvar;
-    PS_MODE m_mode;
+        while(itr_freq != in_freq.end())
+        {
+            frq = *itr_freq;
+            result = 20 * log10(coMagOptoFeedbTransfFunc(frq));
+            out_mag.push_back(result);
+            itr_freq++;
+        }
+    }
 
-    inline float coInvDutyCycle(){return 1 - m_rsvar.actual_duty;} //D^{`}
-    inline int16_t coBoost() const {return m_fcvar.amp_gaim_marg - m_fcvar.phase_shift - 90;} //Boost
-    inline double coTransfZero() const; //f_{z}
-    inline double coTransfPoleOne() const; //f_{p1}
-    inline double coTransfLCZero() const; //f_{lc-z}
-    inline double coQualityLC() const; //Q_{lc}
+    /**
+     * @brief coPhaseOptoFeedbTransfFunc
+     * @param freq
+     * @return
+     */
+    void coPhaseOptoFeedbTransfFunc(QVector<double> &in_freq, QVector<double> &out_phase)
+    {
+        auto itr_freq = in_freq.begin();
+        out_phase.reserve(in_freq.size());
+        double frq = 0., result = 0.;
+
+        while (itr_freq != in_freq.end())
+        {
+            frq = *itr_freq;
+            result = coPhsOptoFeedbTransfFunc(frq) - coPhsLCTransfFunc(frq);
+            out_phase.push_back(result);
+            itr_freq++;
+        }
+    }
 };
-
 #endif // CONTROLOUT_H

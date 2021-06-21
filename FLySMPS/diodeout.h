@@ -32,16 +32,35 @@ public:
      * @param vo - output voltage
      * @param tr - turns ratio
      */
-    DiodeOut(double ps, double vo, double tr):
-        power_sec(ps), volt_out(vo),
-        turn_ratio(tr)
+    DiodeOut(double ps, double vo, double tr)
+        :power_sec(ps)
+        ,volt_out(vo)
+        ,turn_ratio(tr)
     {}
-    inline double doDiodeRevVolt(int16_t ac_inp_volt_max) const;
-    inline double doDiodePowLoss(float dio_drop) const;
+
+    /**
+     * @brief doDiodeRevVolt
+     * @param ac_inp_volt_max - input max AC line voltage
+     * @return max reverse voltage
+     */
+    double doDiodeRevVolt(int16_t ac_inp_volt_max) const
+    {
+        return (volt_out+(ac_inp_volt_max/(qSqrt(2))))/turn_ratio;
+    }
+
+    /**
+     * @brief doDiodePowLoss - losses on the diode
+     * @param dio_drop - volt drop on schottky diode
+     * @return losses value
+     */
+    double doDiodePowLoss(float dio_drop) const
+    {
+        return (power_sec* static_cast<double>(dio_drop))/volt_out;
+    }
+
 private:
     double power_sec;
     double volt_out;
     double turn_ratio;
 };
-
 #endif // DIODEOUT_H
