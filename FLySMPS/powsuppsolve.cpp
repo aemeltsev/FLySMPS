@@ -211,7 +211,7 @@ void PowSuppSolve::calcElectroMagProperties()
     m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs, m_ptpe->actual_num_primary,
                                                                 m_ptpe->curr_primary_peak,
                                                                 m_ptpe->fring_flux_fact);
-    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc.input_dc_min_voltage,
+    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc->input_dc_min_voltage,
                                                          m_indata.freq_switch, m_ptpe->primary_induct);
     m_ptpe->actual_volt_reflected = m_core->actReflVoltage(m_ptpe->actual_max_duty_cycle, m_indata.power_out_max,
                                                            m_ptpe->primary_induct, m_indata.freq_switch);
@@ -636,8 +636,8 @@ void PowSuppSolve::calcPowerStageModel()
         m_pssm->ps_freq_array.push_back(indx);
     }
 
-    m_pcssm->coGainOptoFeedbTransfFunc(m_pssm->ps_freq_array, m_pssm->ps_magnitude_array);
-    m_pcssm->coPhaseOptoFeedbTransfFunc(m_pssm->ps_freq_array, m_pssm->ps_phase_array);
+    m_pcssm->coGainControlToOutTransfFunct(m_pssm->ps_freq_array, m_pssm->ps_magnitude_array);
+    m_pcssm->coPhaseControlToOutTransfFunct(m_pssm->ps_freq_array, m_pssm->ps_phase_array);
 
     emit finishedCalcPowerStageModel();
     qDebug() << "Finished calculate power stage model in Thread " << thread()->currentThreadId();
