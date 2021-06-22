@@ -95,19 +95,19 @@ private:
         int16_t input_volt_ac_max;
         int16_t input_volt_ac_min;
         int16_t freq_line;
-        int16_t freq_switch;
+        int32_t freq_switch;
         int16_t temp_amb;
         //Input secondary voltage, current value
         int16_t volt_out_one;
-        int16_t curr_out_one;
+        float curr_out_one;
         int16_t volt_out_two;
-        int16_t curr_out_two;
+        float curr_out_two;
         int16_t volt_out_three;
-        int16_t curr_out_three;
+        float curr_out_three;
         int16_t volt_out_four;
-        int16_t curr_out_four;
+        float curr_out_four;
         int16_t volt_out_aux;
-        int16_t curr_out_aux;
+        float curr_out_aux;
         double eff;
         double power_out_max;
         //Pre-design
