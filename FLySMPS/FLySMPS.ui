@@ -169,7 +169,7 @@
        <item row="2" column="9">
         <widget class="QLineEdit" name="VAux">
          <property name="text">
-          <string>0.2</string>
+          <string>15</string>
          </property>
         </widget>
        </item>
@@ -218,7 +218,7 @@
        <item row="3" column="9">
         <widget class="QLineEdit" name="IAux">
          <property name="text">
-          <string>15</string>
+          <string>0.2</string>
          </property>
         </widget>
        </item>
