@@ -63,7 +63,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>8</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -267,7 +267,7 @@
        <item row="3" column="1">
         <widget class="QLineEdit" name="FSw">
          <property name="text">
-          <string>50K</string>
+          <string>50000</string>
          </property>
         </widget>
        </item>
