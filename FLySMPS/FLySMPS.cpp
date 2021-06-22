@@ -111,6 +111,7 @@ void FLySMPS::initInputValues()
 
 void FLySMPS::setInputNetwork()
 {
+    ui->PowOut->setNum(m_psolve->m_indata.power_out_max);
     ui->DiodeCurrPeak->setNum(m_psolve->m_db->diode_peak_curr);
     ui->DiodeCurrRMS->setNum(m_psolve->m_db->diode_rms_curr);
     ui->DiodeCurrAVG->setNum(m_psolve->m_db->diode_avg_curr);
