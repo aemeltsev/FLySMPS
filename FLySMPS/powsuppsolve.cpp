@@ -22,7 +22,7 @@
 PowSuppSolve::PowSuppSolve(QObject *parent)
     :QObject(parent)
 {
-    //m_bc.reset(new BCap);
+    m_bc.reset(new BCap);
     m_db.reset(new DBridge);
     m_pm.reset(new PMosfet);
     m_ptpe.reset(new PulseTransPrimaryElectr());
@@ -63,10 +63,10 @@ void PowSuppSolve::calcInputNetwork()
     emit startCalcInputNetwork();
     qDebug() << "Start calculate input network in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     QScopedPointer<BulkCap> b_cap(new BulkCap(m_indata.input_volt_ac_max,
                                               m_indata.input_volt_ac_min,
