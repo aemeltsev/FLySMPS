@@ -120,10 +120,10 @@ void PowSuppSolve::calcElectricalPrimarySide()
     emit startCalcElectricalPrimarySide();
     qDebug() << "Start calculate electrical primary side in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     QScopedPointer<FBPTPrimary> t_prim(new FBPTPrimary(m_indata.ripple_fact,
                                                        m_indata.refl_volt_max,
@@ -135,10 +135,14 @@ void PowSuppSolve::calcElectricalPrimarySide()
     qDebug() << "Working with FBPTPrimary in Thread " << thread()->currentThreadId();
 
     /**< 1. Set input voltage */
-    t_prim->setInputVoltage(m_bc->input_dc_min_voltage, m_bc->input_min_voltage);
+    m_ptpe->inp_power = t_prim->InputPower();
+    t_prim->setInputVoltage(m_indata.input_volt_ac_min,
+                            m_ptpe->inp_power,
+                            m_indata.freq_line,
+                            m_bc->bcapacitor_value,
+                            m_bc->delta_t);
     /**< 2. Fill the structure for primary side */
     m_ptpe->max_duty_cycle = t_prim->DutyCycleDCM();
-    m_ptpe->inp_power = t_prim->InputPower();
     m_ptpe->primary_induct = t_prim->PriInduct();
     m_ptpe->curr_primary_aver = t_prim->CurrPriAver();
     m_ptpe->curr_primary_peak_peak = t_prim->CurrPriPeakToPeak();

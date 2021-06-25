@@ -30,6 +30,16 @@
 
 class FBPTPrimary
 {
+private:
+    double ripple_factor;
+    int16_t refl_volt;
+    double pow_max_out;
+    float efficiency;
+    float freq_switch;
+
+    int16_t input_dc_min_voltage; // dc average, between min input and rectify min peak
+    int16_t input_min_voltage; // recalc after input capacitor selection
+
 public:
     /**
      * @brief FBPTPrimary
@@ -40,12 +50,30 @@ public:
      * @param swfr
      */
     FBPTPrimary(double krf, int16_t rv,
-                int16_t pout, float eff,
+                double pout, float eff,
                 float swfr):
         ripple_factor(krf), refl_volt(rv),
         pow_max_out(pout), efficiency(eff),
         freq_switch(swfr)
     {}
+
+    /**
+     * @brief setInputVoltage
+     * @param idcmv - dc average, between min input and rectify min peak
+     * @param imv - recalc after input capacitor selection
+     */
+    void setInputVoltage(int16_t input_volt_ac_min,
+                         double input_pwr,
+                         int16_t freq_line,
+                         double bulk_cap_value,
+                         double bulk_cap_delta_time)
+    {
+        double input_pk_min_voltage = input_volt_ac_min * M_SQRT2;
+        double pwr_cap_coeff = input_pwr / bulk_cap_value;
+        double chg_time = (1 / freq_line) - 2 * bulk_cap_delta_time;
+        input_min_voltage = qSqrt(qPow(input_pk_min_voltage, 2) - (pwr_cap_coeff * chg_time));
+        input_dc_min_voltage = 0.5 * (input_pk_min_voltage + input_min_voltage);
+    }
 
     /*Inductance of primary side*/
     /**
@@ -54,7 +82,7 @@ public:
      */
     double DutyCycleDCM()
     {
-        return  refl_volt/(refl_volt+input_dc_min_voltage);
+        return static_cast<double>(refl_volt)/(refl_volt+input_dc_min_voltage);
     }
 
     /**
@@ -75,16 +103,6 @@ public:
         return qPow((input_dc_min_voltage * DutyCycleDCM()), 2)/(2. * InputPower()*static_cast<double>(freq_switch)*ripple_factor);
     }
     /*Inductance of primary side*/
-
-    /**
-     * @brief setInputVoltage
-     * @param idcmv - dc average, between min input and rectify min peak
-     * @param imv - recalc after input capacitor selection
-     */
-    void setInputVoltage(int16_t idcmv, int16_t imv)
-    {
-        input_dc_min_voltage = idcmv; input_min_voltage = imv;
-    }
 
     /** All current primary side*/
     /**
@@ -133,15 +151,6 @@ public:
     }
 
     /*All current primary side*/
-private:
-    double ripple_factor;
-    int16_t refl_volt;
-    int16_t pow_max_out;
-    float efficiency;
-    float freq_switch;
-
-    int16_t input_dc_min_voltage; // dc average, between min input and rectify min peak
-    int16_t input_min_voltage; // recalc after input capacitor selection
 };
 
 struct CoreArea
