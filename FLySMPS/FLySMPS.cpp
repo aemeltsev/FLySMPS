@@ -33,6 +33,8 @@ FLySMPS::FLySMPS(QWidget *parent) :
     //m_psolve->moveToThread(m_psworker);
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectricalPrimarySide, this, &FLySMPS::setInitialiseTransProp);
 
 }
 
@@ -77,7 +79,7 @@ void FLySMPS::initInputValues()
 
     m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->ReflVoltage->text())));
     m_psolve->m_indata.voltage_spike = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VSpike->text())));
-    m_psolve->m_indata.ripple_fact = convertToValues(static_cast<QString>(/*TMP*/ui->VSpike->text()));
+    m_psolve->m_indata.ripple_fact = convertToValues(static_cast<QString>(ui->KRF->text()));
     m_psolve->m_indata.eff_transf = convertToValues(static_cast<QString>(ui->EffTransf->text()));
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
