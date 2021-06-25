@@ -75,52 +75,17 @@
         <x>20</x>
         <y>10</y>
         <width>781</width>
-        <height>175</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="title">
        <string>Specification:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_11">
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_6">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_25">
          <property name="text">
-          <string>VOut1 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>VOut3 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="Tamb">
-         <property name="text">
-          <string>50</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="VOut2">
-         <property name="text">
-          <string>5</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="IOut1">
-         <property name="text">
-          <string>1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="8">
-        <widget class="QLabel" name="label_22">
-         <property name="text">
-          <string>IAux [V]</string>
+          <string>T.amb [C]</string>
          </property>
         </widget>
        </item>
@@ -131,59 +96,24 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>VACmax [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>IOut1 [A]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="8">
-        <widget class="QLabel" name="label_21">
-         <property name="text">
-          <string>VAux [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="VOut1">
-         <property name="text">
-          <string>12</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
-        <widget class="QLineEdit" name="VOut3">
+       <item row="0" column="5">
+        <widget class="QLineEdit" name="VOut2">
          <property name="text">
           <string>5</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="9">
-        <widget class="QLineEdit" name="VAux">
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="FSw">
          <property name="text">
-          <string>15</string>
+          <string>50K</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="QLabel" name="label_19">
+       <item row="3" column="9">
+        <widget class="QLineEdit" name="IAux">
          <property name="text">
-          <string>VOut4 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="9">
-        <widget class="QLineEdit" name="IOut4">
-         <property name="text">
-          <string>0</string>
+          <string>0.2</string>
          </property>
         </widget>
        </item>
@@ -201,45 +131,10 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_8">
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>VOut2 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>FLine [Hz]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="9">
-        <widget class="QLineEdit" name="IAux">
-         <property name="text">
-          <string>0.2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>VACmin [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="FLine">
-         <property name="text">
-          <string>50</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>T.amb [C]</string>
+          <string>IOut1 [A]</string>
          </property>
         </widget>
        </item>
@@ -250,31 +145,80 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>VOut1 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLineEdit" name="VOut3">
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="VOut1">
+         <property name="text">
+          <string>12</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>VACmin [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>VACmax [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>VOut4 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="8">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>VAux [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>VOut3 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>VOut2 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="9">
+        <widget class="QLineEdit" name="VAux">
+         <property name="text">
+          <string>15</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="VACmin">
          <property name="text">
           <string>90</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="9">
-        <widget class="QLineEdit" name="VOut4">
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="FSw">
-         <property name="text">
-          <string>50000</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="8">
-        <widget class="QLabel" name="label_20">
-         <property name="text">
-          <string>IOut4 [A]</string>
          </property>
         </widget>
        </item>
@@ -285,10 +229,80 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>FLine [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="9">
+        <widget class="QLineEdit" name="IOut4">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="8">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>IAux [V]</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="6">
         <widget class="QLabel" name="label_11">
          <property name="text">
           <string>IOut3 [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="FLine">
+         <property name="text">
+          <string>50</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="8">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>IOut4 [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLineEdit" name="VOut4">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="IOut1">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="Tamb">
+         <property name="text">
+          <string>50</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="KRF">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_31">
+         <property name="text">
+          <string>Ripple Factor</string>
          </property>
         </widget>
        </item>
@@ -298,7 +312,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>190</y>
+        <y>210</y>
         <width>253</width>
         <height>203</height>
        </rect>
@@ -397,7 +411,7 @@
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>190</y>
+        <y>210</y>
         <width>241</width>
         <height>81</height>
        </rect>
