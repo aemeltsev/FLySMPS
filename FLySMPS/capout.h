@@ -40,7 +40,7 @@ private:
      * @param freq_switch - operating switch frequency
      * @return charg time
      */
-    inline double ocTimeCapCharg(int16_t freq_switch) const
+    inline double ocTimeCapCharg(uint32_t freq_switch) const
     {
         double cross_frq = static_cast<double>(m_cop.co_cros_frq_start_val * freq_switch);
         return (1/(4*cross_frq))+(1/freq_switch);
@@ -75,7 +75,7 @@ public:
      * @param freq_switch - operating switch frequency
      * @return output capacitor
      */
-    inline double ocCapOutValue(int16_t freq_switch) const
+    inline double ocCapOutValue(uint32_t freq_switch) const
     {
         double result = (ocCurrCap()*ocTimeCapCharg(freq_switch))/static_cast<double>((2*(m_cop.co_volts_out * m_cop.co_volts_rippl)));
         return result;
@@ -96,7 +96,7 @@ public:
      * @param freq_switch - operating switch frequency
      * @return
      */
-    inline double ocZeroFreqCapOut(int16_t freq_switch) const
+    inline double ocZeroFreqCapOut(uint32_t freq_switch) const
     {
         return 1./(2.*M_PI*ocESRCapOut()*ocCapOutValue(freq_switch));
     }
