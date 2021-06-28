@@ -209,7 +209,7 @@ public:
      */
     FBPTCore(CoreArea& ca, double prin,
              double pkprcr, double rmsprcr,
-             double ppprcr, float pout)
+             double ppprcr, double pout)
         :primary_induct(prin)//Lp - primary inductance
         ,curr_primary_peak(pkprcr)//Ippk - primary peak current
         ,curr_primary_rms(rmsprcr)//Iprms - primary RMS current
@@ -228,7 +228,7 @@ private:
     double curr_primary_peak;
     double curr_primary_rms;
     double curr_primary_peak_peak;
-    float power_out_max;
+    double power_out_max;
 
     /**
      * @brief EnergyStoredChoke - The maximum energy stored in the inductor
@@ -261,9 +261,11 @@ public:
      * @param outPow - Total output power in converter
      * @return core geometry coefficient(K_g) m^5
      */
-    double CoreGeometryCoeff(int16_t outPwr) const
+    double CoreGeometryCoeff(double outPwr) const
     {
-        return (2 * S_RO_OM * primary_induct * EnergyStoredChoke() * qPow(curr_primary_rms,2))/(outPwr * qPow(m_ca.mag_flux_dens,2));
+        double k_electr = outPwr * qPow(m_ca.mag_flux_dens, 2);
+        return (2. * 1.72 * qPow(EnergyStoredChoke(), 2)) / (k_electr * 0.5);
+        //return (2 * S_RO_OM * primary_induct * EnergyStoredChoke() * qPow(curr_primary_rms,2))/(outPwr * qPow(m_ca.mag_flux_dens,2));
     }
 
     /**
@@ -286,13 +288,14 @@ private:
     {
         double wa=0., result=0.;
     //FIX Branch
-        if(cs.core_wind_area){
+        if(cs.core_wind_area != -1.0){
             result = m_ca.win_util_factor * cs.core_wind_area * S_RO_OM * cs.mean_leng_per_turn;
         }
         else{
             wa = CoreAreaProd()/cs.core_cross_sect_area;
             result = m_ca.win_util_factor * wa * S_RO_OM * cs.mean_leng_per_turn;
         }
+        //A_w - in A/m^2 to A/mm^2 - A_w*10^-6
         return curr_primary_peak * qSqrt(result/static_cast<double>(power_out_max));
     }
 
@@ -305,6 +308,7 @@ public:
      */
     double CurrentDens(const CoreSelection &cs) const
     {
+        //J_m - in A/m^2 to A/mm^2 - J_m*10^-6
         return curr_primary_peak/AreaWindTotal(cs);
     }
 
@@ -328,7 +332,7 @@ public:
         else if(fns == FBPT_NUM_SETTING::FBPT_CORE_AREA)
         {
             auto check_wa = [&](){
-                if(cs.core_wind_area){
+                if(cs.core_wind_area != -1.0){
                     return cs.core_wind_area;
                 }
                 else{
@@ -344,7 +348,7 @@ public:
       * @brief agLength - Air gap length
       * @param cs - Multiparameters object, contain core selection properties
       * @param varNumPrim - Number of turns the primary side
-      * @return Air gap length(l_g) m
+      * @return Air gap length(l_g)
       */
     double agLength(const CoreSelection &cs, double varNumPrim) const
     {
@@ -439,8 +443,8 @@ public:
     * @param prim_ind - Primary inductance
     * @return duty cycle value
     */
-   float actDutyCycle(QVector<QPair<float, float>> outVtcr, int16_t in_volt_min,
-                                int16_t fsw, double prim_ind) const
+   float actDutyCycle(const QVector<QPair<float, float>>& outVtcr, double in_volt_min,
+                                int32_t fsw, double prim_ind) const
    {
        auto get_max = [](double frst, double scnd){return qMax(frst, scnd);};
 
@@ -470,7 +474,7 @@ public:
     * @return reflected voltage value
     */
    int16_t actReflVoltage(float actDuty, float maxOutPwr,
-                                    double primInduct, int16_t fsw) const
+                                    double primInduct, int32_t fsw) const
    {
        return qSqrt(2*maxOutPwr*primInduct*fsw)/(1-actDuty);
    }
