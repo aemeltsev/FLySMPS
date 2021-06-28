@@ -159,10 +159,10 @@ void PowSuppSolve::calcArea()
     emit startCalcArea();
     qDebug() << "Start calculate area in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     m_core.reset(new FBPTCore(m_ca, m_ptpe->primary_induct,
                               m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms,
@@ -184,23 +184,30 @@ void PowSuppSolve::calcElectroMagProperties()
     emit startCalcElectroMagProperties();
     qDebug() << "Start calculate magnetic properties in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /*if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     QVector<QPair<float, float>> out_vlcr;
+    out_vlcr.reserve(4);
 
-    qDebug() << "Initialize vector of the current and voltage values in Thread " << thread()->currentThreadId();
-
-    out_vlcr[0] = qMakePair(static_cast<float>(m_indata.volt_out_one),
-                            static_cast<float>(m_indata.curr_out_one));
-    out_vlcr[1] = qMakePair(static_cast<float>(m_indata.volt_out_two),
-                            static_cast<float>(m_indata.curr_out_two));
-    out_vlcr[2] = qMakePair(static_cast<float>(m_indata.volt_out_three),
+    auto ofrst = qMakePair(static_cast<float>(m_indata.volt_out_one),
+                           static_cast<float>(m_indata.curr_out_one));
+    out_vlcr.push_back(ofrst);
+    auto osec = qMakePair(static_cast<float>(m_indata.volt_out_two),
+                          static_cast<float>(m_indata.curr_out_two));
+    out_vlcr.push_back(osec);
+    auto othir = qMakePair(static_cast<float>(m_indata.volt_out_three),
                             static_cast<float>(m_indata.curr_out_three));
-    out_vlcr[3] = qMakePair(static_cast<float>(m_indata.volt_out_four),
-                            static_cast<float>(m_indata.curr_out_four));
+    out_vlcr.push_back(othir);
+    auto ofour = qMakePair(static_cast<float>(m_indata.volt_out_four),
+                           static_cast<float>(m_indata.curr_out_four));
+    out_vlcr.push_back(ofour);
+    qDebug() << "Initialize vector with capacity: " << out_vlcr.capacity() << " size: " << out_vlcr.size() << " value [0]: " << out_vlcr[0].first;
+    qDebug() << "Initialize vector with capacity: " << out_vlcr.capacity() << " size: " << out_vlcr.size() << " value [1]: " << out_vlcr[1].first;
+    qDebug() << "Initialize vector with capacity: " << out_vlcr.capacity() << " size: " << out_vlcr.size() << " value [2]: " << out_vlcr[2].first;
+    qDebug() << "Initialize vector with capacity: " << out_vlcr.capacity() << " size: " << out_vlcr.size() << " value [3]: " << out_vlcr[3].first;
 
     qDebug() << "Write electromagnetic properties in Thread " << thread()->currentThreadId();
 
@@ -214,7 +221,7 @@ void PowSuppSolve::calcElectroMagProperties()
                                                        m_ptpe->curr_primary_peak);
     m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs, m_ptpe->actual_num_primary,
                                                                 m_ptpe->curr_primary_peak,
-                                                                m_ptpe->fring_flux_fact);
+                                                                m_ptpe->length_air_gap);
     m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc->input_dc_min_voltage,
                                                          m_indata.freq_switch, m_ptpe->primary_induct);
     m_ptpe->actual_volt_reflected = m_core->actReflVoltage(m_ptpe->actual_max_duty_cycle, m_indata.power_out_max,

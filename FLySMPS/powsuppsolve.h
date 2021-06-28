@@ -25,6 +25,7 @@
 #include <QSharedPointer>
 #include <QMutex>
 #include <QVector>
+#include <QList>
 #include <QHash>
 #include <QtMath>
 #include "diodebridge.h"
