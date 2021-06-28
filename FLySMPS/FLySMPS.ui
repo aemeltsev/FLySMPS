@@ -1142,7 +1142,7 @@
         <x>19</x>
         <y>229</y>
         <width>281</width>
-        <height>171</height>
+        <height>161</height>
        </rect>
       </property>
       <property name="title">
@@ -1180,7 +1180,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_64">
          <property name="text">
-          <string>Jm - max. curr. dens. use &lt;5 [A/m2]</string>
+          <string>Jm - max. curr. dens. &lt;5 [A/mm2]</string>
          </property>
         </widget>
        </item>
@@ -1194,14 +1194,14 @@
        <item row="3" column="0">
         <widget class="QLabel" name="label_77">
          <property name="text">
-          <string>AL - inductance factor [nH/turn]</string>
+          <string>AL - inductance factor [H/turn]</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="InductanceFact">
          <property name="text">
-          <string>0.0</string>
+          <string>0.000000185</string>
          </property>
         </widget>
        </item>
@@ -1212,8 +1212,8 @@
        <rect>
         <x>310</x>
         <y>230</y>
-        <width>491</width>
-        <height>171</height>
+        <width>481</width>
+        <height>201</height>
        </rect>
       </property>
       <property name="title">
@@ -1227,59 +1227,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_124">
-         <property name="text">
-          <string>Ve [m3]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLineEdit" name="Esize"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="WA"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="Dsize"/>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLineEdit" name="RGDiam"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_69">
-         <property name="text">
-          <string>Ae [m2]</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="3">
-        <widget class="QLineEdit" name="Fsize"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="label_128">
+        <widget class="QLineEdit" name="Fsize">
          <property name="text">
-          <string>E [m]</string>
+          <string>0.008</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="VE"/>
-       </item>
-       <item row="4" column="2">
-        <widget class="QLabel" name="label_130">
+        <widget class="QLineEdit" name="VE">
          <property name="text">
-          <string>Diam round gap [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="MLT"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_73">
-         <property name="text">
-          <string>MLT [m]</string>
+          <string>0.00000302</string>
          </property>
         </widget>
        </item>
@@ -1290,33 +1248,17 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="AE"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_125">
-         <property name="text">
-          <string>D [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="MPL"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="Csize"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_126">
-         <property name="text">
-          <string>C [m]</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_68">
          <property name="text">
           <string>MPL [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="AE">
+         <property name="text">
+          <string>0.000052</string>
          </property>
         </widget>
        </item>
@@ -1334,6 +1276,114 @@
          </property>
          <property name="checked">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_124">
+         <property name="text">
+          <string>Ve [m3]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="Dsize">
+         <property name="text">
+          <string>0.007</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="RGDiam"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_73">
+         <property name="text">
+          <string>MLT [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_128">
+         <property name="text">
+          <string>E [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_126">
+         <property name="text">
+          <string>C [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="WA">
+         <property name="text">
+          <string>0.000061</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="MLT">
+         <property name="text">
+          <string>0.05</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="Csize">
+         <property name="text">
+          <string>0.007</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="Esize">
+         <property name="text">
+          <string>0.017</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_130">
+         <property name="text">
+          <string>Diam round gap [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_69">
+         <property name="text">
+          <string>Ae [m2]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="MPL">
+         <property name="text">
+          <string>0.057</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_125">
+         <property name="text">
+          <string>D [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="MUE">
+         <property name="text">
+          <string>1620</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_116">
+         <property name="text">
+          <string>μ_e</string>
          </property>
         </widget>
        </item>
@@ -1363,6 +1413,9 @@
       </property>
       <property name="text">
        <string>Use AL</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="AEUse">
@@ -1394,7 +1447,7 @@
      <widget class="QPushButton" name="UpdateCoreParamPushButton">
       <property name="geometry">
        <rect>
-        <x>720</x>
+        <x>220</x>
         <y>410</y>
         <width>80</width>
         <height>22</height>
