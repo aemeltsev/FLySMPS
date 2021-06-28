@@ -47,6 +47,7 @@ private slots:
 
     void initTransValues();
     void setInitialiseTransProp();
+    void setCoreAreaProp();
 
     void initTransCoreValues();
     void setTransPrimaryProp();
@@ -74,6 +75,10 @@ private slots:
     void setOptoFeedbPlot();
 
     void setUpdateInputValues();
+
+signals:
+    void initTransValuesComplete();
+    void initTransCoreValuesComplete();
 
 private:
     void initInputValues();

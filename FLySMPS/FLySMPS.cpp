@@ -36,6 +36,14 @@ FLySMPS::FLySMPS(QWidget *parent) :
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectricalPrimarySide, this, &FLySMPS::setInitialiseTransProp);
 
+    connect(ui->CalcPrimarySidePushButton, &QPushButton::clicked, this, &FLySMPS::initTransValues);
+    connect(this, &FLySMPS::initTransValuesComplete, m_psolve.data(), &PowSuppSolve::calcArea);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcArea, this, &FLySMPS::setCoreAreaProp);
+
+    connect(ui->UpdateCoreParamPushButton, &QPushButton::clicked, this, &FLySMPS::initTransCoreValues);
+    connect(this, &FLySMPS::initTransCoreValuesComplete, m_psolve.data(), &PowSuppSolve::calcElectroMagProperties);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectroMagProperties, this, &FLySMPS::setTransPrimaryProp);
+
 }
 
 FLySMPS::~FLySMPS()
@@ -148,15 +156,18 @@ void FLySMPS::initTransValues()
     /** If use AL factor for calculate */
     else if(ui->ALUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
-        QString ind_fct;
-        ui->InductanceFact->textEdited(ind_fct);
-        m_psolve->m_cs.ind_fact = convertToValues(ind_fct);
+        ui->InductanceFact->setReadOnly(false);
+
+        //QString ind_fct;
+        //ui->InductanceFact->textEdited(ind_fct);
+        m_psolve->m_cs.ind_fact = convertToValues(static_cast<QString>(ui->InductanceFact->text()));
         //TODO Check error value, use QValidator
     }
     /** If use maximum flux density */
     else if(ui->BMUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
     }
+    emit initTransValuesComplete();
 }
 
 void FLySMPS::setInitialiseTransProp()
@@ -172,6 +183,12 @@ void FLySMPS::setInitialiseTransProp()
     ui->CurPriRMS->setNum(m_psolve->m_ptpe->curr_primary_rms);
 }
 
+void FLySMPS::setCoreAreaProp()
+{
+    ui->WaAe->setNum(m_psolve->m_ptpe->core_area_product);
+    ui->GeomCoeff->setNum(m_psolve->m_ptpe->core_geom_coeff);
+}
+
 //TODO reimplement for use one check branch
 void FLySMPS::initTransCoreValues()
 {
@@ -183,10 +200,19 @@ void FLySMPS::initTransCoreValues()
     }
 
     m_psolve->m_cs.core_cross_sect_area = convertToValues(static_cast<QString>(ui->AE->text()));
-    m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+
+    if(ui->WA->text().isEmpty())
+    {
+        m_psolve->m_cs.core_wind_area = -1.0;
+    }
+    else{
+        m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+    }
+
     m_psolve->m_cs.core_vol = convertToValues(static_cast<QString>(ui->VE->text()));
     m_psolve->m_cs.mean_leng_per_turn = convertToValues(static_cast<QString>(ui->MLT->text()));
     m_psolve->m_cs.mean_mag_path_leng = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_cs.core_permeal = convertToValues(static_cast<QString>(ui->MUE->text()));
     m_psolve->m_md.D = convertToValues(static_cast<QString>(ui->Dsize->text()));
     m_psolve->m_md.C = convertToValues(static_cast<QString>(ui->Csize->text()));
     m_psolve->m_md.F = convertToValues(static_cast<QString>(ui->Fsize->text()));
@@ -202,12 +228,11 @@ void FLySMPS::initTransCoreValues()
     else{
         m_psolve->m_md.Diam = 0.;
     }
+    emit initTransCoreValuesComplete();
 }
 
 void FLySMPS::setTransPrimaryProp()
 {
-    ui->WaAe->setNum(m_psolve->m_ptpe->core_area_product);
-    ui->GeomCoeff->setNum(m_psolve->m_ptpe->core_geom_coeff);
     ui->PrimaryNum->setNum(m_psolve->m_ptpe->number_primary);
     ui->CurrDensity->setNum(m_psolve->m_ptpe->curr_dens);
     ui->LengAirGap->setNum(m_psolve->m_ptpe->length_air_gap);
