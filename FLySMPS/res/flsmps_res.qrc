@@ -2,4 +2,10 @@
     <qresource prefix="/control_opto_circuit">
         <file>opto-res.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>icons/128-128.ico</file>
+        <file>icons/16-16.ico</file>
+        <file>icons/256-256.ico</file>
+        <file>icons/32-32.ico</file>
+    </qresource>
 </RCC>
