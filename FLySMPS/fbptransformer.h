@@ -404,7 +404,7 @@ public:
     * @return actual number of turns value
     */
    int16_t actNumPrimary(const CoreSelection &cs, FBPT_SHAPE_AIR_GAP &fsag,
-                                   MechDimension &mchdm, double varNumPrim,
+                                   MechDimension &mchdm, uint32_t varNumPrim,
                                    double varIndPrim, double currPeakPrim) const
    {
        int16_t act_num_prim_turns = 0;
@@ -429,9 +429,9 @@ public:
     * @param agLength - Air gap length
     * @return actual maximum flux density
     */
-   double actMagneticFluxPeak(const CoreSelection &cs, int16_t actNumPrim, double maxCurPrim, float agLength) const
+   double actMagneticFluxPeak(const CoreSelection &cs, uint32_t actNumPrim, double maxCurPrim, double agLength) const
    {
-       return (S_MU_Z * actNumPrim * maxCurPrim)/(agLength+(cs.mean_mag_path_leng/cs.core_permeal));
+       return (S_MU_Z * actNumPrim * maxCurPrim)/(agLength + (cs.mean_mag_path_leng/cs.core_permeal));
    }
 
    /**
@@ -551,7 +551,7 @@ public:
      */
     inline double outCurrRMSSecond()
     {
-        double tmp = ((1-actual_duty_cycle)/actual_duty_cycle);
+        double tmp = (1 - static_cast<double>(actual_duty_cycle)) / static_cast<double>(actual_duty_cycle);
         return curr_primary_rms * outCoeffPWR() * outNumTurnRatio() * qSqrt(tmp);
     }
 private:
@@ -579,12 +579,8 @@ public:
      * @param fcu
      * @param ins
      */
-    FBPTWinding(int16_t aprnm, float frsw,
-                float rmscp, int8_t m=4,
-                double fcu=0.4, double ins=0.01)
-        :actual_num_primary(aprnm)
-        ,freq_switch(frsw)
-        ,curr_primary_rms(rmscp)
+    FBPTWinding(float frsw, float m=4., double fcu=0.4, double ins=0.01)
+        :freq_switch(frsw)
         ,M(m)
         ,FCu(fcu)
         ,INS(ins)
@@ -598,7 +594,7 @@ public:
      */
     inline double wEffBobbWidth(const MechDimension &mchdm) const
     {
-        return mchdm.D-(2. * M);
+        return static_cast<double>(mchdm.E) - (2. * static_cast<double>(M));
     }
 
     /**
@@ -609,7 +605,7 @@ public:
      */
     inline double wEffWindCrossSect(const CoreSelection &cs, const MechDimension &mchdm) const
     {
-        return (cs.core_wind_area*(wEffBobbWidth(mchdm)))/mchdm.D;
+        return (cs.core_wind_area*(wEffBobbWidth(mchdm))) / static_cast<double>(mchdm.E);
     }
 
     /**
@@ -619,9 +615,9 @@ public:
      * @param windfact
      * @return
      */
-    inline double wCoperWireCrossSectArea(const CoreSelection &cs, const MechDimension &mchdm, double windfact) const
+    inline double wCoperWireCrossSectArea(const CoreSelection &cs, const MechDimension &mchdm, double windfact, uint32_t num_turns) const
     {
-        return (windfact * FCu *(wEffWindCrossSect(cs, mchdm)))/actual_num_primary;
+        return (windfact * FCu *(wEffWindCrossSect(cs, mchdm))) / num_turns;
     }
 
     /**
@@ -631,7 +627,8 @@ public:
      */
     inline double wMaxWireSizeAWG(double wirecrosssect) const
     {
-        return (9.97*(1.8277 - (2*std::log10(2*qSqrt((wirecrosssect)/M_PI)))));
+        wirecrosssect *= 1E+6;
+        return (9.97 * (1.8277 - (2 * std::log10(2 * qSqrt(wirecrosssect / M_PI)))));
     }
 
     /**
@@ -640,78 +637,80 @@ public:
      */
     inline double wSkinDepth() const
     {
-        return qSqrt((S_RO_OM)/(2.*M_PI*static_cast<double>(freq_switch)*S_MU_Z));
+        return qSqrt((S_RO_OM) / (2. * M_PI * static_cast<double>(freq_switch)*S_MU_Z));
     }
 
     /**
      * @brief setWireDiam -
      * @param awgp
-     * @param np
      */
-    void setWireDiam(double awgp, uint16_t np)
-    {
-        AWGp = awgp;
-        Np = np;
-    }
+    void setWireDiam(float awgp){ AWGp = awgp;}
 
     /**
      * @brief wCoperWireDiam - (DP) or (DS)
-     * @return
+     * @return mm
      */
     inline double wCoperWireDiam() const
     {
-        double tmp = (AWGp)/(2.*9.97);
+        double tmp = static_cast<double>(AWGp)/(2.*9.97);
         double out = ((1.8277/2.)-(tmp));
         return qPow(10., out);
     }
 
     /**
-     * @brief wCoperWireCrossSectAreaPost - (ECA)
-     * @return
+     * @brief wCoperWireCrossSectAreaPost - (ECA) - Effective copper area
+     * @param mchdm
+     * @return in mm^2
      */
-    inline double wCoperWireCrossSectAreaPost() const
+    inline double wCoperWireCrossSectAreaPost(int16_t npw) const
     {
-        return (M_PI/4.)*qPow(wCoperWireDiam(), 2.)*Np;
+        return qPow((wCoperWireDiam() / 2.), 2.) * M_PI * npw;
     }
 
     /**
      * @brief wCurrentDenst - (JP) or (JS)
-     * @return
+     * @return in A/mm^2
      */
-    inline double wCurrentDenst() const
+    inline double wCurrentDenst(double curr_rms, int16_t npw) const
     {
-        return static_cast<double>(curr_primary_rms)/wCoperWireCrossSectAreaPost();
+        return static_cast<double>(curr_rms)/wCoperWireCrossSectAreaPost(npw);
+    }
+
+    /**
+     * @brief wOuterDiam - (OD) - Wire outer diameter including insulation
+     * @return in mm
+     */
+    inline double wOuterDiam() const
+    {
+        return wCoperWireDiam() + (2 * INS);
     }
 
     /**
      * @brief wNumTurnToLay - Number of turns per layer(NTL)
      * @param mchdm
-     * @return
+     * @return in turns/layer
      */
-    inline double wNumTurnToLay(const MechDimension &mchdm) const
+    inline double wNumTurnToLay(const MechDimension &mchdm, int16_t npw) const
     {
-        return (wEffBobbWidth(mchdm))/(Np*(wCoperWireDiam()+(2*INS)));
+        return (wEffBobbWidth(mchdm) / (wOuterDiam() * npw)) * 1000;
     }
 
     /**
      * @brief wNumLay - (LN)
      * @param mchdm
-     * @return
+     * @return number of layer value
      */
-    inline double wNumLay(const MechDimension &mchdm) const
+    inline double wNumLay(const MechDimension &mchdm, uint32_t num_turns, int16_t npw) const
     {
-        return (actual_num_primary)/(wNumTurnToLay(mchdm));
+        return num_turns / wNumTurnToLay(mchdm, npw);
     }
 
     /*Winding*/
 private:
-    int16_t actual_num_primary;
     float freq_switch;
-    float curr_primary_rms;
-    int8_t M;
+    float M;
     double FCu;
-    double AWGp;
-    double Np;
+    float AWGp;
     double INS;
 };
 #endif // FBPTRANSFORMER_H
