@@ -79,6 +79,8 @@ private slots:
 signals:
     void initTransValuesComplete();
     void initTransCoreValuesComplete();
+    void initTransWiredsComplete();
+    void initMosfetValuesComplete();
 
 private:
     void initInputValues();

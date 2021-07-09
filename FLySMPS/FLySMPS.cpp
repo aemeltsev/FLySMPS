@@ -44,6 +44,13 @@ FLySMPS::FLySMPS(QWidget *parent) :
     connect(this, &FLySMPS::initTransCoreValuesComplete, m_psolve.data(), &PowSuppSolve::calcElectroMagProperties);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectroMagProperties, this, &FLySMPS::setTransPrimaryProp);
 
+    connect(ui->CalcWindingPushButton, &QPushButton::clicked, this, &FLySMPS::initTransWireds);
+    connect(this, &FLySMPS::initTransWiredsComplete, m_psolve.data(), &PowSuppSolve::calcTransformerWired);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcTransformerWired, this, &FLySMPS::setTransWiredProp);
+//* Debug from -
+    connect(ui->CalcSwitchPushButton, &QPushButton::clicked, this, &FLySMPS::initMosfetValues);
+    connect(this, &FLySMPS::initMosfetValuesComplete, m_psolve.data(), &PowSuppSolve::calcSwitchNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcSwitchNetwork, this, &FLySMPS::setSolveMosfet);
 }
 
 FLySMPS::~FLySMPS()
@@ -233,12 +240,12 @@ void FLySMPS::initTransCoreValues()
 
 void FLySMPS::setTransPrimaryProp()
 {
-    ui->PrimaryNum->setNum(m_psolve->m_ptpe->number_primary);
+    ui->PrimaryNum->setNum(static_cast<int32_t>(m_psolve->m_ptpe->number_primary));
     ui->CurrDensity->setNum(m_psolve->m_ptpe->curr_dens);
     ui->LengAirGap->setNum(m_psolve->m_ptpe->length_air_gap);
     ui->FrigRluxCoeff->setNum(m_psolve->m_ptpe->fring_flux_fact);
 
-    ui->ActPrimaryNum->setNum(m_psolve->m_ptpe->actual_num_primary);
+    ui->ActPrimaryNum->setNum(static_cast<int32_t>(m_psolve->m_ptpe->actual_num_primary));
     ui->ActBMax->setNum(m_psolve->m_ptpe->actual_flux_dens_peak);
     ui->ActReflVolt->setNum(m_psolve->m_ptpe->actual_volt_reflected);
     ui->ActDutyMax->setNum(m_psolve->m_ptpe->actual_max_duty_cycle);
@@ -246,23 +253,52 @@ void FLySMPS::setTransPrimaryProp()
 
 void FLySMPS::initTransWireds()
 {
-    m_psolve->m_psw.m_af[0] = convertToValues(static_cast<QString>(ui->AFNPm->text()));
-    m_psolve->m_psw.m_af[1] = convertToValues(static_cast<QString>(ui->AFOut1->text()));;
-    m_psolve->m_psw.m_af[2] = convertToValues(static_cast<QString>(ui->AFOut2->text()));;
-    m_psolve->m_psw.m_af[3] = convertToValues(static_cast<QString>(ui->AFOut3->text()));;
-    m_psolve->m_psw.m_af[4] = convertToValues(static_cast<QString>(ui->AFOut4->text()));;
-    m_psolve->m_psw.m_af[5] = convertToValues(static_cast<QString>(ui->AFAux->text()));;
+    auto af_0 = convertToValues(static_cast<QString>(ui->AFNPm->text()));
+    auto af_1 = convertToValues(static_cast<QString>(ui->AFOut1->text()));
+    auto af_2 = convertToValues(static_cast<QString>(ui->AFOut2->text()));
+    auto af_3 = convertToValues(static_cast<QString>(ui->AFOut3->text()));
+    auto af_4 = convertToValues(static_cast<QString>(ui->AFOut4->text()));
+    auto af_5 = convertToValues(static_cast<QString>(ui->AFAux->text()));
 
-    m_psolve->m_psw.m_ins[0] = convertToValues(static_cast<QString>(ui->INSPm->text()));
-    m_psolve->m_psw.m_ins[1] = convertToValues(static_cast<QString>(ui->INSOut1->text()));
-    m_psolve->m_psw.m_ins[2] = convertToValues(static_cast<QString>(ui->INSOut2->text()));
-    m_psolve->m_psw.m_ins[3] = convertToValues(static_cast<QString>(ui->INSOut3->text()));
-    m_psolve->m_psw.m_ins[4] = convertToValues(static_cast<QString>(ui->INSOut4->text()));
-    m_psolve->m_psw.m_ins[5] = convertToValues(static_cast<QString>(ui->INSAux->text()));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_0));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_1));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_2));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_3));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_4));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_5));
 
-    m_psolve->m_psw.m_fcu = convertToValues(static_cast<QString>(ui->Fcu->text()));
-    m_psolve->m_psw.m_mcd = convertToValues(static_cast<QString>(ui->InM->text()));
+    auto ins_0 = convertToValues(static_cast<QString>(ui->INSPm->text()));
+    auto ins_1 = convertToValues(static_cast<QString>(ui->INSOut1->text()));
+    auto ins_2 = convertToValues(static_cast<QString>(ui->INSOut2->text()));
+    auto ins_3 = convertToValues(static_cast<QString>(ui->INSOut3->text()));
+    auto ins_4 = convertToValues(static_cast<QString>(ui->INSOut4->text()));
+    auto ins_5 = convertToValues(static_cast<QString>(ui->INSAux->text()));
 
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_0));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_1));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_2));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_3));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_4));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_5));
+
+    auto npw_prim = convertToValues(static_cast<QString>(ui->NPWPrim->text()));
+    auto npw_out_1 = convertToValues(static_cast<QString>(ui->NPWOut1->text()));
+    auto npw_out_2 = convertToValues(static_cast<QString>(ui->NPWOut2->text()));
+    auto npw_out_3 = convertToValues(static_cast<QString>(ui->NPWOut3->text()));
+    auto npw_out_4 = convertToValues(static_cast<QString>(ui->NPWOut4->text()));
+    auto npw_aux = convertToValues(static_cast<QString>(ui->NPWAux->text()));
+
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_prim));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_1));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_2));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_3));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_4));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_aux));
+
+    m_psolve->m_psw.m_fcu = static_cast<float>(convertToValues(static_cast<QString>(ui->Fcu->text())));
+    m_psolve->m_psw.m_mcd = static_cast<float>(convertToValues(static_cast<QString>(ui->InM->text())));
+
+    emit initTransWiredsComplete();
 }
 
 void FLySMPS::setTransWiredProp()
@@ -315,22 +351,22 @@ void FLySMPS::setTransWiredProp()
     ui->Out4NTL->setNum(m_psolve->m_ptsw->out_four_wind["NTL"]);
     ui->Out4LN->setNum(m_psolve->m_ptsw->out_four_wind["LN"]);
 
-    ui->AuxN->setNum(m_psolve->m_ptsw->out_aux_wind["NSEC"]);
-    ui->AuxAN->setNum(m_psolve->m_ptsw->out_aux_wind["ANS"]);
-    ui->AuxAWGN->setNum(m_psolve->m_ptsw->out_aux_wind["AWGNS"]);
-    ui->AuxD->setNum(m_psolve->m_ptsw->out_aux_wind["DS"]);
+    ui->AuxN->setNum(m_psolve->m_ptsw->out_aux_wind["NAUX"]);
+    ui->AuxAN->setNum(m_psolve->m_ptsw->out_aux_wind["ANAUX"]);
+    ui->AuxAWGN->setNum(m_psolve->m_ptsw->out_aux_wind["AWGAUX"]);
+    ui->AuxD->setNum(m_psolve->m_ptsw->out_aux_wind["DAUX"]);
     ui->AuxECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
     ui->AuxOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
     ui->AuxNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
 
-    ui->PrimAP->setNum(m_psolve->m_ptsw->out_aux_wind["AP"]);
-    ui->PrimAWGP->setNum(m_psolve->m_ptsw->out_aux_wind["AWGP"]);
-    ui->PrimDP->setNum(m_psolve->m_ptsw->out_aux_wind["DP"]);
-    ui->PrimECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
-    ui->PrimJP->setNum(m_psolve->m_ptsw->out_aux_wind["JP"]);
-    ui->PrimOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
-    ui->PrimNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
-    ui->PrimLN->setNum(m_psolve->m_ptsw->out_aux_wind["LN"]);
+    ui->PrimAP->setNum(m_psolve->m_ptsw->primary_wind["AP"]);
+    ui->PrimAWGP->setNum(m_psolve->m_ptsw->primary_wind["AWGP"]);
+    ui->PrimDP->setNum(m_psolve->m_ptsw->primary_wind["DP"]);
+    ui->PrimECA->setNum(m_psolve->m_ptsw->primary_wind["ECA"]);
+    ui->PrimJP->setNum(m_psolve->m_ptsw->primary_wind["JP"]);
+    ui->PrimOD->setNum(m_psolve->m_ptsw->primary_wind["OD"]);
+    ui->PrimNTL->setNum(m_psolve->m_ptsw->primary_wind["NTL"]);
+    ui->PrimLN->setNum(m_psolve->m_ptsw->primary_wind["LN"]);
 }
 
 void FLySMPS::initMosfetValues()
@@ -357,6 +393,8 @@ void FLySMPS::initMosfetValues()
     m_psolve->m_ccsp.cl_vol_rip = convertToValues(static_cast<QString>(ui->SnubbVoltRipp->text()));
 
     m_psolve->m_ccsp.cs_volt = convertToValues(static_cast<QString>(ui->CSVolt->text()));
+
+    emit initMosfetValuesComplete();
 }
 
 void FLySMPS::setSolveMosfet()
