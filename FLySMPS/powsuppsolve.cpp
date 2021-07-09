@@ -125,10 +125,10 @@ void PowSuppSolve::calcElectricalPrimarySide()
         return;
     }*/
 
-    QScopedPointer<FBPTPrimary> t_prim(new FBPTPrimary(m_indata.ripple_fact,
+    QScopedPointer<FBPTPrimary> t_prim(new FBPTPrimary(static_cast<double>(m_indata.ripple_fact),
                                                        m_indata.refl_volt_max,
                                                        m_indata.power_out_max,
-                                                       m_indata.eff,
+                                                       static_cast<float>(m_indata.eff),
                                                        m_indata.freq_switch));
     qDebug() << "Initialize FBPTPrimary object in Thread " << thread()->currentThreadId();
 
@@ -212,20 +212,31 @@ void PowSuppSolve::calcElectroMagProperties()
     qDebug() << "Write electromagnetic properties in Thread " << thread()->currentThreadId();
 
     m_ptpe->curr_dens = m_core->CurrentDens(m_cs);
-    m_ptpe->number_primary = m_core->numPrimary(m_cs, m_fns);
+    m_ptpe->number_primary = static_cast<uint32_t>(m_core->numPrimary(m_cs, m_fns));
     m_ptpe->length_air_gap = m_core->agLength(m_cs, m_ptpe->number_primary);
     m_ptpe->fring_flux_fact = m_core->agFringFluxFact(m_cs, m_ptpe->number_primary, m_fsag, m_md);
-    m_ptpe->actual_num_primary = m_core->actNumPrimary(m_cs, m_fsag,
-                                                       m_md, m_ptpe->number_primary,
+
+    m_ptpe->actual_num_primary = static_cast<uint32_t>(m_core->actNumPrimary(m_cs,
+                                                       m_fsag,
+                                                       m_md,
+                                                       m_ptpe->number_primary,
                                                        m_ptpe->primary_induct,
-                                                       m_ptpe->curr_primary_peak);
-    m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs, m_ptpe->actual_num_primary,
+                                                       m_ptpe->curr_primary_peak));
+
+    m_ptpe->actual_flux_dens_peak = m_core->actMagneticFluxPeak(m_cs,
+                                                                m_ptpe->actual_num_primary,
                                                                 m_ptpe->curr_primary_peak,
                                                                 m_ptpe->length_air_gap);
-    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr, m_bc->input_dc_min_voltage,
-                                                         m_indata.freq_switch, m_ptpe->primary_induct);
-    m_ptpe->actual_volt_reflected = m_core->actReflVoltage(m_ptpe->actual_max_duty_cycle, m_indata.power_out_max,
-                                                           m_ptpe->primary_induct, m_indata.freq_switch);
+
+    m_ptpe->actual_max_duty_cycle = m_core->actDutyCycle(out_vlcr,
+                                                         m_bc->input_dc_min_voltage,
+                                                         m_indata.freq_switch,
+                                                         m_ptpe->primary_induct);
+
+    m_ptpe->actual_volt_reflected = m_core->actReflVoltage(static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                           static_cast<float>(m_indata.power_out_max),
+                                                           m_ptpe->primary_induct,
+                                                           m_indata.freq_switch);
     emit finishedCalcElectroMagProperties();
     qDebug() << "Finished calculate magnetic properties in Thread " << thread()->currentThreadId();
 }
@@ -235,38 +246,50 @@ void PowSuppSolve::calcTransformerWired()
     emit startCalcTransformerWired();
     qDebug() << "Start calculate transformer wired in Thread " << thread()->currentThreadId();
 
-    m_sec.reserve(SET_SECONDARY_WIRED); /**< Reserve for number of secondary side */
-    m_wind.reserve(SET_SECONDARY_WIRED+1); /**< Reserve for all windings */
-
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
     // Make secondary side objects
-    QSharedPointer<FBPTSecondary> sec_one = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_one, m_indata.volt_out_one,
-                                               m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                               m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                               m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_one = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_one,
+                                                                                            m_indata.volt_out_one,
+                                                                                            static_cast<float>(m_ptpe->actual_volt_reflected),
+                                                                                            static_cast<float>(m_indata.power_out_max),
+                                                                                            static_cast<int16_t>(m_ptpe->actual_num_primary),
+                                                                                            static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                                                            m_indata.volt_diode_drop_sec));
 
-    QSharedPointer<FBPTSecondary> sec_two = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_two, m_indata.curr_out_two,
-                                                m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_two = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_two,
+                                                                                            m_indata.volt_out_two,
+                                                                                            static_cast<float>(m_ptpe->actual_volt_reflected),
+                                                                                            static_cast<float>(m_indata.power_out_max),
+                                                                                            static_cast<int16_t>(m_ptpe->actual_num_primary),
+                                                                                            static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                                                            m_indata.volt_diode_drop_sec));
 
-    QSharedPointer<FBPTSecondary> sec_three = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_three, m_indata.curr_out_three,
-                                                  m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                  m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                  m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_three = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_three,
+                                                                                              m_indata.volt_out_three,
+                                                                                              static_cast<float>(m_ptpe->actual_volt_reflected),
+                                                                                              static_cast<float>(m_indata.power_out_max),
+                                                                                              static_cast<int16_t>(m_ptpe->actual_num_primary),
+                                                                                              static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                                                              m_indata.volt_diode_drop_sec));
 
-    QSharedPointer<FBPTSecondary> sec_four = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_four, m_indata.curr_out_four,
-                                                 m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                 m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                 m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> sec_four = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_four,
+                                                                                             m_indata.volt_out_four,
+                                                                                             static_cast<float>(m_ptpe->actual_volt_reflected),
+                                                                                             static_cast<float>(m_indata.power_out_max),
+                                                                                             static_cast<int16_t>(m_ptpe->actual_num_primary),
+                                                                                             static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                                                             m_indata.volt_diode_drop_sec));
 
-    QSharedPointer<FBPTSecondary> aux_out = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.volt_out_aux, m_indata.curr_out_aux,
-                                                m_ptpe->actual_volt_reflected, m_indata.power_out_max,
-                                                m_ptpe->actual_num_primary, m_ptpe->actual_max_duty_cycle,
-                                                m_indata.volt_diode_drop_sec));
+    QSharedPointer<FBPTSecondary> aux_out = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_aux,
+                                                                                            m_indata.volt_out_aux,
+                                                                                            static_cast<float>(m_ptpe->actual_volt_reflected),
+                                                                                            static_cast<float>(m_indata.power_out_max),
+                                                                                            static_cast<int16_t>(m_ptpe->actual_num_primary),
+                                                                                            static_cast<float>(m_ptpe->actual_max_duty_cycle),
+                                                                                            m_indata.volt_diode_drop_sec));
 
     qDebug() << "Make secondary side objects in Thread " << thread()->currentThreadId();
 
@@ -280,29 +303,35 @@ void PowSuppSolve::calcTransformerWired()
 
 
     // Make winding objects
-    QSharedPointer<FBPTWinding> wind_prim = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                              m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                              m_psw.m_fcu, m_psw.m_ins[0]));
+    QSharedPointer<FBPTWinding> wind_prim = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                        m_psw.m_mcd,
+                                                                                        static_cast<double>(m_psw.m_fcu),
+                                                                                        static_cast<double>(m_psw.m_ins[0])));
 
-    QSharedPointer<FBPTWinding> wind_sec_one = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                 m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                 m_psw.m_fcu, m_psw.m_ins[1]));
+    QSharedPointer<FBPTWinding> wind_sec_one = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                           m_psw.m_mcd,
+                                                                                           static_cast<double>(m_psw.m_fcu),
+                                                                                           static_cast<double>(m_psw.m_ins[1])));
 
-    QSharedPointer<FBPTWinding> wind_sec_two = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                 m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                 m_psw.m_fcu, m_psw.m_ins[2]));
+    QSharedPointer<FBPTWinding> wind_sec_two = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                           m_psw.m_mcd,
+                                                                                           static_cast<double>(m_psw.m_fcu),
+                                                                                           static_cast<double>(m_psw.m_ins[2])));
 
-    QSharedPointer<FBPTWinding> wind_sec_three = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                   m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                   m_psw.m_fcu, m_psw.m_ins[3]));
+    QSharedPointer<FBPTWinding> wind_sec_three = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                             m_psw.m_mcd,
+                                                                                             static_cast<double>(m_psw.m_fcu),
+                                                                                             static_cast<double>(m_psw.m_ins[3])));
 
-    QSharedPointer<FBPTWinding> wind_sec_four = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                                  m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                                  m_psw.m_fcu, m_psw.m_ins[4]));
+    QSharedPointer<FBPTWinding> wind_sec_four = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                            m_psw.m_mcd,
+                                                                                            static_cast<double>(m_psw.m_fcu),
+                                                                                            static_cast<double>(m_psw.m_ins[4])));
 
-    QSharedPointer<FBPTWinding> wind_aux = QSharedPointer<FBPTWinding>(new FBPTWinding(m_ptpe->actual_num_primary, m_indata.freq_switch,
-                                             m_ptpe->curr_primary_rms, m_psw.m_mcd,
-                                             m_psw.m_fcu, m_psw.m_ins[5]));
+    QSharedPointer<FBPTWinding> wind_aux = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
+                                                                                       m_psw.m_mcd,
+                                                                                       static_cast<double>(m_psw.m_fcu),
+                                                                                       static_cast<double>(m_psw.m_ins[5])));
 
     qDebug() << "Make winding objects in Thread " << thread()->currentThreadId();
 
@@ -317,100 +346,125 @@ void PowSuppSolve::calcTransformerWired()
     qDebug() << "Packing of the winding objects in to sequence container in Thread " << thread()->currentThreadId();
 
     // Packing winding properties of the primary side
-    m_ptsw->primary_wind.insert("AP", m_wind[0]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[0]));
-    m_ptsw->primary_wind.insert("AWGP", m_wind[0]->wMaxWireSizeAWG(m_ptsw->primary_wind.value("AP")));
+    m_ptsw->primary_wind.insert("AP", static_cast<float>(m_wind[0]->wCoperWireCrossSectArea(m_cs,
+                                                                                            m_md,
+                                                                                            static_cast<double>(m_psw.m_af[0]),
+                                                                                            m_ptpe->actual_num_primary)));
 
-    m_wind[0]->setWireDiam(m_ptsw->primary_wind.value("AWGP"), m_ptpe->actual_num_primary);
+    m_ptsw->primary_wind.insert("AWGP", static_cast<float>(m_wind[0]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->primary_wind.value("AP")))));
 
-    m_ptsw->primary_wind.insert("DP", m_wind[0]->wCoperWireDiam());
-    m_ptsw->primary_wind.insert("ECA", m_wind[0]->wCoperWireCrossSectAreaPost());
-    m_ptsw->primary_wind.insert("JP", m_wind[0]->wCurrentDenst());
-    m_ptsw->primary_wind.insert("OD", 1);
-    m_ptsw->primary_wind.insert("NTL", m_wind[0]->wNumTurnToLay(m_md));
-    m_ptsw->primary_wind.insert("LN", m_wind[0]->wNumLay(m_md));
+    m_wind[0]->setWireDiam(m_ptsw->primary_wind.value("AWGP"));
+
+    m_ptsw->primary_wind.insert("DP", static_cast<float>(m_wind[0]->wCoperWireDiam()));
+    m_ptsw->primary_wind.insert("ECA", static_cast<float>(m_wind[0]->wCoperWireCrossSectAreaPost(m_psw.m_npw[0])));
+    m_ptsw->primary_wind.insert("JP", static_cast<float>(m_wind[0]->wCurrentDenst(m_ptpe->curr_primary_rms, m_psw.m_npw[0])));
+    m_ptsw->primary_wind.insert("OD", static_cast<float>(m_wind[0]->wOuterDiam()));
+    m_ptsw->primary_wind.insert("NTL", static_cast<float>(m_wind[0]->wNumTurnToLay(m_md, m_psw.m_npw[0])));
+    m_ptsw->primary_wind.insert("LN", static_cast<float>( m_wind[0]->wNumLay(m_md, m_ptpe->actual_num_primary, m_psw.m_npw[0])));
 
     // Packing winding properties of the 1st secondary side
     m_sec[0]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
 
-    m_ptsw->out_one_wind.insert("JSP", m_sec[0]->outCurrPeakSecond());
-    m_ptsw->out_one_wind.insert("JSRMS", m_sec[0]->outCurrRMSSecond());
-    m_ptsw->out_one_wind.insert("NSEC", m_sec[0]->outNumSecond());
-    m_ptsw->out_one_wind.insert("ANS", m_wind[1]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[1]));
-    m_ptsw->out_one_wind.insert("AWGNS", m_wind[1]->wMaxWireSizeAWG(m_ptsw->out_one_wind.value("ANS")));
+    m_ptsw->out_one_wind.insert("JSP", static_cast<float>(m_sec[0]->outCurrPeakSecond()));
+    m_ptsw->out_one_wind.insert("JSRMS", static_cast<float>(m_sec[0]->outCurrRMSSecond()));
+    m_ptsw->out_one_wind.insert("NSEC", static_cast<float>(m_sec[0]->outNumSecond()));
+    m_ptsw->out_one_wind.insert("ANS", static_cast<float>(m_wind[1]->wCoperWireCrossSectArea(m_cs,
+                                                                                             m_md,
+                                                                                             static_cast<double>(m_psw.m_af[1]),
+                                                                                             static_cast<uint32_t>(m_ptsw->out_one_wind.value("NSEC")))));
 
-    m_wind[1]->setWireDiam(m_ptsw->out_one_wind.value("AWGNS"), m_ptpe->actual_num_primary);
-    m_ptsw->out_one_wind.insert("DS", m_wind[1]->wCoperWireDiam());
-    m_ptsw->out_one_wind.insert("ECA", m_wind[1]->wCoperWireCrossSectAreaPost());
-    m_ptsw->out_one_wind.insert("JS", m_wind[1]->wCurrentDenst());
-    m_ptsw->out_one_wind.insert("OD", 1);
-    m_ptsw->out_one_wind.insert("NTL", m_wind[1]->wNumTurnToLay(m_md));
-    m_ptsw->out_one_wind.insert("LN", m_wind[1]->wNumLay(m_md));
+    m_ptsw->out_one_wind.insert("AWGNS", static_cast<float>(m_wind[1]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->out_one_wind.value("ANS")))));
+
+    m_wind[1]->setWireDiam(m_ptsw->out_one_wind.value("AWGNS"));
+
+    m_ptsw->out_one_wind.insert("DS", static_cast<float>(m_wind[1]->wCoperWireDiam()));
+    m_ptsw->out_one_wind.insert("ECA", static_cast<float>(m_wind[1]->wCoperWireCrossSectAreaPost(m_psw.m_npw[1])));
+    m_ptsw->out_one_wind.insert("JS", static_cast<float>(m_wind[1]->wCurrentDenst(static_cast<double>(m_ptsw->out_one_wind.value("JSRMS")), m_psw.m_npw[1])));
+    m_ptsw->out_one_wind.insert("OD", static_cast<float>(m_wind[1]->wOuterDiam()));
+    m_ptsw->out_one_wind.insert("NTL", static_cast<float>(m_wind[1]->wNumTurnToLay(m_md, m_psw.m_npw[1])));
+    m_ptsw->out_one_wind.insert("LN", static_cast<float>(m_wind[1]->wNumLay(m_md, static_cast<uint32_t>(m_ptsw->out_one_wind.value("NSEC")), m_psw.m_npw[1])));
 
     // Packing winding properties of the 2nd secondary side
     m_sec[1]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
 
-    m_ptsw->out_two_wind.insert("JSP", m_sec[1]->outCurrPeakSecond());
-    m_ptsw->out_two_wind.insert("JSRMS", m_sec[1]->outCurrRMSSecond());
-    m_ptsw->out_two_wind.insert("NSEC", m_sec[1]->outNumSecond());
-    m_ptsw->out_two_wind.insert("ANS", m_wind[2]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[2]));
-    m_ptsw->out_two_wind.insert("AWGNS", m_wind[2]->wMaxWireSizeAWG(m_ptsw->out_two_wind.value("ANS")));
+    m_ptsw->out_two_wind.insert("JSP", static_cast<float>(m_sec[1]->outCurrPeakSecond()));
+    m_ptsw->out_two_wind.insert("JSRMS", static_cast<float>(m_sec[1]->outCurrRMSSecond()));
+    m_ptsw->out_two_wind.insert("NSEC", static_cast<float>(m_sec[1]->outNumSecond()));
+    m_ptsw->out_two_wind.insert("ANS", static_cast<float>(m_wind[2]->wCoperWireCrossSectArea(m_cs,
+                                                                                             m_md,
+                                                                                             static_cast<double>(m_psw.m_af[2]),
+                                                                                             static_cast<uint32_t>(m_ptsw->out_two_wind.value("NSEC")))));
 
-    m_wind[2]->setWireDiam(m_ptsw->out_two_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+    m_ptsw->out_two_wind.insert("AWGNS", static_cast<float>(m_wind[2]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->out_two_wind.value("ANS")))));
 
-    m_ptsw->out_two_wind.insert("DS", m_wind[2]->wCoperWireDiam());
-    m_ptsw->out_two_wind.insert("ECA", m_wind[2]->wCoperWireCrossSectAreaPost());
-    m_ptsw->out_two_wind.insert("JS", m_wind[2]->wCurrentDenst());
-    m_ptsw->out_two_wind.insert("OD", 1);
-    m_ptsw->out_two_wind.insert("NTL", m_wind[2]->wNumTurnToLay(m_md));
-    m_ptsw->out_two_wind.insert("LN", m_wind[2]->wNumLay(m_md));
+    m_wind[2]->setWireDiam(m_ptsw->out_two_wind.value("AWGNS"));
+
+    m_ptsw->out_two_wind.insert("DS", static_cast<float>(m_wind[2]->wCoperWireDiam()));
+    m_ptsw->out_two_wind.insert("ECA", static_cast<float>(m_wind[2]->wCoperWireCrossSectAreaPost(m_psw.m_npw[2])));
+    m_ptsw->out_two_wind.insert("JS", static_cast<float>(m_wind[2]->wCurrentDenst(static_cast<double>(m_ptsw->out_two_wind.value("JSRMS")), m_psw.m_npw[2])));
+    m_ptsw->out_two_wind.insert("OD", static_cast<float>(m_wind[2]->wOuterDiam()));
+    m_ptsw->out_two_wind.insert("NTL", static_cast<float>(m_wind[2]->wNumTurnToLay(m_md, m_psw.m_npw[2])));
+    m_ptsw->out_two_wind.insert("LN", static_cast<float>(m_wind[2]->wNumLay(m_md, static_cast<uint32_t>(m_ptsw->out_two_wind.value("NSEC")), m_psw.m_npw[2])));
 
     // Packing winding properties of the 3th secondary side
     m_sec[2]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
 
-    m_ptsw->out_three_wind.insert("JSP", m_sec[2]->outCurrPeakSecond());
-    m_ptsw->out_three_wind.insert("JSRMS", m_sec[2]->outCurrRMSSecond());
-    m_ptsw->out_three_wind.insert("NSEC", m_sec[2]->outNumSecond());
-    m_ptsw->out_three_wind.insert("ANS", m_wind[3]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[3]));
-    m_ptsw->out_three_wind.insert("AWGNS", m_wind[3]->wMaxWireSizeAWG(m_ptsw->out_three_wind.value("ANS")));
+    m_ptsw->out_three_wind.insert("JSP", static_cast<float>(m_sec[2]->outCurrPeakSecond()));
+    m_ptsw->out_three_wind.insert("JSRMS", static_cast<float>(m_sec[2]->outCurrRMSSecond()));
+    m_ptsw->out_three_wind.insert("NSEC", static_cast<float>(m_sec[2]->outNumSecond()));
+    m_ptsw->out_three_wind.insert("ANS", static_cast<float>(m_wind[3]->wCoperWireCrossSectArea(m_cs,
+                                                                                               m_md,
+                                                                                               static_cast<double>(m_psw.m_af[3]),
+                                                                                               static_cast<uint32_t>(m_ptsw->out_three_wind.value("NSEC")))));
 
-    m_wind[3]->setWireDiam(m_ptsw->out_three_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+    m_ptsw->out_three_wind.insert("AWGNS", static_cast<float>(m_wind[3]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->out_three_wind.value("ANS")))));
 
-    m_ptsw->out_three_wind.insert("DS", m_wind[3]->wCoperWireDiam());
-    m_ptsw->out_three_wind.insert("ECA", m_wind[3]->wCoperWireCrossSectAreaPost());
-    m_ptsw->out_three_wind.insert("JS", m_wind[3]->wCurrentDenst());
-    m_ptsw->out_three_wind.insert("OD", 1);
-    m_ptsw->out_three_wind.insert("NTL", m_wind[3]->wNumTurnToLay(m_md));
-    m_ptsw->out_three_wind.insert("LN", m_wind[3]->wNumLay(m_md));
+    m_wind[3]->setWireDiam(m_ptsw->out_three_wind.value("AWGNS"));
+
+    m_ptsw->out_three_wind.insert("DS", static_cast<float>(m_wind[3]->wCoperWireDiam()));
+    m_ptsw->out_three_wind.insert("ECA", static_cast<float>(m_wind[3]->wCoperWireCrossSectAreaPost(m_psw.m_npw[3])));
+    m_ptsw->out_three_wind.insert("JS", static_cast<float>(m_wind[3]->wCurrentDenst(static_cast<double>(m_ptsw->out_three_wind.value("JSRMS")), m_psw.m_npw[3])));
+    m_ptsw->out_three_wind.insert("OD", static_cast<float>(m_wind[3]->wOuterDiam()));
+    m_ptsw->out_three_wind.insert("NTL", static_cast<float>(m_wind[3]->wNumTurnToLay(m_md,m_psw.m_npw[3])));
+    m_ptsw->out_three_wind.insert("LN", static_cast<float>(m_wind[3]->wNumLay(m_md, static_cast<uint32_t>(m_ptsw->out_three_wind.value("NSEC")), m_psw.m_npw[3])));
 
     // Packing winding properties of the 4th secondary side
     m_sec[3]->setCurrentParam(m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms);
 
-    m_ptsw->out_four_wind.insert("JSP", m_sec[3]->outCurrPeakSecond());
-    m_ptsw->out_four_wind.insert("JSRMS", m_sec[3]->outCurrRMSSecond());
-    m_ptsw->out_four_wind.insert("NSEC", m_sec[3]->outNumSecond());
-    m_ptsw->out_four_wind.insert("ANS", m_wind[4]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[4]));
-    m_ptsw->out_four_wind.insert("AWGNS", m_wind[4]->wMaxWireSizeAWG(m_ptsw->out_four_wind.value("ANS")));
+    m_ptsw->out_four_wind.insert("JSP", static_cast<float>(m_sec[3]->outCurrPeakSecond()));
+    m_ptsw->out_four_wind.insert("JSRMS", static_cast<float>(m_sec[3]->outCurrRMSSecond()));
+    m_ptsw->out_four_wind.insert("NSEC", static_cast<float>(m_sec[3]->outNumSecond()));
+    m_ptsw->out_four_wind.insert("ANS", static_cast<float>(m_wind[4]->wCoperWireCrossSectArea(m_cs,
+                                                                                              m_md,
+                                                                                              static_cast<double>(m_psw.m_af[4]),
+                                                                                              static_cast<uint32_t>(m_ptsw->out_four_wind.value("NSEC")))));
 
-    m_wind[4]->setWireDiam(m_ptsw->out_four_wind.value("AWGNS"), m_ptpe->actual_num_primary);
+    m_ptsw->out_four_wind.insert("AWGNS", static_cast<float>(m_wind[4]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->out_four_wind.value("ANS")))));
 
-    m_ptsw->out_four_wind.insert("DS", m_wind[4]->wCoperWireDiam());
-    m_ptsw->out_four_wind.insert("ECA", m_wind[4]->wCoperWireCrossSectAreaPost());
-    m_ptsw->out_four_wind.insert("JS", m_wind[4]->wCurrentDenst());
-    m_ptsw->out_four_wind.insert("OD", 1);
-    m_ptsw->out_four_wind.insert("NTL", m_wind[4]->wNumTurnToLay(m_md));
-    m_ptsw->out_four_wind.insert("LN", m_wind[4]->wNumLay(m_md));
+    m_wind[4]->setWireDiam(m_ptsw->out_four_wind.value("AWGNS"));
+
+    m_ptsw->out_four_wind.insert("DS", static_cast<float>(m_wind[4]->wCoperWireDiam()));
+    m_ptsw->out_four_wind.insert("ECA", static_cast<float>(m_wind[4]->wCoperWireCrossSectAreaPost(m_psw.m_npw[4])));
+    m_ptsw->out_four_wind.insert("JS", static_cast<float>(m_wind[4]->wCurrentDenst(static_cast<double>(m_ptsw->out_four_wind.value("JSRMS")), m_psw.m_npw[4])));
+    m_ptsw->out_four_wind.insert("OD", static_cast<float>(m_wind[4]->wOuterDiam()));
+    m_ptsw->out_four_wind.insert("NTL", static_cast<float>(m_wind[4]->wNumTurnToLay(m_md, m_psw.m_npw[4])));
+    m_ptsw->out_four_wind.insert("LN", static_cast<float>(m_wind[4]->wNumLay(m_md, static_cast<uint32_t>(m_ptsw->out_four_wind.value("NSEC")), m_psw.m_npw[4])));
 
     // Packing winding properties of the auxilary side
-    m_ptsw->out_aux_wind.insert("NAUX", aux_out->outNumSecond());
-    m_ptsw->out_aux_wind.insert("ANAUX", m_wind[5]->wCoperWireCrossSectArea(m_cs, m_md, m_psw.m_af[5]));
-    m_ptsw->out_aux_wind.insert("AWGAUX", m_wind[5]->wMaxWireSizeAWG(m_ptsw->out_aux_wind.value("ANS")));
+    m_ptsw->out_aux_wind.insert("NAUX", static_cast<float>(aux_out->outNumSecond()));
+    m_ptsw->out_aux_wind.insert("ANAUX", static_cast<float>(m_wind[5]->wCoperWireCrossSectArea(m_cs,
+                                                                                               m_md,
+                                                                                               static_cast<double>(m_psw.m_af[5]),
+                                                                                               static_cast<uint32_t>(m_ptsw->out_aux_wind.value("NAUX")))));
 
-    m_wind[5]->setWireDiam(m_ptsw->out_aux_wind.value("AWGAUX"), m_ptpe->actual_num_primary);
+    m_ptsw->out_aux_wind.insert("AWGAUX", static_cast<float>(m_wind[5]->wMaxWireSizeAWG(static_cast<double>(m_ptsw->out_aux_wind.value("ANAUX")))));
 
-    m_ptsw->out_aux_wind.insert("DAUX", m_wind[5]->wCoperWireDiam());
-    m_ptsw->out_aux_wind.insert("ECA", m_wind[5]->wCoperWireCrossSectAreaPost());
-    m_ptsw->out_aux_wind.insert("OD", 1);
-    m_ptsw->out_aux_wind.insert("NTL", m_wind[5]->wNumTurnToLay(m_md));
+    m_wind[5]->setWireDiam(m_ptsw->out_aux_wind.value("AWGAUX"));
+
+    m_ptsw->out_aux_wind.insert("DAUX", static_cast<float>(m_wind[5]->wCoperWireDiam()));
+    m_ptsw->out_aux_wind.insert("ECA", static_cast<float>(m_wind[5]->wCoperWireCrossSectAreaPost(m_psw.m_npw[5])));
+    m_ptsw->out_aux_wind.insert("OD", static_cast<float>(m_wind[5]->wOuterDiam()));
+    m_ptsw->out_aux_wind.insert("NTL", static_cast<float>(m_wind[5]->wNumTurnToLay(m_md, m_psw.m_npw[5])));
 
     qDebug() << "Packing winding properties objects in Thread " << thread()->currentThreadId();
 
@@ -423,18 +477,21 @@ void PowSuppSolve::calcSwitchNetwork()
     emit startCalcSwitchNetwork();
     qDebug() << "Start calculate switch network in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     int16_t vmaxrms = static_cast<int16_t>(m_indata.input_volt_ac_max * M_SQRT2);
     int16_t vminrms = static_cast<int16_t>(m_indata.input_volt_ac_min * M_SQRT2);
 
-    QScopedPointer<SwMosfet> sw_mos(new SwMosfet(vmaxrms, vminrms,
-                                                 m_ptpe->actual_volt_reflected, m_indata.voltage_spike,
-                                                 m_indata.eff, m_indata.power_out_max,
-                                                 m_indata.freq_switch, m_ptpe->actual_max_duty_cycle,
+    QScopedPointer<SwMosfet> sw_mos(new SwMosfet(vmaxrms,
+                                                 m_ptpe->actual_volt_reflected,
+                                                 m_indata.voltage_spike,
+                                                 m_indata.eff,
+                                                 m_indata.power_out_max,
+                                                 m_indata.freq_switch,
+                                                 m_ptpe->actual_max_duty_cycle,
                                                  m_indata.leakage_induct));
 
     qDebug() << "Initialise switching mosfet object in Thread " << thread()->currentThreadId();
@@ -444,9 +501,9 @@ void PowSuppSolve::calcSwitchNetwork()
     m_pm->mosfet_voltage_nom = sw_mos->swMosfetVoltageNom();
     m_pm->mosfet_voltage_max = sw_mos->swMosfetVoltageMax();
     sw_mos->setCurrValues(m_ptpe->curr_primary_rms, m_ptpe->curr_primary_peak);
-    m_pm->mosfet_ds_curr = sw_mos->swMosfetCurrent();
-    m_pm->mosfet_on_time = sw_mos->swMosfetOnTime(m_ptpe->primary_induct, (m_indata.input_volt_ac_max/M_SQRT2));
-    m_pm->mosfet_off_time = sw_mos->swMosfetOffTime(m_pm->mosfet_on_time);
+    m_pm->mosfet_ds_curr = m_ptpe->curr_primary_peak;
+    m_pm->mosfet_on_time = 0.;
+    m_pm->mosfet_off_time = 0.;
     m_pm->mosfet_sw_tot = sw_mos->swMosfetTotPeriod();
     m_pm->mosfet_rise_time = sw_mos->swMosfetRiseTime(m_mospr);
     m_pm->mosfet_conduct_loss = sw_mos->swMosfetConductLoss(m_mospr);

@@ -96,7 +96,7 @@ private:
         int16_t input_volt_ac_max;
         int16_t input_volt_ac_min;
         int16_t freq_line;
-        int32_t freq_switch;
+        uint32_t freq_switch;
         int16_t temp_amb;
         //Input secondary voltage, current value
         int16_t volt_out_one;
@@ -113,7 +113,7 @@ private:
         double power_out_max;
         //Pre-design
         int16_t refl_volt_max;
-        int16_t voltage_spike;
+        uint16_t voltage_spike;
         float ripple_fact;
         float eff_transf;
         float volt_diode_drop_sec;
@@ -136,7 +136,8 @@ private:
          *  [1]-1st wired insulation coefficient ... [4]-4th wired insulation coefficient,
          *  [5]-Aux insulation coefficient */
         QVector<float> m_ins;
-        int16_t m_mcd; /**< Safety standart margin */
+        QVector<int16_t> m_npw;
+        float m_mcd; /**< Safety standart margin */
         float m_fcu; /**< Copper space factor */
     };
 
@@ -176,7 +177,7 @@ private:
         float mosfet_ds_curr;
         double mosfet_on_time;
         double mosfet_off_time;
-        double mosfet_sw_tot;
+        double mosfet_fall_time;
         double mosfet_rise_time;
 
         float mosfet_conduct_loss;
@@ -283,8 +284,8 @@ private:
         double max_duty_cycle;//Max duty cycle
         double inp_power;//Input power
         double primary_induct;//Primary inductance
-        int32_t number_primary;
-        int32_t actual_num_primary;
+        uint32_t number_primary;
+        uint32_t actual_num_primary;
 
         double curr_primary_aver;//Primary average current during turn-on
         double curr_primary_peak_peak;//Primary peak-to-peak current
