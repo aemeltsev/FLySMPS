@@ -67,7 +67,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -3099,7 +3099,7 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>591</width>
+        <width>691</width>
         <height>181</height>
        </rect>
       </property>
@@ -3494,7 +3494,7 @@
        <item row="14" column="2">
         <widget class="QLineEdit" name="AuxESRPerc">
          <property name="text">
-          <string>0.025</string>
+          <string>0.9</string>
          </property>
         </widget>
        </item>
@@ -3532,7 +3532,7 @@
        <item row="11" column="1">
         <widget class="QLineEdit" name="Out2VRip">
          <property name="text">
-          <string>0.5</string>
+          <string>0.03</string>
          </property>
         </widget>
        </item>
@@ -3563,14 +3563,14 @@
        <item row="10" column="2">
         <widget class="QLineEdit" name="Out1ESRPerc">
          <property name="text">
-          <string>0.025</string>
+          <string>0.9</string>
          </property>
         </widget>
        </item>
        <item row="12" column="2">
         <widget class="QLineEdit" name="Out3ESRPerc">
          <property name="text">
-          <string>0.025</string>
+          <string>0.9</string>
          </property>
         </widget>
        </item>
@@ -3726,7 +3726,7 @@
        <item row="12" column="1">
         <widget class="QLineEdit" name="Out3VRip">
          <property name="text">
-          <string>0.5</string>
+          <string>0.03</string>
          </property>
         </widget>
        </item>
@@ -3743,7 +3743,7 @@
        <item row="11" column="2">
         <widget class="QLineEdit" name="Out2ESRPerc">
          <property name="text">
-          <string>0.025</string>
+          <string>0.9</string>
          </property>
         </widget>
        </item>
@@ -3831,14 +3831,14 @@
        <item row="13" column="1">
         <widget class="QLineEdit" name="Out4VRip">
          <property name="text">
-          <string>0.5</string>
+          <string>0.03</string>
          </property>
         </widget>
        </item>
        <item row="13" column="2">
         <widget class="QLineEdit" name="Out4ESRPerc">
          <property name="text">
-          <string>0.025</string>
+          <string>0.9</string>
          </property>
         </widget>
        </item>
@@ -3913,14 +3913,14 @@
        <item row="14" column="1">
         <widget class="QLineEdit" name="AuxVRip">
          <property name="text">
-          <string>0.5</string>
+          <string>0.03</string>
          </property>
         </widget>
        </item>
        <item row="10" column="1">
         <widget class="QLineEdit" name="Out1VRip">
          <property name="text">
-          <string>0.5</string>
+          <string>0.03</string>
          </property>
         </widget>
        </item>
@@ -3989,7 +3989,7 @@
      <widget class="QPushButton" name="CalcOutPushButton">
       <property name="geometry">
        <rect>
-        <x>630</x>
+        <x>720</x>
         <y>30</y>
         <width>80</width>
         <height>22</height>
