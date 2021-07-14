@@ -81,6 +81,8 @@ signals:
     void initTransCoreValuesComplete();
     void initTransWiredsComplete();
     void initMosfetValuesComplete();
+    void initOutCapValuesComplete();
+    void initOutFilterComplete();
 
 private:
     void initInputValues();
