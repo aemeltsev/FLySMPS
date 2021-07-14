@@ -186,12 +186,12 @@ private:
         float mosfet_capacit_loss;
         float mosfet_total_loss;
 
-        int16_t snubber_voltage_max;
+        int32_t snubber_voltage_max;
         float snubber_pwr_diss;
-        int16_t snubber_res_value;
+        int32_t snubber_res_value;
         double snubber_cap_value;
 
-        int16_t curr_sense_res;
+        float curr_sense_res;
         float curr_sense_res_loss;
     };
 
