@@ -22,6 +22,13 @@
 #include <QtMath>
 #include <cstdint>
 
+/**
+ * @brief The DiodeOut class
+ *        See more:
+ *        TIDA-010000.-50W opto-regulated multi-output flyback design for 380-480VAC motor drives
+ *        TIDUBK6A.-Multiple isolated output, auxiliary supply reference design
+ *        AN5504.-Designing Flyback Converters Using Peak-Current-Mode Controllers
+ */
 class DiodeOut
 {
 public:
@@ -41,21 +48,42 @@ public:
     /**
      * @brief doDiodeRevVolt
      * @param ac_inp_volt_max - input max AC line voltage
-     * @return max reverse voltage
+     * @return max reverse voltage V
      */
     double doDiodeRevVolt(int16_t ac_inp_volt_max) const
     {
-        return (volt_out+(ac_inp_volt_max/(qSqrt(2))))/turn_ratio;
+        return volt_out + (ac_inp_volt_max / turn_ratio);
     }
 
     /**
      * @brief doDiodePowLoss - losses on the diode
      * @param dio_drop - volt drop on schottky diode
-     * @return losses value
+     * @return losses value W
      */
     double doDiodePowLoss(float dio_drop) const
     {
-        return (power_sec* static_cast<double>(dio_drop))/volt_out;
+        return (power_sec * static_cast<double>(dio_drop)) / volt_out;
+    }
+
+    /**
+     * @brief doDiodeCurrPeak - maximum secondary peak current
+     * @param cur_pri_pk - maximum primary peak current
+     * @return output current value in A
+     */
+    double doDiodeCurrPeak(float cur_pri_pk)
+    {
+        return static_cast<double>(cur_pri_pk) / turn_ratio;
+    }
+
+    /**
+     * @brief doDiodeCurrRMS - maximum secondary RMS current
+     * @param cur_pri_pk - maximum primary peak current
+     * @return output current value in A
+     */
+    double doDiodeCurrRMS(float cur_pri_pk)
+    {
+        double cur_sec = power_sec / volt_out;
+        return qSqrt((2. * cur_sec * static_cast<double>(cur_pri_pk)) / (3. * turn_ratio));
     }
 
 private:
