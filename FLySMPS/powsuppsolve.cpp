@@ -70,7 +70,7 @@ void PowSuppSolve::calcInputNetwork()
 
     QScopedPointer<BulkCap> b_cap(new BulkCap(m_indata.input_volt_ac_max,
                                               m_indata.input_volt_ac_min,
-                                              m_indata.eff,
+                                              static_cast<float>(m_indata.eff),
                                               static_cast<float>(m_indata.power_out_max),
                                               m_indata.freq_line));
     qDebug() << "Initialize BulkCap object in Thread " << thread()->currentThreadId();
@@ -89,7 +89,7 @@ void PowSuppSolve::calcInputNetwork()
 
     QScopedPointer<DiodeBridge> b_diode(new DiodeBridge(m_indata.input_volt_ac_max,
                                                         m_indata.input_volt_ac_min,
-                                                        m_indata.eff,
+                                                        static_cast<float>(m_indata.eff),
                                                         static_cast<float>(m_indata.power_out_max),
                                                         m_indata.freq_line));
     qDebug() << "Initialize DiodeBridge object in Thread " << thread()->currentThreadId();
@@ -97,7 +97,7 @@ void PowSuppSolve::calcInputNetwork()
     qDebug() << "Working with DiodeBridge in Thread " << thread()->currentThreadId();
 
     /**< 1. Set capacitor params */
-    b_diode->setBcapParam(m_bc->bcapacitor_peak_curr, m_bc->charg_time);
+    b_diode->setBcapParam(static_cast<float>(m_bc->bcapacitor_peak_curr) , m_bc->charg_time);
     /**< 2. Fill the structure */
     m_db->diode_peak_curr = b_diode->IDiodePeak();
     m_db->diode_curr_slope = b_diode->DiodeCurrentSlope();
@@ -482,43 +482,41 @@ void PowSuppSolve::calcSwitchNetwork()
         return;
     }*/
 
-    int16_t vmaxrms = static_cast<int16_t>(m_indata.input_volt_ac_max * M_SQRT2);
-    int16_t vminrms = static_cast<int16_t>(m_indata.input_volt_ac_min * M_SQRT2);
+    auto vmaxrms = static_cast<uint16_t>(m_indata.input_volt_ac_max * M_SQRT2);
+    //int16_t vminrms = static_cast<int16_t>(m_indata.input_volt_ac_min * M_SQRT2);
 
     QScopedPointer<SwMosfet> sw_mos(new SwMosfet(vmaxrms,
-                                                 m_ptpe->actual_volt_reflected,
                                                  m_indata.voltage_spike,
-                                                 m_indata.eff,
-                                                 m_indata.power_out_max,
                                                  m_indata.freq_switch,
-                                                 m_ptpe->actual_max_duty_cycle,
-                                                 m_indata.leakage_induct));
+                                                 m_ptpe->actual_volt_reflected,
+                                                 m_ptpe->primary_induct,
+                                                 m_ptpe->curr_primary_peak_peak));
 
     qDebug() << "Initialise switching mosfet object in Thread " << thread()->currentThreadId();
 
     qDebug() << "Working with switching mosfet in Thread " << thread()->currentThreadId();
 
-    m_pm->mosfet_voltage_nom = sw_mos->swMosfetVoltageNom();
-    m_pm->mosfet_voltage_max = sw_mos->swMosfetVoltageMax();
-    sw_mos->setCurrValues(m_ptpe->curr_primary_rms, m_ptpe->curr_primary_peak);
-    m_pm->mosfet_ds_curr = m_ptpe->curr_primary_peak;
+    m_pm->mosfet_voltage_nom = static_cast<int16_t>(sw_mos->swMosfetVoltageNom());
+    m_pm->mosfet_voltage_max = static_cast<int16_t>(sw_mos->swMosfetVoltageMax());
+    sw_mos->setCurrValues(static_cast<float>(m_ptpe->curr_primary_rms), static_cast<float>(m_ptpe->curr_primary_peak));
+    m_pm->mosfet_ds_curr = static_cast<float>(m_ptpe->curr_primary_peak);
     m_pm->mosfet_on_time = 0.;
     m_pm->mosfet_off_time = 0.;
-    m_pm->mosfet_sw_tot = sw_mos->swMosfetTotPeriod();
+    m_pm->mosfet_fall_time = sw_mos->swMosfetFallTime(m_mospr);
     m_pm->mosfet_rise_time = sw_mos->swMosfetRiseTime(m_mospr);
-    m_pm->mosfet_conduct_loss = sw_mos->swMosfetConductLoss(m_mospr);
-    m_pm->mosfet_drive_loss = sw_mos->swMosfetDriveLoss(m_mospr);
-    m_pm->mosfet_switch_loss = sw_mos->swMosfetSwitchLoss(m_mospr);
-    m_pm->mosfet_capacit_loss = sw_mos->swMosfetCapacitLoss(m_mospr);
-    m_pm->mosfet_total_loss = sw_mos->swMosfetTotalLoss(m_mospr);
+    m_pm->mosfet_conduct_loss = static_cast<float>(sw_mos->swMosfetConductLoss(m_mospr));
+    m_pm->mosfet_drive_loss = static_cast<float>(sw_mos->swMosfetDriveLoss(m_mospr));
+    m_pm->mosfet_switch_loss = static_cast<float>(sw_mos->swMosfetSwitchLoss(m_mospr));
+    m_pm->mosfet_capacit_loss = static_cast<float>(sw_mos->swMosfetCapacitLoss(m_mospr));
+    m_pm->mosfet_total_loss = static_cast<float>(sw_mos->swMosfetTotalLoss(m_mospr));
 
-    m_pm->snubber_voltage_max = sw_mos->clVoltageMax();
-    m_pm->snubber_pwr_diss = sw_mos->clPowerDiss(m_ccsp);
-    m_pm->snubber_res_value = sw_mos->clResValue(m_ccsp);
+    m_pm->snubber_voltage_max = static_cast<int32_t>(sw_mos->clVoltageMax());
     m_pm->snubber_cap_value = sw_mos->clCapValue(m_ccsp);
+    m_pm->snubber_res_value = static_cast<int32_t>(sw_mos->clResValue(m_ccsp));
+    m_pm->snubber_pwr_diss = static_cast<float>(sw_mos->clPowerDiss(m_ccsp));
 
-    m_pm->curr_sense_res = sw_mos->csCurrRes(m_ccsp);
-    m_pm->curr_sense_res_loss = sw_mos->csCurrResLoss(m_ccsp);
+    m_pm->curr_sense_res = static_cast<float>(sw_mos->csCurrRes(m_ccsp));
+    m_pm->curr_sense_res_loss = static_cast<float>(sw_mos->csCurrResLoss(m_ccsp));
 
     emit finishedCalcSwitchNetwork();
     qDebug() << "Finished calculate switch network in Thread " << thread()->currentThreadId();
@@ -529,37 +527,58 @@ void PowSuppSolve::calcOtputNetwork()
     emit startCalcOtputNetwork();
     qDebug() << "Start calculate output network in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
     }
-    /**Todo using this lambda in parameters ctors
-    auto turnRatio = [=](int16_t, int16_t)
-    {
+    */
 
+    auto turnRatio = [=](uint32_t num_pr, uint32_t num_sec, bool volt_rt = true)
+    {
+        if((num_pr != 0)&&(num_sec != 0))
+        {
+
+            if(volt_rt)
+            {
+                return static_cast<double>(num_pr) / num_sec;
+            }
+            else
+            {
+                return static_cast<double>(num_sec) / num_pr;
+            }
+        }
+        else
+        {
+            return  0.;
+        }
     };
 
-    auto outPwr = [=](int16_t out_volt, int16_t out_curr)
+    auto outPwr = [=](float out_volt, int16_t out_curr)
     {
         return out_volt * out_curr;
     };
-    */
+
 
     //Construct output diode objects
-    QScopedPointer<DiodeOut> d_out_one(new DiodeOut((m_indata.curr_out_one * m_indata.volt_out_one), m_indata.volt_out_one,
-                                                    (m_ptpe->actual_num_primary * m_ptsw->out_one_wind.value("NSEC"))));
+    QScopedPointer<DiodeOut> d_out_one(new DiodeOut(outPwr(m_indata.curr_out_one, m_indata.volt_out_one),
+                                                    m_indata.volt_out_one,
+                                                    turnRatio(m_ptpe->actual_num_primary, m_ptsw->out_one_wind.value("NSEC"))));
 
-    QScopedPointer<DiodeOut> d_out_two(new DiodeOut((m_indata.curr_out_two*m_indata.volt_out_two), m_indata.volt_out_two,
-                                                    (m_ptpe->actual_num_primary * m_ptsw->out_two_wind.value("NSEC"))));
+    QScopedPointer<DiodeOut> d_out_two(new DiodeOut(outPwr(m_indata.curr_out_two, m_indata.volt_out_two),
+                                                    m_indata.volt_out_two,
+                                                    turnRatio(m_ptpe->actual_num_primary, m_ptsw->out_two_wind.value("NSEC"))));
 
-    QScopedPointer<DiodeOut> d_out_three(new DiodeOut((m_indata.curr_out_three*m_indata.volt_out_three), m_indata.volt_out_three,
-                                                      (m_ptpe->actual_num_primary * m_ptsw->out_three_wind.value("NSEC"))));
+    QScopedPointer<DiodeOut> d_out_three(new DiodeOut(outPwr(m_indata.curr_out_three, m_indata.volt_out_three),
+                                                      m_indata.volt_out_three,
+                                                      turnRatio(m_ptpe->actual_num_primary, m_ptsw->out_three_wind.value("NSEC"))));
 
-    QScopedPointer<DiodeOut> d_out_four(new DiodeOut((m_indata.curr_out_four*m_indata.volt_out_four), m_indata.volt_out_four,
-                                                     (m_ptpe->actual_num_primary * m_ptsw->out_four_wind.value("NSEC"))));
+    QScopedPointer<DiodeOut> d_out_four(new DiodeOut(outPwr(m_indata.curr_out_four, m_indata.volt_out_four),
+                                                     m_indata.volt_out_four,
+                                                     turnRatio(m_ptpe->actual_num_primary, m_ptsw->out_four_wind.value("NSEC"))));
 
-    QScopedPointer<DiodeOut> d_out_aux(new DiodeOut((m_indata.curr_out_aux*m_indata.volt_out_aux), m_indata.volt_out_aux,
-                                                    (m_ptpe->actual_num_primary * m_ptsw->out_aux_wind.value("NAUX"))));
+    QScopedPointer<DiodeOut> d_out_aux(new DiodeOut(outPwr(m_indata.curr_out_aux, m_indata.volt_out_aux),
+                                                    m_indata.volt_out_aux,
+                                                    turnRatio(m_ptpe->actual_num_primary, m_ptsw->out_aux_wind.value("NAUX"))));
     qDebug() << "Start calculate output diode in Thread " << thread()->currentThreadId();
 
     //Construct output capacitor objects
@@ -572,71 +591,107 @@ void PowSuppSolve::calcOtputNetwork()
     qDebug() << "Start calculate output capacitor in Thread " << thread()->currentThreadId();
 
     //Packing output diode values
-    m_fod->out_diode_first.insert("SOP", (m_indata.curr_out_one * m_indata.volt_out_one));
+    m_fod->out_diode_first.insert("SOP", outPwr(m_indata.curr_out_one,
+                                                m_indata.volt_out_one));
     m_fod->out_diode_first.insert("SOV", m_indata.volt_out_one);
-    m_fod->out_diode_first.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_one_wind.value("NSEC")));
-    m_fod->out_diode_first.insert("DRV", d_out_one->doDiodeRevVolt(m_indata.input_volt_ac_max));
-    m_fod->out_diode_first.insert("DPD", d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec));
-
-    m_fod->out_diode_sec.insert("SOP", (m_indata.curr_out_two*m_indata.volt_out_two));
+    m_fod->out_diode_first.insert("TR", static_cast<float>(turnRatio(m_ptpe->actual_num_primary,
+                                                                     static_cast<uint32_t>(m_ptsw->out_one_wind.value("NSEC")))));
+    m_fod->out_diode_first.insert("DRV", static_cast<float>(d_out_one->doDiodeRevVolt(m_indata.input_volt_ac_max)));
+    m_fod->out_diode_first.insert("DPD", static_cast<float>(d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec)));
+    //
+    m_fod->out_diode_sec.insert("SOP", outPwr(m_indata.curr_out_two,
+                                              m_indata.volt_out_two));
     m_fod->out_diode_sec.insert("SOV", m_indata.volt_out_two);
-    m_fod->out_diode_sec.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_two_wind.value("NSEC")));
-    m_fod->out_diode_sec.insert("DRV", d_out_two->doDiodeRevVolt(m_indata.input_volt_ac_max));
-    m_fod->out_diode_sec.insert("DPD", d_out_two->doDiodePowLoss(m_indata.volt_diode_drop_sec));
-
-    m_fod->out_diode_thrid.insert("SOP", (m_indata.curr_out_three*m_indata.volt_out_three));
+    m_fod->out_diode_sec.insert("TR", static_cast<float>(turnRatio(m_ptpe->actual_num_primary,
+                                                                   static_cast<uint32_t>(m_ptsw->out_two_wind.value("NSEC")))));
+    m_fod->out_diode_sec.insert("DRV", static_cast<float>(d_out_two->doDiodeRevVolt(m_indata.input_volt_ac_max)));
+    m_fod->out_diode_sec.insert("DPD", static_cast<float>(d_out_two->doDiodePowLoss(m_indata.volt_diode_drop_sec)));
+    //
+    m_fod->out_diode_thrid.insert("SOP", outPwr(m_indata.curr_out_three,
+                                                m_indata.volt_out_three));
     m_fod->out_diode_thrid.insert("SOV", m_indata.volt_out_three);
-    m_fod->out_diode_thrid.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_three_wind.value("NSEC")));
-    m_fod->out_diode_thrid.insert("DRV", d_out_three->doDiodeRevVolt(m_indata.input_volt_ac_max));
-    m_fod->out_diode_thrid.insert("DPD", d_out_three->doDiodePowLoss(m_indata.volt_diode_drop_sec));
-
-    m_fod->out_diode_four.insert("SOP", (m_indata.curr_out_four*m_indata.volt_out_four));
+    m_fod->out_diode_thrid.insert("TR", static_cast<float>(turnRatio(m_ptpe->actual_num_primary,
+                                                                     static_cast<uint32_t>(m_ptsw->out_three_wind.value("NSEC")))));
+    m_fod->out_diode_thrid.insert("DRV", static_cast<float>(d_out_three->doDiodeRevVolt(m_indata.input_volt_ac_max)));
+    m_fod->out_diode_thrid.insert("DPD", static_cast<float>(d_out_three->doDiodePowLoss(m_indata.volt_diode_drop_sec)));
+    //
+    m_fod->out_diode_four.insert("SOP", outPwr(m_indata.curr_out_four,
+                                               m_indata.volt_out_four));
     m_fod->out_diode_four.insert("SOV", m_indata.volt_out_four);
-    m_fod->out_diode_four.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_four_wind.value("NSEC")));
-    m_fod->out_diode_four.insert("DRV", d_out_four->doDiodeRevVolt(m_indata.input_volt_ac_max));
-    m_fod->out_diode_four.insert("DPD", d_out_four->doDiodePowLoss(m_indata.volt_diode_drop_sec));
-
-    m_fod->out_diode_aux.insert("SOP", (m_indata.curr_out_aux*m_indata.volt_out_aux));
+    m_fod->out_diode_four.insert("TR", static_cast<float>(turnRatio(m_ptpe->actual_num_primary,
+                                                                    static_cast<uint32_t>(m_ptsw->out_four_wind.value("NSEC")))));
+    m_fod->out_diode_four.insert("DRV", static_cast<float>(d_out_four->doDiodeRevVolt(m_indata.input_volt_ac_max)));
+    m_fod->out_diode_four.insert("DPD", static_cast<float>(d_out_four->doDiodePowLoss(m_indata.volt_diode_drop_sec)));
+    //
+    m_fod->out_diode_aux.insert("SOP", outPwr(m_indata.curr_out_aux,
+                                              m_indata.volt_out_aux));
     m_fod->out_diode_aux.insert("SOV", m_indata.volt_out_aux);
-    m_fod->out_diode_aux.insert("TR", (m_ptpe->actual_num_primary * m_ptsw->out_aux_wind.value("NAUX")));
-    m_fod->out_diode_aux.insert("DRV", d_out_aux->doDiodeRevVolt(m_indata.input_volt_ac_max));
-    m_fod->out_diode_aux.insert("DPD", d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec));
+    m_fod->out_diode_aux.insert("TR", static_cast<float>(turnRatio(m_ptpe->actual_num_primary,
+                                                                   static_cast<uint32_t>(m_ptsw->out_aux_wind.value("NAUX")))));
+    m_fod->out_diode_aux.insert("DRV", static_cast<float>(d_out_aux->doDiodeRevVolt(m_indata.input_volt_ac_max)));
+    m_fod->out_diode_aux.insert("DPD", static_cast<float>(d_out_aux->doDiodePowLoss(m_indata.volt_diode_drop_sec)));
 
     //Packing output capacitor values
+    bool chek_tr = false;
     m_foc->out_cap_first.insert("CVO", c_out_one->ocCapOutValue(m_indata.freq_switch));
     m_foc->out_cap_first.insert("CESRO", c_out_one->ocESRCapOut());
-    m_foc->out_cap_first.insert("CCRMS", c_out_one->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_first.insert("CCRMS", c_out_one->ocCurrOurRMS(m_ptpe->curr_primary_peak,
+                                                                 turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_one_wind.value("NSEC")), chek_tr)
+                                                                 ));
     m_foc->out_cap_first.insert("CZFCO", c_out_one->ocZeroFreqCapOut(m_indata.freq_switch));
-    m_foc->out_cap_first.insert("CRVO", c_out_one->ocOutRippleVolt(m_indata.curr_out_one, 1));
-    m_foc->out_cap_first.insert("COL", c_out_one->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
-
+    m_foc->out_cap_first.insert("CRVO", c_out_one->ocOutRippleVolt(m_ptpe->curr_primary_peak,
+                                                                   m_foc->out_cap_first.value("CVO"),
+                                                                   turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_one_wind.value("NSEC")), chek_tr),
+                                                                   m_indata.freq_switch));
+    m_foc->out_cap_first.insert("COL", c_out_one->ocCapOutLoss(m_foc->out_cap_first.value("CCRMS")));
+    //
     m_foc->out_cap_sec.insert("CVO", c_out_two->ocCapOutValue(m_indata.freq_switch));
     m_foc->out_cap_sec.insert("CESRO", c_out_two->ocESRCapOut());
-    m_foc->out_cap_sec.insert("CCRMS", c_out_two->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_sec.insert("CCRMS", c_out_two->ocCurrOurRMS(m_ptpe->curr_primary_peak,
+                                                               turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_two_wind.value("NSEC")), chek_tr)
+                                                               ));
     m_foc->out_cap_sec.insert("CZFCO", c_out_two->ocZeroFreqCapOut(m_indata.freq_switch));
-    m_foc->out_cap_sec.insert("CRVO", c_out_two->ocOutRippleVolt(m_indata.curr_out_two, 1));
-    m_foc->out_cap_sec.insert("COL", c_out_two->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_sec.insert("CRVO", c_out_two->ocOutRippleVolt(m_ptpe->curr_primary_peak,
+                                                                 m_foc->out_cap_sec.value("CVO"),
+                                                                 turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_two_wind.value("NSEC")), chek_tr),
+                                                                 m_indata.freq_switch));
+    m_foc->out_cap_sec.insert("COL", c_out_two->ocCapOutLoss(m_foc->out_cap_sec.value("CCRMS")));
 
     m_foc->out_cap_thrid.insert("CVO", c_out_three->ocCapOutValue(m_indata.freq_switch));
     m_foc->out_cap_thrid.insert("CESRO", c_out_three->ocESRCapOut());
-    m_foc->out_cap_thrid.insert("CCRMS", c_out_three->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_thrid.insert("CCRMS", c_out_three->ocCurrOurRMS(m_ptpe->curr_primary_peak,
+                                                                   turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_three_wind.value("NSEC")), chek_tr)
+                                                                   ));
     m_foc->out_cap_thrid.insert("CZFCO", c_out_three->ocZeroFreqCapOut(m_indata.freq_switch));
-    m_foc->out_cap_thrid.insert("CRVO", c_out_three->ocOutRippleVolt(m_indata.curr_out_three, 1));
-    m_foc->out_cap_thrid.insert("COL", c_out_three->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_thrid.insert("CRVO", c_out_three->ocOutRippleVolt(m_ptpe->curr_primary_peak,
+                                                                     m_foc->out_cap_thrid.value("CVO"),
+                                                                     turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_three_wind.value("NSEC")), chek_tr),
+                                                                     m_indata.freq_switch));
+    m_foc->out_cap_thrid.insert("COL", c_out_three->ocCapOutLoss(m_foc->out_cap_thrid.value("CCRMS")));
 
     m_foc->out_cap_four.insert("CVO", c_out_four->ocCapOutValue(m_indata.freq_switch));
     m_foc->out_cap_four.insert("CESRO", c_out_four->ocESRCapOut());
-    m_foc->out_cap_four.insert("CCRMS", c_out_four->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_four.insert("CCRMS", c_out_four->ocCurrOurRMS(m_ptpe->curr_primary_peak,
+                                                                 turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_four_wind.value("NSEC")), chek_tr)
+                                                                 ));
     m_foc->out_cap_four.insert("CZFCO", c_out_four->ocZeroFreqCapOut(m_indata.freq_switch));
-    m_foc->out_cap_four.insert("CRVO", c_out_four->ocOutRippleVolt(m_indata.curr_out_four, 1));
-    m_foc->out_cap_four.insert("COL", c_out_four->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_four.insert("CRVO", c_out_four->ocOutRippleVolt(m_ptpe->curr_primary_peak,
+                                                                   m_foc->out_cap_four.value("CVO"),
+                                                                   turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_four_wind.value("NSEC")), chek_tr),
+                                                                   m_indata.freq_switch));
+    m_foc->out_cap_four.insert("COL", c_out_four->ocCapOutLoss(m_foc->out_cap_four.value("CCRMS")));
 
     m_foc->out_cap_aux.insert("CVO", c_out_aux->ocCapOutValue(m_indata.freq_switch));
     m_foc->out_cap_aux.insert("CESRO", c_out_aux->ocESRCapOut());
-    m_foc->out_cap_aux.insert("CCRMS", c_out_aux->ocCurrOurRMS(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_aux.insert("CCRMS", c_out_aux->ocCurrOurRMS(m_ptpe->curr_primary_peak,
+                                                               turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_aux_wind.value("NSEC")), chek_tr)
+                                                               ));
     m_foc->out_cap_aux.insert("CZFCO", c_out_aux->ocZeroFreqCapOut(m_indata.freq_switch));
-    m_foc->out_cap_aux.insert("CRVO", c_out_aux->ocOutRippleVolt(m_indata.curr_out_aux, 1));
-    m_foc->out_cap_aux.insert("COL", c_out_aux->ocCapOutLoss(m_ptpe->actual_max_duty_cycle));
+    m_foc->out_cap_aux.insert("CRVO", c_out_aux->ocOutRippleVolt(m_ptpe->curr_primary_peak,
+                                                                 m_foc->out_cap_aux.value("CVO"),
+                                                                 turnRatio(m_ptpe->actual_num_primary, static_cast<uint32_t>(m_ptsw->out_aux_wind.value("NSEC")), chek_tr),
+                                                                 m_indata.freq_switch));
+    m_foc->out_cap_aux.insert("COL", c_out_aux->ocCapOutLoss(m_foc->out_cap_aux.value("CCRMS")));
 
     qDebug() << "Packing output capacitor and diode values in Thread " << thread()->currentThreadId();
 
