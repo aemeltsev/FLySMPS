@@ -232,8 +232,8 @@ private:
 
     struct FullOutFilter
      {
-         int16_t frequency;
-         int16_t load_resistance;
+         int32_t frequency;
+         int32_t load_resistance;
          double angular_cut_freq;
          double capacitor;
          double inductor;

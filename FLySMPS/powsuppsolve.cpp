@@ -704,10 +704,10 @@ void PowSuppSolve::calcOutputFilter()
     emit startCalcOutputFilter();
     qDebug() << "Start calculate output filter in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /**if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     QScopedPointer<OutFilter> out_fl(new OutFilter(m_of->frequency, m_of->load_resistance));
 
@@ -733,10 +733,10 @@ void PowSuppSolve::calcPowerStageModel()
     emit startCalcPowerStageModel();
     qDebug() << "Start calculate power stage model in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /*if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     m_pcssm.reset(new PCSSM(m_ssm));
 
@@ -754,7 +754,7 @@ void PowSuppSolve::calcPowerStageModel()
     m_pssm->ps_magnitude_array.reserve(SET_FREQ_SIZE/100);
     m_pssm->ps_phase_array.reserve(SET_FREQ_SIZE/100);
 
-    for(int32_t indx =10; indx<SET_FREQ_SIZE; indx +=100)
+    for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
     {
         m_pssm->ps_freq_array.push_back(indx);
     }
