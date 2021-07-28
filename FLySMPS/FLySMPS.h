@@ -83,6 +83,8 @@ signals:
     void initMosfetValuesComplete();
     void initOutCapValuesComplete();
     void initOutFilterComplete();
+    void initPowerStageModelComplete();
+    void initOptoFeedbStageComplete();
 
 private:
     void initInputValues();
