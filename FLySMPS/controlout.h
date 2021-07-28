@@ -29,6 +29,8 @@
 #define S_OPTO_FORVARD_DROP    1        //V_f - the LED forvard voltage A
 #define S_INT_BIAS_CONTR       5        //V_ccp - the pull-up Vcc level on primary side V
 #define S_OPTO_POLE            10000    //f_opto - the optocoupler pole that has ben characterized with R_pullup Hz
+#define M_PI_DEG               180
+
 enum PS_MODE
 {
     CCM_MODE = 0,
@@ -121,7 +123,7 @@ public:
      */
     inline double coZeroOneAngFreq() const
     {
-        return 1/(2 * M_PI * m_ssmvar.output_cap * m_ssmvar.output_cap_esr);
+        return 1/(m_ssmvar.output_cap * m_ssmvar.output_cap_esr);
     }
 
     /**
@@ -130,7 +132,7 @@ public:
      */
     inline double coPoleOneAngFreq() const
     {
-        return 2/(2 * M_PI * static_cast<double>(m_ssmvar.output_full_load_res) * m_ssmvar.output_cap);
+        return 2/(static_cast<double>(m_ssmvar.output_full_load_res) * m_ssmvar.output_cap);
     }
 
     /********************COM*************************/
@@ -142,10 +144,10 @@ public:
      */
     inline double coDCMZeroTwoAngFreq() const
     {
-        double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
+        double voltrat = static_cast<double>(m_ssmvar.output_voltage)/m_ssmvar.input_voltage;
         double tmp = qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res);
 
-        return tmp/(2 * M_PI * m_ssmvar.primary_ind * voltrat*(voltrat+1));
+        return tmp/(m_ssmvar.primary_ind * voltrat*(voltrat+1));
     }
 
     /**
@@ -154,10 +156,10 @@ public:
      */
     inline double coDCMPoleTwoAngFreq() const
     {
-        double voltrat = m_ssmvar.output_voltage/m_ssmvar.input_voltage;
+        double voltrat = static_cast<double>(m_ssmvar.output_voltage)/m_ssmvar.input_voltage;
 
         return (qPow(m_ssmvar.turn_ratio, 2) * static_cast<double>(m_ssmvar.output_full_load_res))
-                /(2 * M_PI * m_ssmvar.primary_ind * qPow((voltrat+1),2));
+                /(m_ssmvar.primary_ind * qPow((voltrat+1),2));
     }
 
     /**
@@ -325,10 +327,10 @@ public:
         if(m_mode == DCM_MODE)
         {
             num1 = qSqrt(1 + qPow((freq/coZeroOneAngFreq()), 2));
-            num2 = qSqrt(1 + qPow((freq/coDCMZeroTwoAngFreq()), 2));
+            num2 = qSqrt(1 - qPow((freq/coDCMZeroTwoAngFreq()), 2));
             dnm1 = qSqrt(1 + qPow((freq/coPoleOneAngFreq()), 2));
             dnm2 = qSqrt(1 + qPow((freq/coDCMPoleTwoAngFreq()), 2));
-            result = 20 * log10(coDCMCriticValue()*((num1*num2)/(dnm1*dnm2)));
+            result = coDCMCriticValue()*((num1*num2)/(dnm1*dnm2));
         }
         else if(m_mode == CCM_MODE)
         {
@@ -338,8 +340,7 @@ public:
                         qPow(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2), 2) +
                         qPow((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())), 2)
                         );
-
-            result = 20 * log10(coCCMVoltGainCoeff()*((num1*num2)/(dnm1)));
+            result = coCCMVoltGainCoeff()*((num1*num2)/(dnm1));
         }
         return result;
     }
@@ -358,12 +359,12 @@ public:
         if(m_mode == DCM_MODE)
         {
             targ = qAtan(freq/coPoleOneAngFreq());
-            result = farg + sarg - targ + qAtan(freq/coDCMPoleTwoAngFreq());
+            result = farg - sarg - targ - qAtan(freq/coDCMPoleTwoAngFreq());
         }
         else if(m_mode == CCM_MODE)
         {
             targ = qAtan((freq/(coCCMQualityFact()*coCCMPoleTwoAngFreq())) * (1/(1 - qPow((freq/coCCMPoleTwoAngFreq()), 2))));
-            result = farg + sarg - targ;
+            result = farg - sarg - targ;
         }
         return result;
     }
@@ -379,7 +380,7 @@ public:
         double dnm = 0.0;
         if(m_mode == DCM_MODE)
         {
-            result = coMagDutyToOutTrasfFunct(freq) * (20 * log10(coGainCurrModeContrModulator()));
+            result = 20 * log10(coMagDutyToOutTrasfFunct(freq) * coGainCurrModeContrModulator());
         }
         else if(m_mode == CCM_MODE)
         {
@@ -396,7 +397,7 @@ public:
         double dnm = 0.0;
         if(m_mode == DCM_MODE)
         {
-            result = coPhsDutyToOutTrasfFunct(freq) * qAtan(coGainCurrModeContrModulator());
+            result = coPhsDutyToOutTrasfFunct(freq) * (M_PI_DEG/M_PI);
         }
         else if(m_mode == CCM_MODE)
         {
