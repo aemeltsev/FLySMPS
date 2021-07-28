@@ -4027,14 +4027,14 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_766">
          <property name="text">
-          <string>AngCutFrq [Hz]</string>
+          <string>AngCutFrq [ω]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="label_777">
          <property name="text">
-          <string>Cutoff Freq. [Hz]</string>
+          <string>Cutoff Freq. [ω]</string>
          </property>
         </widget>
        </item>
@@ -4160,6 +4160,9 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="text">
+       <string>50000</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_764">
       <property name="geometry">
@@ -4184,7 +4187,7 @@
        </rect>
       </property>
       <property name="text">
-       <string/>
+       <string>100</string>
       </property>
      </widget>
      <widget class="QCustomPlot" name="LCFilterGraph" native="true">
