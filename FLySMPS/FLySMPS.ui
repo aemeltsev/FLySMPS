@@ -4440,15 +4440,23 @@
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QLineEdit" name="GainMarg"/>
+        <widget class="QLineEdit" name="GainMarg">
+         <property name="text">
+          <string>-16</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="ResPullUp"/>
+        <widget class="QLineEdit" name="ResPullUp">
+         <property name="text">
+          <string>4700</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
         <widget class="QLineEdit" name="OptoInnerCap">
          <property name="text">
-          <string/>
+          <string>5.2p</string>
          </property>
         </widget>
        </item>
@@ -4462,12 +4470,16 @@
        <item row="2" column="2">
         <widget class="QLabel" name="label_798">
          <property name="text">
-          <string>Gain Marg</string>
+          <string>Phase Shift</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="PhaseMarg"/>
+        <widget class="QLineEdit" name="PhaseMarg">
+         <property name="text">
+          <string>70</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_797">
@@ -4477,7 +4489,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="OptoCTR"/>
+        <widget class="QLineEdit" name="OptoCTR">
+         <property name="text">
+          <string>0.8</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_800">
@@ -4494,10 +4510,18 @@
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QLineEdit" name="ResDown"/>
+        <widget class="QLineEdit" name="ResDown">
+         <property name="text">
+          <string>10000</string>
+         </property>
+        </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="CapFilterESR"/>
+        <widget class="QLineEdit" name="CapFilterESR">
+         <property name="text">
+          <string>0.02</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
