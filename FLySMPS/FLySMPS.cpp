@@ -722,11 +722,11 @@ void FLySMPS::initPowerStageModel()
     m_psolve->m_ssm.turn_ratio = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary) /*m_psolve->m_ptpe->number_primary/m_psolve->m_ptsw->out_one_wind.value("NSEC")*/;
     m_psolve->m_ssm.output_cap = m_psolve->m_foc->out_cap_first["CVO"];
     m_psolve->m_ssm.output_cap_esr = m_psolve->m_foc->out_cap_first["CESRO"];
-    m_psolve->m_ssm.sawvolt = /*rsc(m_psolve->m_indata.volt_out_one,
+    m_psolve->m_ssm.sawvolt = rsc(m_psolve->m_indata.volt_out_one,
                                   m_psolve->m_indata.volt_diode_drop_sec,
                                   m_psolve->m_pm->curr_sense_res,
                                   commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary),
-                                  m_psolve->m_ptpe->primary_induct)*/ 0;
+                                  m_psolve->m_ptpe->primary_induct);
     emit initPowerStageModelComplete();
 }
 
@@ -802,11 +802,13 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_fc.out_current = m_psolve->m_indata.curr_out_one;
     m_psolve->m_fc.res_pull_up = convertToValues(static_cast<QString>(ui->ResPullUp->text()));
     m_psolve->m_fc.res_down = convertToValues(static_cast<QString>(ui->ResDown->text()));
-    m_psolve->m_fc.phase_shift = convertToValues(static_cast<QString>(ui->PhaseMarg->text()));
-    m_psolve->m_fc.amp_gaim_marg = convertToValues(static_cast<QString>(ui->GainMarg->text()));
+    m_psolve->m_fc.phase_rotate = convertToValues(static_cast<QString>(ui->PhaseMarg->text()));//M
+    m_psolve->m_fc.phase_marg = convertToValues(static_cast<QString>(ui->GainMarg->text()));//P
     m_psolve->m_fc.opto_ctr = convertToValues(static_cast<QString>(ui->OptoCTR->text()));
     m_psolve->m_fc.freq_sw = m_psolve->m_indata.freq_switch;
     m_psolve->m_fc.opto_inner_cap = convertToValues(static_cast<QString>(ui->OptoInnerCap->text()));
+    m_psolve->m_fc.out_sm_cap =  m_psolve->m_foc->out_cap_first.value("CVO");
+    m_psolve->m_fc.out_sm_cap_esr = m_psolve->m_foc->out_cap_first.value("CESRO");
 
     m_psolve->m_rs.inp_voltage = m_psolve->m_indata.input_volt_ac_min;
     m_psolve->m_rs.prim_turns = m_psolve->m_ptpe->actual_num_primary;
@@ -846,9 +848,11 @@ void FLySMPS::setOptoFeedbPlot()
 
     ui->OptoGraph->addGraph(ui->OptoGraph->xAxis, ui->OptoGraph->yAxis);
     ui->OptoGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->OptoGraph->graph(0)->setName("Mag.");
 
     ui->OptoGraph->addGraph(ui->OptoGraph->xAxis2, ui->OptoGraph->yAxis2);
     ui->OptoGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->OptoGraph->graph(1)->setName("Phs.");
 
     //configure right and top axis to show ticks but no labels:
     ui->OptoGraph->xAxis2->setVisible(true);
@@ -864,11 +868,27 @@ void FLySMPS::setOptoFeedbPlot()
     ui->OptoGraph->yAxis->setLabel("Mag. dB");
     ui->OptoGraph->yAxis2->setLabel("Deg. ");
 
+    ui->OptoGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->OptoGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
     //set axes ranges, so we see all data:
-    ui->OptoGraph->yAxis->setRange(-27, 3);
-    ui->OptoGraph->xAxis->setRange(0, 1000000);
-    ui->OptoGraph->yAxis2->setRange(0, -90);
-    ui->OptoGraph->xAxis2->setRange(0, 1000000);
+    ui->OptoGraph->yAxis->setRange(-70, 20);
+    ui->OptoGraph->xAxis->setRange(1e3, 1e5);
+    ui->OptoGraph->yAxis2->setRange(0, -210);
+    ui->OptoGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->OptoGraph->xAxis->setNumberFormat("eb");
+    ui->OptoGraph->xAxis->setNumberPrecision(0);
+
+    ui->OptoGraph->xAxis2->setNumberFormat("eb");
+    ui->OptoGraph->xAxis2->setNumberPrecision(0);
+
+    ui->OptoGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
+    ui->OptoGraph->legend->setVisible(true);
+    ui->OptoGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
+    ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
     m_psolve->m_ofs->of_freq_array.clear();
