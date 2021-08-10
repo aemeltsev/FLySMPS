@@ -771,10 +771,10 @@ void PowSuppSolve::calcOptocouplerFeedback()
     emit startCalcOptocouplerFeedback();
     qDebug() << "Start calculate optocoupler feedback in Thread " << thread()->currentThreadId();
 
-    if(!m_isSolveRunning){
+    /*if(!m_isSolveRunning){
         emit calcCanceled();
         return;
-    }
+    }*/
 
     m_fccd.reset(new FCCD(m_fc, m_rs, m_lc));
 
@@ -796,11 +796,11 @@ void PowSuppSolve::calcOptocouplerFeedback()
     m_ofs->of_res_err_amp = m_fccd->coResZero();
     m_ofs->of_cap_err_amp = m_fccd->coCapZero();
 
-    m_ofs->of_freq_array.reserve(SET_FREQ_SIZE/100);
-    m_ofs->of_magnitude_array.reserve(SET_FREQ_SIZE/100);
-    m_ofs->of_phase_array.reserve(SET_FREQ_SIZE/100);
+    m_ofs->of_freq_array.reserve(SET_FREQ_SIZE/1000);
+    m_ofs->of_magnitude_array.reserve(SET_FREQ_SIZE/1000);
+    m_ofs->of_phase_array.reserve(SET_FREQ_SIZE/1000);
 
-    for(int32_t indx =10; indx<SET_FREQ_SIZE; indx +=100)
+    for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
     {
         m_ofs->of_freq_array.push_back(indx);
     }

@@ -262,9 +262,9 @@ private:
 
     struct OptocouplerFedbackStage
     {
-        int16_t of_opto_led_res;
-        int16_t of_opto_bias_res;
-        int16_t of_up_divide_res;
+        double of_opto_led_res;
+        double of_opto_bias_res;
+        double of_up_divide_res;
         double of_quality;
         double of_ext_ramp_slope;
         double of_ind_on_slope;
