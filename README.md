@@ -8,6 +8,12 @@ FLYSMPS is a graphical application and it uses the QT 5 framework. For graphic p
 
 ![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/screen_main.png)
 
+![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/db_bcap.png)
+
+![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/first_trans.png)
+
+![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/filter.png)
+
 **TODO:**
 - [ ] Debugging and bug fixing 
 - [ ] Unit tests
