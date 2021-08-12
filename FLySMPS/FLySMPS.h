@@ -105,8 +105,7 @@ private:
     QList<QLabel*> cap_out_four;
     QList<QLabel*> cap_out_aux;
 
-
-    QThread *m_psworker;
+    QThread *m_psthread;
 };
 
 #endif // FLYSMPS_H

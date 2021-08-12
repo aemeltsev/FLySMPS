@@ -23,14 +23,14 @@
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FLySMPS),
-    m_psolve(new PowSuppSolve)
+    m_psolve(new PowSuppSolve),
+    m_psthread(new QThread)
 {
     ui->setupUi(this);
 
-    m_psworker = new QThread();
     initInputValues();
 
-    //m_psolve->moveToThread(m_psworker);
+    m_psolve->moveToThread(m_psthread);
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
@@ -60,11 +60,15 @@ FLySMPS::FLySMPS(QWidget *parent) :
         setOutCap();
     });
 
-    connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
-    connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
+    //connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
+    //connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
+    //connect(this, SIGNAL(initOutFilterComplete()), m_psworker, SLOT(start()));
+    //connect(m_psworker, SIGNAL(started()), m_psolve.data(), SLOT(calcOutputFilter()));
+    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, m_psworker, &QThread::quit, Qt::DirectConnection);
+
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setSolveLCFilter);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setLCPlot);
-//* Debug from -
+
     connect(ui->CalcPSMPushButton, &QPushButton::clicked, this, &FLySMPS::initPowerStageModel);
     connect(this, &FLySMPS::initPowerStageModelComplete, m_psolve.data(), &PowSuppSolve::calcPowerStageModel);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStageModel);
@@ -79,10 +83,10 @@ FLySMPS::FLySMPS(QWidget *parent) :
 
 FLySMPS::~FLySMPS()
 {
-    if(m_psworker->isRunning()){
-        m_psworker->quit();
-    }
-    m_psworker->deleteLater();
+    m_psolve->abort();
+    m_psthread->wait();
+    qDebug()<<"Deleting thread and worker in Thread "<<this->QObject::thread()->currentThreadId();
+    delete m_psthread;
 }
 
 void FLySMPS::initInputValues()
@@ -627,6 +631,8 @@ void FLySMPS::initOutFilter()
 
 void FLySMPS::setSolveLCFilter()
 {
+    ui->LCFilterGraph->replot();
+
     ui->LCAngCutFreq->setNum(m_psolve->m_of->angular_cut_freq);
     ui->LCInd->setNum(m_psolve->m_of->inductor);
     ui->LCCap->setNum(m_psolve->m_of->capacitor);
@@ -732,6 +738,8 @@ void FLySMPS::initPowerStageModel()
 
 void FLySMPS::setPowerStageModel()
 {
+    ui->PSMGraph->replot();
+
     ui->PSMFz1->setNum(m_psolve->m_pssm->ps_zero_one);
     ui->PSMFp1->setNum(m_psolve->m_pssm->ps_pole_one);
     ui->PSMFz2dcm->setNum(m_psolve->m_pssm->ps_dcm_zero_two);
@@ -826,6 +834,8 @@ void FLySMPS::initOptoFeedbStage()
 
 void FLySMPS::setOptoFeedbStage()
 {
+    ui->OptoGraph->replot();
+
     ui->ResLed->setNum(m_psolve->m_ofs->of_opto_led_res);
     ui->ResBias->setNum(m_psolve->m_ofs->of_opto_bias_res);
     ui->ResUp->setNum(m_psolve->m_ofs->of_up_divide_res);
