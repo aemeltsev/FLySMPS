@@ -23,25 +23,70 @@
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FLySMPS),
-    m_psolve(new PowSuppSolve)
+    m_psolve(new PowSuppSolve),
+    m_psthread(new QThread)
 {
     ui->setupUi(this);
 
-    m_psworker = new QThread();
     initInputValues();
 
-    m_psolve->moveToThread(m_psworker);
+    m_psolve->moveToThread(m_psthread);
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectricalPrimarySide, this, &FLySMPS::setInitialiseTransProp);
+
+    connect(ui->CalcPrimarySidePushButton, &QPushButton::clicked, this, &FLySMPS::initTransValues);
+    connect(this, &FLySMPS::initTransValuesComplete, m_psolve.data(), &PowSuppSolve::calcArea);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcArea, this, &FLySMPS::setCoreAreaProp);
+
+    connect(ui->UpdateCoreParamPushButton, &QPushButton::clicked, this, &FLySMPS::initTransCoreValues);
+    connect(this, &FLySMPS::initTransCoreValuesComplete, m_psolve.data(), &PowSuppSolve::calcElectroMagProperties);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectroMagProperties, this, &FLySMPS::setTransPrimaryProp);
+
+    connect(ui->CalcWindingPushButton, &QPushButton::clicked, this, &FLySMPS::initTransWireds);
+    connect(this, &FLySMPS::initTransWiredsComplete, m_psolve.data(), &PowSuppSolve::calcTransformerWired);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcTransformerWired, this, &FLySMPS::setTransWiredProp);
+
+    connect(ui->CalcSwitchPushButton, &QPushButton::clicked, this, &FLySMPS::initMosfetValues);
+    connect(this, &FLySMPS::initMosfetValuesComplete, m_psolve.data(), &PowSuppSolve::calcSwitchNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcSwitchNetwork, this, &FLySMPS::setSolveMosfet);
+
+    connect(ui->CalcOutPushButton, &QPushButton::clicked, this, &FLySMPS::initOutCapValues);
+    connect(this, &FLySMPS::initOutCapValuesComplete, m_psolve.data(), &PowSuppSolve::calcOtputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOtputNetwork, [this]()
+    {
+        setSolveOutDiode();
+        setOutCap();
+    });
+
+    //connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
+    //connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
+    //connect(this, SIGNAL(initOutFilterComplete()), m_psworker, SLOT(start()));
+    //connect(m_psworker, SIGNAL(started()), m_psolve.data(), SLOT(calcOutputFilter()));
+    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, m_psworker, &QThread::quit, Qt::DirectConnection);
+
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setSolveLCFilter);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setLCPlot);
+
+    connect(ui->CalcPSMPushButton, &QPushButton::clicked, this, &FLySMPS::initPowerStageModel);
+    connect(this, &FLySMPS::initPowerStageModelComplete, m_psolve.data(), &PowSuppSolve::calcPowerStageModel);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStageModel);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStagePlot);
+
+    connect(ui->CalcOptoPushButton, &QPushButton::clicked, this, &FLySMPS::initOptoFeedbStage);
+    connect(this, &FLySMPS::initOptoFeedbStageComplete, m_psolve.data(), &PowSuppSolve::calcOptocouplerFeedback);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbStage);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbPlot);
 
 }
 
 FLySMPS::~FLySMPS()
 {
-    if(m_psworker->isRunning()){
-        m_psworker->quit();
-    }
-    m_psworker->deleteLater();
+    m_psolve->abort();
+    m_psthread->wait();
+    qDebug()<<"Deleting thread and worker in Thread "<<this->QObject::thread()->currentThreadId();
+    delete m_psthread;
 }
 
 void FLySMPS::initInputValues()
@@ -49,18 +94,18 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.input_volt_ac_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmax->text())));
     m_psolve->m_indata.input_volt_ac_min = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmin->text())));
     m_psolve->m_indata.freq_line = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->FLine->text())));
-    m_psolve->m_indata.freq_switch = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
+    m_psolve->m_indata.freq_switch = static_cast<int32_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
     m_psolve->m_indata.temp_amb = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->Tamb->text())));
     m_psolve->m_indata.volt_out_one = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut1->text())));
-    m_psolve->m_indata.curr_out_one = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->IOut1->text())));
+    m_psolve->m_indata.curr_out_one = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut1->text())));
     m_psolve->m_indata.volt_out_two = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut2->text())));
-    m_psolve->m_indata.curr_out_two = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->IOut2->text())));
+    m_psolve->m_indata.curr_out_two = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut2->text())));
     m_psolve->m_indata.volt_out_three = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut3->text())));
-    m_psolve->m_indata.curr_out_three = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->IOut3->text())));
+    m_psolve->m_indata.curr_out_three = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut3->text())));
     m_psolve->m_indata.volt_out_four = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut4->text())));
-    m_psolve->m_indata.curr_out_four = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->IOut4->text())));
+    m_psolve->m_indata.curr_out_four = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut4->text())));
     m_psolve->m_indata.volt_out_aux = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VAux->text())));
-    m_psolve->m_indata.curr_out_aux = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->IAux->text())));
+    m_psolve->m_indata.curr_out_aux = static_cast<float>(convertToValues(static_cast<QString>(ui->IAux->text())));
     m_psolve->m_indata.eff = convertToValues(static_cast<QString>(ui->Eff->text()));
     m_psolve->m_indata.mrgn = convertToValues(static_cast<QString>(ui->Eff->text())); /* TMP after use real value */
 
@@ -77,7 +122,7 @@ void FLySMPS::initInputValues()
 
     m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->ReflVoltage->text())));
     m_psolve->m_indata.voltage_spike = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VSpike->text())));
-    m_psolve->m_indata.ripple_fact = convertToValues(static_cast<QString>(/*TMP*/ui->VSpike->text()));
+    m_psolve->m_indata.ripple_fact = convertToValues(static_cast<QString>(ui->KRF->text()));
     m_psolve->m_indata.eff_transf = convertToValues(static_cast<QString>(ui->EffTransf->text()));
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
@@ -86,31 +131,75 @@ void FLySMPS::initInputValues()
     ui->InductanceFact->setReadOnly(ui->ALUse->checkState() == Qt::Unchecked);
     ui->RGDiam->setReadOnly(ui->RGap->checkState() == Qt::Unchecked);
 
-    QList<QLabel*> d_out_one;
-    d_out_one << ui->Out1Pwr << ui->Out1Volt << ui->Out1TR << ui->Out1DRV << ui->Out1Diss;
-    QList<QLabel*> d_out_two;
-    d_out_two << ui->Out2Pwr << ui->Out2Volt << ui->Out2TR << ui->Out2DRV << ui->Out2Diss;
-    QList<QLabel*> d_out_three;
-    d_out_three << ui->Out3Pwr << ui->Out3Volt << ui->Out3TR << ui->Out3DRV << ui->Out3Diss;
-    QList<QLabel*> d_out_four;
-    d_out_four << ui->Out4Pwr << ui->Out4Volt << ui->Out4TR << ui->Out4DRV << ui->Out4Diss;
-    QList<QLabel*> d_out_aux;
-    d_out_aux << ui->AuxPwr << ui->AuxVolt << ui->AuxTR << ui->AuxDRV << ui->AuxDiss;
+    d_out_one.append(ui->Out1Pwr);
+    d_out_one.append(ui->Out1Volt);
+    d_out_one.append(ui->Out1TR);
+    d_out_one.append(ui->Out1DRV);
+    d_out_one.append(ui->Out1Diss);
 
-    QList<QLabel*> cap_out_one;
-    cap_out_one << ui->Out1Cap << ui->Out1CapEsr << ui->Out1CurrRMS << ui->Out1CapZF << ui->Out1CapVRip << ui->Out1CapDiss;
-    QList<QLabel*> cap_out_two;
-    cap_out_two << ui->Out2Cap << ui->Out2CapEsr << ui->Out2CurrRMS << ui->Out2CapZF << ui->Out2CapVRip << ui->Out2CapDiss;
-    QList<QLabel*> cap_out_three;
-    cap_out_three << ui->Out3Cap << ui->Out3CapEsr << ui->Out3CurrRMS << ui->Out3CapZF << ui->Out3CapVRip << ui->Out3CapDiss;
-    QList<QLabel*> cap_out_four;
-    cap_out_four << ui->Out4Cap << ui->Out4CapEsr << ui->Out4CurrRMS << ui->Out4CapZF << ui->Out4CapVRip << ui->Out4CapDiss;
-    QList<QLabel*> cap_out_aux;
-    cap_out_aux << ui->AuxCap << ui->AuxCapEsr << ui->AuxCurrRMS << ui->AuxCapZF << ui->AuxCapVRip << ui->AuxCapDiss;
+    d_out_two.append(ui->Out2Pwr);
+    d_out_two.append(ui->Out2Volt);
+    d_out_two.append(ui->Out2TR);
+    d_out_two.append(ui->Out2DRV);
+    d_out_two.append(ui->Out2Diss);
+
+    d_out_three.append(ui->Out3Pwr);
+    d_out_three.append(ui->Out3Volt);
+    d_out_three.append(ui->Out3TR);
+    d_out_three.append(ui->Out3DRV);
+    d_out_three.append(ui->Out3Diss);
+
+    d_out_four.append(ui->Out4Pwr);
+    d_out_four.append(ui->Out4Volt);
+    d_out_four.append(ui->Out4TR);
+    d_out_four.append(ui->Out4DRV);
+    d_out_four.append(ui->Out4Diss);
+
+    d_out_aux.append(ui->AuxPwr);
+    d_out_aux.append(ui->AuxVolt);
+    d_out_aux.append(ui->AuxTR);
+    d_out_aux.append(ui->AuxDRV);
+    d_out_aux.append(ui->AuxDiss);
+
+    cap_out_one.append(ui->Out1Cap);
+    cap_out_one.append(ui->Out1CapEsr);
+    cap_out_one.append(ui->Out1CurrRMS);
+    cap_out_one.append(ui->Out1CapZF);
+    cap_out_one.append(ui->Out1CapVRip);
+    cap_out_one.append(ui->Out1CapDiss);
+
+    cap_out_two.append(ui->Out2Cap);
+    cap_out_two.append(ui->Out2CapEsr);
+    cap_out_two.append(ui->Out2CurrRMS);
+    cap_out_two.append(ui->Out2CapZF);
+    cap_out_two.append(ui->Out2CapVRip);
+    cap_out_two.append(ui->Out2CapDiss);
+
+    cap_out_three.append(ui->Out3Cap);
+    cap_out_three.append(ui->Out3CapEsr);
+    cap_out_three.append(ui->Out3CurrRMS);
+    cap_out_three.append(ui->Out3CapZF);
+    cap_out_three.append(ui->Out3CapVRip);
+    cap_out_three.append(ui->Out3CapDiss);
+
+    cap_out_four.append(ui->Out4Cap);
+    cap_out_four.append(ui->Out4CapEsr);
+    cap_out_four.append(ui->Out4CurrRMS);
+    cap_out_four.append(ui->Out4CapZF);
+    cap_out_four.append(ui->Out4CapVRip);
+    cap_out_four.append(ui->Out4CapDiss);
+
+    cap_out_aux.append(ui->AuxCap);
+    cap_out_aux.append(ui->AuxCapEsr);
+    cap_out_aux.append(ui->AuxCurrRMS);
+    cap_out_aux.append(ui->AuxCapZF);
+    cap_out_aux.append(ui->AuxCapVRip);
+    cap_out_aux.append(ui->AuxCapDiss);
 }
 
 void FLySMPS::setInputNetwork()
 {
+    ui->PowOut->setNum(m_psolve->m_indata.power_out_max);
     ui->DiodeCurrPeak->setNum(m_psolve->m_db->diode_peak_curr);
     ui->DiodeCurrRMS->setNum(m_psolve->m_db->diode_rms_curr);
     ui->DiodeCurrAVG->setNum(m_psolve->m_db->diode_avg_curr);
@@ -145,15 +234,18 @@ void FLySMPS::initTransValues()
     /** If use AL factor for calculate */
     else if(ui->ALUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_INDUCT_FACTOR;
-        QString ind_fct;
-        ui->InductanceFact->textEdited(ind_fct);
-        m_psolve->m_cs.ind_fact = convertToValues(ind_fct);
+        ui->InductanceFact->setReadOnly(false);
+
+        //QString ind_fct;
+        //ui->InductanceFact->textEdited(ind_fct);
+        m_psolve->m_cs.ind_fact = convertToValues(static_cast<QString>(ui->InductanceFact->text()));
         //TODO Check error value, use QValidator
     }
     /** If use maximum flux density */
     else if(ui->BMUse->isChecked()){
         m_psolve->m_fns = FBPT_NUM_SETTING::FBPT_FLUX_PEAK;
     }
+    emit initTransValuesComplete();
 }
 
 void FLySMPS::setInitialiseTransProp()
@@ -169,6 +261,12 @@ void FLySMPS::setInitialiseTransProp()
     ui->CurPriRMS->setNum(m_psolve->m_ptpe->curr_primary_rms);
 }
 
+void FLySMPS::setCoreAreaProp()
+{
+    ui->WaAe->setNum(m_psolve->m_ptpe->core_area_product);
+    ui->GeomCoeff->setNum(m_psolve->m_ptpe->core_geom_coeff);
+}
+
 //TODO reimplement for use one check branch
 void FLySMPS::initTransCoreValues()
 {
@@ -180,10 +278,19 @@ void FLySMPS::initTransCoreValues()
     }
 
     m_psolve->m_cs.core_cross_sect_area = convertToValues(static_cast<QString>(ui->AE->text()));
-    m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+
+    if(ui->WA->text().isEmpty())
+    {
+        m_psolve->m_cs.core_wind_area = -1.0;
+    }
+    else{
+        m_psolve->m_cs.core_wind_area = convertToValues(static_cast<QString>(ui->WA->text()));
+    }
+
     m_psolve->m_cs.core_vol = convertToValues(static_cast<QString>(ui->VE->text()));
     m_psolve->m_cs.mean_leng_per_turn = convertToValues(static_cast<QString>(ui->MLT->text()));
     m_psolve->m_cs.mean_mag_path_leng = convertToValues(static_cast<QString>(ui->AE->text()));
+    m_psolve->m_cs.core_permeal = convertToValues(static_cast<QString>(ui->MUE->text()));
     m_psolve->m_md.D = convertToValues(static_cast<QString>(ui->Dsize->text()));
     m_psolve->m_md.C = convertToValues(static_cast<QString>(ui->Csize->text()));
     m_psolve->m_md.F = convertToValues(static_cast<QString>(ui->Fsize->text()));
@@ -199,18 +306,17 @@ void FLySMPS::initTransCoreValues()
     else{
         m_psolve->m_md.Diam = 0.;
     }
+    emit initTransCoreValuesComplete();
 }
 
 void FLySMPS::setTransPrimaryProp()
 {
-    ui->WaAe->setNum(m_psolve->m_ptpe->core_area_product);
-    ui->GeomCoeff->setNum(m_psolve->m_ptpe->core_geom_coeff);
-    ui->PrimaryNum->setNum(m_psolve->m_ptpe->number_primary);
+    ui->PrimaryNum->setNum(static_cast<int32_t>(m_psolve->m_ptpe->number_primary));
     ui->CurrDensity->setNum(m_psolve->m_ptpe->curr_dens);
     ui->LengAirGap->setNum(m_psolve->m_ptpe->length_air_gap);
     ui->FrigRluxCoeff->setNum(m_psolve->m_ptpe->fring_flux_fact);
 
-    ui->ActPrimaryNum->setNum(m_psolve->m_ptpe->actual_num_primary);
+    ui->ActPrimaryNum->setNum(static_cast<int32_t>(m_psolve->m_ptpe->actual_num_primary));
     ui->ActBMax->setNum(m_psolve->m_ptpe->actual_flux_dens_peak);
     ui->ActReflVolt->setNum(m_psolve->m_ptpe->actual_volt_reflected);
     ui->ActDutyMax->setNum(m_psolve->m_ptpe->actual_max_duty_cycle);
@@ -218,23 +324,52 @@ void FLySMPS::setTransPrimaryProp()
 
 void FLySMPS::initTransWireds()
 {
-    m_psolve->m_psw.m_af[0] = convertToValues(static_cast<QString>(ui->AFNPm->text()));
-    m_psolve->m_psw.m_af[1] = convertToValues(static_cast<QString>(ui->AFOut1->text()));;
-    m_psolve->m_psw.m_af[2] = convertToValues(static_cast<QString>(ui->AFOut2->text()));;
-    m_psolve->m_psw.m_af[3] = convertToValues(static_cast<QString>(ui->AFOut3->text()));;
-    m_psolve->m_psw.m_af[4] = convertToValues(static_cast<QString>(ui->AFOut4->text()));;
-    m_psolve->m_psw.m_af[5] = convertToValues(static_cast<QString>(ui->AFAux->text()));;
+    auto af_0 = convertToValues(static_cast<QString>(ui->AFNPm->text()));
+    auto af_1 = convertToValues(static_cast<QString>(ui->AFOut1->text()));
+    auto af_2 = convertToValues(static_cast<QString>(ui->AFOut2->text()));
+    auto af_3 = convertToValues(static_cast<QString>(ui->AFOut3->text()));
+    auto af_4 = convertToValues(static_cast<QString>(ui->AFOut4->text()));
+    auto af_5 = convertToValues(static_cast<QString>(ui->AFAux->text()));
 
-    m_psolve->m_psw.m_ins[0] = convertToValues(static_cast<QString>(ui->INSPm->text()));
-    m_psolve->m_psw.m_ins[1] = convertToValues(static_cast<QString>(ui->INSOut1->text()));
-    m_psolve->m_psw.m_ins[2] = convertToValues(static_cast<QString>(ui->INSOut2->text()));
-    m_psolve->m_psw.m_ins[3] = convertToValues(static_cast<QString>(ui->INSOut3->text()));
-    m_psolve->m_psw.m_ins[4] = convertToValues(static_cast<QString>(ui->INSOut4->text()));
-    m_psolve->m_psw.m_ins[5] = convertToValues(static_cast<QString>(ui->INSAux->text()));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_0));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_1));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_2));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_3));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_4));
+    m_psolve->m_psw.m_af.push_back(static_cast<float>(af_5));
 
-    m_psolve->m_psw.m_fcu = convertToValues(static_cast<QString>(ui->Fcu->text()));
-    m_psolve->m_psw.m_mcd = convertToValues(static_cast<QString>(ui->InM->text()));
+    auto ins_0 = convertToValues(static_cast<QString>(ui->INSPm->text()));
+    auto ins_1 = convertToValues(static_cast<QString>(ui->INSOut1->text()));
+    auto ins_2 = convertToValues(static_cast<QString>(ui->INSOut2->text()));
+    auto ins_3 = convertToValues(static_cast<QString>(ui->INSOut3->text()));
+    auto ins_4 = convertToValues(static_cast<QString>(ui->INSOut4->text()));
+    auto ins_5 = convertToValues(static_cast<QString>(ui->INSAux->text()));
 
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_0));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_1));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_2));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_3));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_4));
+    m_psolve->m_psw.m_ins.push_back(static_cast<float>(ins_5));
+
+    auto npw_prim = convertToValues(static_cast<QString>(ui->NPWPrim->text()));
+    auto npw_out_1 = convertToValues(static_cast<QString>(ui->NPWOut1->text()));
+    auto npw_out_2 = convertToValues(static_cast<QString>(ui->NPWOut2->text()));
+    auto npw_out_3 = convertToValues(static_cast<QString>(ui->NPWOut3->text()));
+    auto npw_out_4 = convertToValues(static_cast<QString>(ui->NPWOut4->text()));
+    auto npw_aux = convertToValues(static_cast<QString>(ui->NPWAux->text()));
+
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_prim));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_1));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_2));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_3));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_out_4));
+    m_psolve->m_psw.m_npw.push_back(static_cast<int16_t>(npw_aux));
+
+    m_psolve->m_psw.m_fcu = static_cast<float>(convertToValues(static_cast<QString>(ui->Fcu->text())));
+    m_psolve->m_psw.m_mcd = static_cast<float>(convertToValues(static_cast<QString>(ui->InM->text())));
+
+    emit initTransWiredsComplete();
 }
 
 void FLySMPS::setTransWiredProp()
@@ -287,29 +422,35 @@ void FLySMPS::setTransWiredProp()
     ui->Out4NTL->setNum(m_psolve->m_ptsw->out_four_wind["NTL"]);
     ui->Out4LN->setNum(m_psolve->m_ptsw->out_four_wind["LN"]);
 
-    ui->AuxN->setNum(m_psolve->m_ptsw->out_aux_wind["NSEC"]);
-    ui->AuxAN->setNum(m_psolve->m_ptsw->out_aux_wind["ANS"]);
-    ui->AuxAWGN->setNum(m_psolve->m_ptsw->out_aux_wind["AWGNS"]);
-    ui->AuxD->setNum(m_psolve->m_ptsw->out_aux_wind["DS"]);
+    ui->AuxN->setNum(m_psolve->m_ptsw->out_aux_wind["NAUX"]);
+    ui->AuxAN->setNum(m_psolve->m_ptsw->out_aux_wind["ANAUX"]);
+    ui->AuxAWGN->setNum(m_psolve->m_ptsw->out_aux_wind["AWGAUX"]);
+    ui->AuxD->setNum(m_psolve->m_ptsw->out_aux_wind["DAUX"]);
     ui->AuxECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
     ui->AuxOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
     ui->AuxNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
 
-    ui->PrimAP->setNum(m_psolve->m_ptsw->out_aux_wind["AP"]);
-    ui->PrimAWGP->setNum(m_psolve->m_ptsw->out_aux_wind["AWGP"]);
-    ui->PrimDP->setNum(m_psolve->m_ptsw->out_aux_wind["DP"]);
-    ui->PrimECA->setNum(m_psolve->m_ptsw->out_aux_wind["ECA"]);
-    ui->PrimJP->setNum(m_psolve->m_ptsw->out_aux_wind["JP"]);
-    ui->PrimOD->setNum(m_psolve->m_ptsw->out_aux_wind["OD"]);
-    ui->PrimNTL->setNum(m_psolve->m_ptsw->out_aux_wind["NTL"]);
-    ui->PrimLN->setNum(m_psolve->m_ptsw->out_aux_wind["LN"]);
+    ui->PrimAP->setNum(m_psolve->m_ptsw->primary_wind["AP"]);
+    ui->PrimAWGP->setNum(m_psolve->m_ptsw->primary_wind["AWGP"]);
+    ui->PrimDP->setNum(m_psolve->m_ptsw->primary_wind["DP"]);
+    ui->PrimECA->setNum(m_psolve->m_ptsw->primary_wind["ECA"]);
+    ui->PrimJP->setNum(m_psolve->m_ptsw->primary_wind["JP"]);
+    ui->PrimOD->setNum(m_psolve->m_ptsw->primary_wind["OD"]);
+    ui->PrimNTL->setNum(m_psolve->m_ptsw->primary_wind["NTL"]);
+    ui->PrimLN->setNum(m_psolve->m_ptsw->primary_wind["LN"]);
 }
 
 void FLySMPS::initMosfetValues()
 {
     m_psolve->m_mospr.m_vgs = convertToValues(static_cast<QString>(ui->VGS->text()));
     m_psolve->m_mospr.m_idr = convertToValues(static_cast<QString>(ui->CurrDrv->text()));
+    m_psolve->m_mospr.m_fet_cur_max = convertToValues(static_cast<QString>(ui->CurrDSMax->text()));
+    m_psolve->m_mospr.m_fet_cur_min = convertToValues(static_cast<QString>(ui->CurrDSMin->text()));
     m_psolve->m_mospr.m_qg = convertToValues(static_cast<QString>(ui->QGate->text()));
+    m_psolve->m_mospr.m_qgd = convertToValues(static_cast<QString>(ui->QGD->text()));
+    m_psolve->m_mospr.m_qgs = convertToValues(static_cast<QString>(ui->QGS->text()));
+    m_psolve->m_mospr.m_rgate = convertToValues(static_cast<QString>(ui->RGate->text()));
+    m_psolve->m_mospr.m_vmill = convertToValues(static_cast<QString>(ui->Vmill->text()));
     m_psolve->m_mospr.m_coss = convertToValues(static_cast<QString>(ui->COss->text()));
     m_psolve->m_mospr.m_rdson = convertToValues(static_cast<QString>(ui->RdsOn->text()));
 
@@ -326,9 +467,12 @@ void FLySMPS::initMosfetValues()
     };
 
     m_psolve->m_ccsp.cl_turn_rat = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary);
+    m_psolve->m_ccsp.leakage_induct = m_psolve->m_indata.leakage_induct;
     m_psolve->m_ccsp.cl_vol_rip = convertToValues(static_cast<QString>(ui->SnubbVoltRipp->text()));
 
     m_psolve->m_ccsp.cs_volt = convertToValues(static_cast<QString>(ui->CSVolt->text()));
+
+    emit initMosfetValuesComplete();
 }
 
 void FLySMPS::setSolveMosfet()
@@ -341,8 +485,8 @@ void FLySMPS::setSolveMosfet()
 
     ui->Toff->setNum(m_psolve->m_pm->mosfet_off_time);
     ui->Ton->setNum(m_psolve->m_pm->mosfet_on_time);
-    ui->Ttot->setNum(m_psolve->m_pm->mosfet_sw_tot);
-    ui->Trise_fall->setNum(m_psolve->m_pm->mosfet_rise_time);
+    ui->Trise->setNum(m_psolve->m_pm->mosfet_rise_time);
+    ui->Tfall->setNum(m_psolve->m_pm->mosfet_fall_time);
 
     ui->MosCondL->setNum(m_psolve->m_pm->mosfet_conduct_loss);
     ui->MosDL->setNum(m_psolve->m_pm->mosfet_drive_loss);
@@ -361,134 +505,141 @@ void FLySMPS::setSolveMosfet()
 
 void FLySMPS::setSolveOutDiode()
 {
-    int16_t a=0, b=0, c=0, d=0, e=0; //counters
+    d_out_one[0]->setNum(m_psolve->m_fod->out_diode_first.value("SOP"));
+    d_out_one[1]->setNum(m_psolve->m_fod->out_diode_first.value("SOV"));
+    d_out_one[2]->setNum(m_psolve->m_fod->out_diode_first.value("TR"));
+    d_out_one[3]->setNum(m_psolve->m_fod->out_diode_first.value("DRV"));
+    d_out_one[4]->setNum(m_psolve->m_fod->out_diode_first.value("DPD"));
 
-    for(auto one_itr = m_psolve->m_fod->out_diode_first.constBegin();
-        one_itr != m_psolve->m_fod->out_diode_first.constEnd();
-        ++a, ++one_itr)
-    {
-        d_out_one[a]->setNum(one_itr.value());
-    }
+    d_out_two[0]->setNum(m_psolve->m_fod->out_diode_sec.value("SOP"));
+    d_out_two[1]->setNum(m_psolve->m_fod->out_diode_sec.value("SOV"));
+    d_out_two[2]->setNum(m_psolve->m_fod->out_diode_sec.value("TR"));
+    d_out_two[3]->setNum(m_psolve->m_fod->out_diode_sec.value("DRV"));
+    d_out_two[4]->setNum(m_psolve->m_fod->out_diode_sec.value("DPD"));
 
-    for(auto two_itr = m_psolve->m_fod->out_diode_sec.constBegin();
-        two_itr != m_psolve->m_fod->out_diode_sec.constEnd();
-        ++b, ++two_itr)
-    {
-        d_out_two[b]->setNum(two_itr.value());
-    }
+    d_out_three[0]->setNum(m_psolve->m_fod->out_diode_thrid.value("SOP"));
+    d_out_three[1]->setNum(m_psolve->m_fod->out_diode_thrid.value("SOV"));
+    d_out_three[2]->setNum(m_psolve->m_fod->out_diode_thrid.value("TR"));
+    d_out_three[3]->setNum(m_psolve->m_fod->out_diode_thrid.value("DRV"));
+    d_out_three[4]->setNum(m_psolve->m_fod->out_diode_thrid.value("DPD"));
 
-    for(auto three_itr = m_psolve->m_fod->out_diode_thrid.constBegin();
-        three_itr != m_psolve->m_fod->out_diode_thrid.constEnd();
-        ++b, ++three_itr)
-    {
-        d_out_three[c]->setNum(three_itr.value());
-    }
+    d_out_four[0]->setNum(m_psolve->m_fod->out_diode_four.value("SOP"));
+    d_out_four[1]->setNum(m_psolve->m_fod->out_diode_four.value("SOV"));
+    d_out_four[2]->setNum(m_psolve->m_fod->out_diode_four.value("TR"));
+    d_out_four[3]->setNum(m_psolve->m_fod->out_diode_four.value("DRV"));
+    d_out_four[4]->setNum(m_psolve->m_fod->out_diode_four.value("DPD"));
 
-    for(auto four_itr = m_psolve->m_fod->out_diode_four.constBegin();
-        four_itr != m_psolve->m_fod->out_diode_four.constEnd();
-        ++b, ++four_itr)
-    {
-        d_out_four[d]->setNum(four_itr.value());
-    }
-
-    for(auto aux_itr = m_psolve->m_fod->out_diode_aux.constBegin();
-        aux_itr != m_psolve->m_fod->out_diode_aux.constEnd();
-        ++b, ++aux_itr)
-    {
-        d_out_aux[e]->setNum(aux_itr.value());
-    }
+    d_out_aux[0]->setNum(m_psolve->m_fod->out_diode_aux.value("SOP"));
+    d_out_aux[1]->setNum(m_psolve->m_fod->out_diode_aux.value("SOV"));
+    d_out_aux[2]->setNum(m_psolve->m_fod->out_diode_aux.value("TR"));
+    d_out_aux[3]->setNum(m_psolve->m_fod->out_diode_aux.value("DRV"));
+    d_out_aux[4]->setNum(m_psolve->m_fod->out_diode_aux.value("DPD"));
 }
 
 void FLySMPS::initOutCapValues()
 {
-    m_psolve->m_cop[0].co_volts_rippl = convertToValues(static_cast<QString>(ui->Out1VRip->text()));
-    m_psolve->m_cop[0].co_esr_perc = convertToValues(static_cast<QString>(ui->Out1ESRPerc->text()));
-    m_psolve->m_cop[0].co_cros_frq_start_val = convertToValues(static_cast<QString>(ui->Out1ZFC->text()));
-    m_psolve->m_cop[0].co_volts_out = m_psolve->m_indata.volt_out_one;
-    m_psolve->m_cop[0].co_curr_peak_out = m_psolve->m_indata.curr_out_one;
+    m_psolve->m_cop.reserve(5);
 
-    m_psolve->m_cop[1].co_volts_rippl = convertToValues(static_cast<QString>(ui->Out2VRip->text()));
-    m_psolve->m_cop[1].co_esr_perc = convertToValues(static_cast<QString>(ui->Out2ESRPerc->text()));
-    m_psolve->m_cop[1].co_cros_frq_start_val = convertToValues(static_cast<QString>(ui->Out2ZFC->text()));
-    m_psolve->m_cop[1].co_volts_out = m_psolve->m_indata.volt_out_two;
-    m_psolve->m_cop[1].co_curr_peak_out = m_psolve->m_indata.curr_out_two;
+    CapOutProp co_first;
+    CapOutProp co_sec;
+    CapOutProp co_thr;
+    CapOutProp co_four;
+    CapOutProp co_fifth;
 
-    m_psolve->m_cop[2].co_volts_rippl = convertToValues(static_cast<QString>(ui->Out3VRip->text()));
-    m_psolve->m_cop[2].co_esr_perc = convertToValues(static_cast<QString>(ui->Out3ESRPerc->text()));
-    m_psolve->m_cop[2].co_cros_frq_start_val = convertToValues(static_cast<QString>(ui->Out3ZFC->text()));
-    m_psolve->m_cop[2].co_volts_out = m_psolve->m_indata.volt_out_three;
-    m_psolve->m_cop[2].co_curr_peak_out = m_psolve->m_indata.curr_out_three;
+    co_first.co_volts_rippl = static_cast<float>(convertToValues(static_cast<QString>(ui->Out1VRip->text())));
+    co_first.co_esr_perc = static_cast<float>(convertToValues(static_cast<QString>(ui->Out1ESRPerc->text())));
+    co_first.co_cros_frq_start_val = static_cast<float>(convertToValues(static_cast<QString>(ui->Out1ZFC->text())));
+    co_first.co_volts_out = m_psolve->m_indata.volt_out_one;
+    co_first.co_curr_peak_out = m_psolve->m_indata.curr_out_one;
+    m_psolve->m_cop.push_back(co_first);
 
-    m_psolve->m_cop[3].co_volts_rippl = convertToValues(static_cast<QString>(ui->Out4VRip->text()));
-    m_psolve->m_cop[3].co_esr_perc = convertToValues(static_cast<QString>(ui->Out4ESRPerc->text()));
-    m_psolve->m_cop[3].co_cros_frq_start_val = convertToValues(static_cast<QString>(ui->Out4ZFC->text()));
-    m_psolve->m_cop[3].co_volts_out = m_psolve->m_indata.volt_out_four;
-    m_psolve->m_cop[3].co_curr_peak_out = m_psolve->m_indata.curr_out_four;
+    co_sec.co_volts_rippl = static_cast<float>(convertToValues(static_cast<QString>(ui->Out2VRip->text())));
+    co_sec.co_esr_perc = static_cast<float>(convertToValues(static_cast<QString>(ui->Out2ESRPerc->text())));
+    co_sec.co_cros_frq_start_val = static_cast<float>(convertToValues(static_cast<QString>(ui->Out2ZFC->text())));
+    co_sec.co_volts_out = m_psolve->m_indata.volt_out_two;
+    co_sec.co_curr_peak_out = m_psolve->m_indata.curr_out_two;
+    m_psolve->m_cop.push_back(co_sec);
 
-    m_psolve->m_cop[4].co_volts_rippl = convertToValues(static_cast<QString>(ui->AuxVRip->text()));
-    m_psolve->m_cop[4].co_esr_perc = convertToValues(static_cast<QString>(ui->AuxESRPerc->text()));
-    m_psolve->m_cop[4].co_cros_frq_start_val = convertToValues(static_cast<QString>(ui->AuxZFC->text()));
-    m_psolve->m_cop[4].co_volts_out = m_psolve->m_indata.volt_out_aux;
-    m_psolve->m_cop[4].co_curr_peak_out = m_psolve->m_indata.curr_out_aux;
+    co_thr.co_volts_rippl = static_cast<float>(convertToValues(static_cast<QString>(ui->Out3VRip->text())));
+    co_thr.co_esr_perc = static_cast<float>(convertToValues(static_cast<QString>(ui->Out3ESRPerc->text())));
+    co_thr.co_cros_frq_start_val = static_cast<float>(convertToValues(static_cast<QString>(ui->Out3ZFC->text())));
+    co_thr.co_volts_out = m_psolve->m_indata.volt_out_three;
+    co_thr.co_curr_peak_out = m_psolve->m_indata.curr_out_three;
+    m_psolve->m_cop.push_back(co_thr);
 
+    co_four.co_volts_rippl = static_cast<float>(convertToValues(static_cast<QString>(ui->Out4VRip->text())));
+    co_four.co_esr_perc = static_cast<float>(convertToValues(static_cast<QString>(ui->Out4ESRPerc->text())));
+    co_four.co_cros_frq_start_val = static_cast<float>(convertToValues(static_cast<QString>(ui->Out4ZFC->text())));
+    co_four.co_volts_out = m_psolve->m_indata.volt_out_four;
+    co_four.co_curr_peak_out = m_psolve->m_indata.curr_out_four;
+    m_psolve->m_cop.push_back(co_four);
+
+    co_fifth.co_volts_rippl = static_cast<float>(convertToValues(static_cast<QString>(ui->AuxVRip->text())));
+    co_fifth.co_esr_perc = static_cast<float>(convertToValues(static_cast<QString>(ui->AuxESRPerc->text())));
+    co_fifth.co_cros_frq_start_val = static_cast<float>(convertToValues(static_cast<QString>(ui->AuxZFC->text())));
+    co_fifth.co_volts_out = m_psolve->m_indata.volt_out_aux;
+    co_fifth.co_curr_peak_out = m_psolve->m_indata.curr_out_aux;
+    m_psolve->m_cop.push_back(co_fifth);
+
+    emit initOutCapValuesComplete();
 }
 
 void FLySMPS::setOutCap()
 {
-    int16_t a=0, b=0, c=0, d=0, e=0; //counters
+    cap_out_one[0]->setNum(m_psolve->m_foc->out_cap_first.value("CVO"));
+    cap_out_one[1]->setNum(m_psolve->m_foc->out_cap_first.value("CESRO"));
+    cap_out_one[2]->setNum(m_psolve->m_foc->out_cap_first.value("CCRMS"));
+    cap_out_one[3]->setNum(m_psolve->m_foc->out_cap_first.value("CZFCO"));
+    cap_out_one[4]->setNum(m_psolve->m_foc->out_cap_first.value("CRVO"));
+    cap_out_one[5]->setNum(m_psolve->m_foc->out_cap_first.value("COL"));
 
-    for(auto one_itr = m_psolve->m_foc->out_cap_first.constBegin();
-        one_itr != m_psolve->m_foc->out_cap_first.constEnd();
-        ++a, ++one_itr)
-    {
-        cap_out_one[a]->setNum(one_itr.value());
-    }
+    cap_out_two[0]->setNum(m_psolve->m_foc->out_cap_sec.value("CVO"));
+    cap_out_two[1]->setNum(m_psolve->m_foc->out_cap_sec.value("CESRO"));
+    cap_out_two[2]->setNum(m_psolve->m_foc->out_cap_sec.value("CCRMS"));
+    cap_out_two[3]->setNum(m_psolve->m_foc->out_cap_sec.value("CZFCO"));
+    cap_out_two[4]->setNum(m_psolve->m_foc->out_cap_sec.value("CRVO"));
+    cap_out_two[5]->setNum(m_psolve->m_foc->out_cap_sec.value("COL"));
 
-    for(auto two_itr = m_psolve->m_foc->out_cap_sec.constBegin();
-        two_itr != m_psolve->m_foc->out_cap_sec.constEnd();
-        ++b, ++two_itr)
-    {
-        cap_out_two[b]->setNum(two_itr.value());
-    }
+    cap_out_three[0]->setNum(m_psolve->m_foc->out_cap_thrid.value("CVO"));
+    cap_out_three[1]->setNum(m_psolve->m_foc->out_cap_thrid.value("CESRO"));
+    cap_out_three[2]->setNum(m_psolve->m_foc->out_cap_thrid.value("CCRMS"));
+    cap_out_three[3]->setNum(m_psolve->m_foc->out_cap_thrid.value("CZFCO"));
+    cap_out_three[4]->setNum(m_psolve->m_foc->out_cap_thrid.value("CRVO"));
+    cap_out_three[5]->setNum(m_psolve->m_foc->out_cap_thrid.value("COL"));
 
-    for(auto three_itr = m_psolve->m_foc->out_cap_thrid.constBegin();
-        three_itr != m_psolve->m_foc->out_cap_thrid.constEnd();
-        ++b, ++three_itr)
-    {
-        cap_out_three[c]->setNum(three_itr.value());
-    }
+    cap_out_four[0]->setNum(m_psolve->m_foc->out_cap_four.value("CVO"));
+    cap_out_four[1]->setNum(m_psolve->m_foc->out_cap_four.value("CESRO"));
+    cap_out_four[2]->setNum(m_psolve->m_foc->out_cap_four.value("CCRMS"));
+    cap_out_four[3]->setNum(m_psolve->m_foc->out_cap_four.value("CZFCO"));
+    cap_out_four[4]->setNum(m_psolve->m_foc->out_cap_four.value("CRVO"));
+    cap_out_four[5]->setNum(m_psolve->m_foc->out_cap_four.value("COL"));
 
-    for(auto four_itr = m_psolve->m_foc->out_cap_four.constBegin();
-        four_itr != m_psolve->m_foc->out_cap_four.constEnd();
-        ++b, ++four_itr)
-    {
-        cap_out_four[d]->setNum(four_itr.value());
-    }
-
-    for(auto aux_itr = m_psolve->m_foc->out_cap_aux.constBegin();
-        aux_itr != m_psolve->m_foc->out_cap_aux.constEnd();
-        ++b, ++aux_itr)
-    {
-        cap_out_aux[e]->setNum(aux_itr.value());
-    }
+    cap_out_aux[0]->setNum(m_psolve->m_foc->out_cap_aux.value("CVO"));
+    cap_out_aux[1]->setNum(m_psolve->m_foc->out_cap_aux.value("CESRO"));
+    cap_out_aux[2]->setNum(m_psolve->m_foc->out_cap_aux.value("CCRMS"));
+    cap_out_aux[3]->setNum(m_psolve->m_foc->out_cap_aux.value("CZFCO"));
+    cap_out_aux[4]->setNum(m_psolve->m_foc->out_cap_aux.value("CRVO"));
+    cap_out_aux[5]->setNum(m_psolve->m_foc->out_cap_aux.value("COL"));
 }
 
 void FLySMPS::initOutFilter()
 {
-    m_psolve->m_of->angular_cut_freq = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
+    m_psolve->m_of->frequency = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
     m_psolve->m_of->load_resistance = convertToValues(static_cast<QString>(ui->LCF_ResLoad->text()));
+    emit initOutFilterComplete();
 }
 
 void FLySMPS::setSolveLCFilter()
 {
-    //todo
-    ui->LCAngCutFreq->setNum(1);
-    ui->LCInd->setNum(1);
-    ui->LCCap->setNum(1);
-    ui->LCQual->setNum(1);
-    ui->LCDamp->setNum(1);
-    ui->LCCutFreq->setNum(1);
-    ui->LCOutRippVolt->setNum(1);
+    ui->LCFilterGraph->replot();
+
+    ui->LCAngCutFreq->setNum(m_psolve->m_of->angular_cut_freq);
+    ui->LCInd->setNum(m_psolve->m_of->inductor);
+    ui->LCCap->setNum(m_psolve->m_of->capacitor);
+    ui->LCQual->setNum(m_psolve->m_of->q_factor);
+    ui->LCDamp->setNum(m_psolve->m_of->damping);
+    ui->LCCutFreq->setNum(m_psolve->m_of->cut_freq);
+    ui->LCOutRippVolt->setNum(m_psolve->m_of->out_ripp_voltage);
 }
 
 void FLySMPS::setLCPlot()
@@ -498,9 +649,11 @@ void FLySMPS::setLCPlot()
 
     ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis, ui->LCFilterGraph->yAxis);
     ui->LCFilterGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->LCFilterGraph->graph(0)->setName("Mag.");
 
     ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis2, ui->LCFilterGraph->yAxis2);
     ui->LCFilterGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->LCFilterGraph->graph(1)->setName("Phs.");
 
     //configure right and top axis to show ticks but no labels:
     ui->LCFilterGraph->xAxis2->setVisible(true);
@@ -516,11 +669,27 @@ void FLySMPS::setLCPlot()
     ui->LCFilterGraph->yAxis->setLabel("Mag. dB");
     ui->LCFilterGraph->yAxis2->setLabel("Deg. ");
 
+    ui->LCFilterGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->LCFilterGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->LCFilterGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->LCFilterGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
     //set axes ranges, so we see all data:
-    ui->LCFilterGraph->yAxis->setRange(-27, 3);
-    ui->LCFilterGraph->xAxis->setRange(0, 1000000);
+    ui->LCFilterGraph->yAxis->setRange(-60, 3);
+    ui->LCFilterGraph->xAxis->setRange(1e3, 1e5);
     ui->LCFilterGraph->yAxis2->setRange(0, -90);
-    ui->LCFilterGraph->xAxis2->setRange(0, 1000000);
+    ui->LCFilterGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->LCFilterGraph->xAxis->setNumberFormat("eb");
+    ui->LCFilterGraph->xAxis->setNumberPrecision(0);
+
+    ui->LCFilterGraph->xAxis2->setNumberFormat("eb");
+    ui->LCFilterGraph->xAxis2->setNumberPrecision(0);
+
+    ui->LCFilterGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
+    ui->LCFilterGraph->legend->setVisible(true);
+    ui->LCFilterGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
+    ui->LCFilterGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
     m_psolve->m_of->of_freq_array.clear();
@@ -549,14 +718,14 @@ void FLySMPS::initPowerStageModel()
         return static_cast<float>(nump/n_frst);
     };
 
-    m_psolve->m_ssm.input_voltage = m_psolve->m_indata.input_volt_ac_min;
+    m_psolve->m_ssm.input_voltage = m_psolve->m_indata.input_volt_ac_max;
     m_psolve->m_ssm.freq_switch = m_psolve->m_indata.freq_switch;
     m_psolve->m_ssm.actual_duty = m_psolve->m_ptpe->actual_max_duty_cycle;
     m_psolve->m_ssm.primary_ind = m_psolve->m_ptpe->primary_induct;
     m_psolve->m_ssm.res_sense = m_psolve->m_pm->curr_sense_res;
     m_psolve->m_ssm.output_voltage = m_psolve->m_indata.volt_out_one;
     m_psolve->m_ssm.output_full_load_res = m_psolve->m_indata.volt_out_one/m_psolve->m_indata.curr_out_one;
-    m_psolve->m_ssm.turn_ratio = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary);
+    m_psolve->m_ssm.turn_ratio = commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary) /*m_psolve->m_ptpe->number_primary/m_psolve->m_ptsw->out_one_wind.value("NSEC")*/;
     m_psolve->m_ssm.output_cap = m_psolve->m_foc->out_cap_first["CVO"];
     m_psolve->m_ssm.output_cap_esr = m_psolve->m_foc->out_cap_first["CESRO"];
     m_psolve->m_ssm.sawvolt = rsc(m_psolve->m_indata.volt_out_one,
@@ -564,10 +733,13 @@ void FLySMPS::initPowerStageModel()
                                   m_psolve->m_pm->curr_sense_res,
                                   commTR(m_psolve->m_ptpe->actual_max_duty_cycle, m_psolve->m_ptpe->actual_num_primary),
                                   m_psolve->m_ptpe->primary_induct);
+    emit initPowerStageModelComplete();
 }
 
 void FLySMPS::setPowerStageModel()
 {
+    ui->PSMGraph->replot();
+
     ui->PSMFz1->setNum(m_psolve->m_pssm->ps_zero_one);
     ui->PSMFp1->setNum(m_psolve->m_pssm->ps_pole_one);
     ui->PSMFz2dcm->setNum(m_psolve->m_pssm->ps_dcm_zero_two);
@@ -583,9 +755,11 @@ void FLySMPS::setPowerStagePlot()
 
     ui->PSMGraph->addGraph(ui->PSMGraph->xAxis, ui->PSMGraph->yAxis);
     ui->PSMGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->PSMGraph->graph(0)->setName("Mag.");
 
     ui->PSMGraph->addGraph(ui->PSMGraph->xAxis2, ui->PSMGraph->yAxis2);
     ui->PSMGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->PSMGraph->graph(1)->setName("Phs.");
 
     //configure right and top axis to show ticks but no labels:
     ui->PSMGraph->xAxis2->setVisible(true);
@@ -593,7 +767,7 @@ void FLySMPS::setPowerStagePlot()
 
     //pass data points to graphs:
     ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_magnitude_array);
-    ui->PSMGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_pssm->ps_phase_array);
+    ui->PSMGraph->graph(1)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_phase_array);
     ui->PSMGraph->replot();
 
     //give the axis some labels:
@@ -601,11 +775,27 @@ void FLySMPS::setPowerStagePlot()
     ui->PSMGraph->yAxis->setLabel("Mag. dB");
     ui->PSMGraph->yAxis2->setLabel("Deg. ");
 
+    ui->PSMGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->PSMGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->PSMGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->PSMGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
     //set axes ranges, so we see all data:
-    ui->PSMGraph->yAxis->setRange(-27, 3);
-    ui->PSMGraph->xAxis->setRange(0, 1000000);
-    ui->PSMGraph->yAxis2->setRange(0, -90);
-    ui->PSMGraph->xAxis2->setRange(0, 1000000);
+    ui->PSMGraph->yAxis->setRange(-100,-30);
+    ui->PSMGraph->xAxis->setRange(1e3, 1e5);
+    ui->PSMGraph->yAxis2->setRange(0, -210);
+    ui->PSMGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->PSMGraph->xAxis->setNumberFormat("eb");
+    ui->PSMGraph->xAxis->setNumberPrecision(0);
+
+    ui->PSMGraph->xAxis2->setNumberFormat("eb");
+    ui->PSMGraph->xAxis2->setNumberPrecision(0);
+
+    ui->PSMGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
+    ui->PSMGraph->legend->setVisible(true);
+    ui->PSMGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
+    ui->PSMGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
     m_psolve->m_pssm->ps_freq_array.clear();
@@ -620,11 +810,13 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_fc.out_current = m_psolve->m_indata.curr_out_one;
     m_psolve->m_fc.res_pull_up = convertToValues(static_cast<QString>(ui->ResPullUp->text()));
     m_psolve->m_fc.res_down = convertToValues(static_cast<QString>(ui->ResDown->text()));
-    m_psolve->m_fc.phase_shift = convertToValues(static_cast<QString>(ui->PhaseMarg->text()));
-    m_psolve->m_fc.amp_gaim_marg = convertToValues(static_cast<QString>(ui->GainMarg->text()));
+    m_psolve->m_fc.phase_rotate = convertToValues(static_cast<QString>(ui->PhaseMarg->text()));//M
+    m_psolve->m_fc.phase_marg = convertToValues(static_cast<QString>(ui->GainMarg->text()));//P
     m_psolve->m_fc.opto_ctr = convertToValues(static_cast<QString>(ui->OptoCTR->text()));
     m_psolve->m_fc.freq_sw = m_psolve->m_indata.freq_switch;
     m_psolve->m_fc.opto_inner_cap = convertToValues(static_cast<QString>(ui->OptoInnerCap->text()));
+    m_psolve->m_fc.out_sm_cap =  m_psolve->m_foc->out_cap_first.value("CVO");
+    m_psolve->m_fc.out_sm_cap_esr = m_psolve->m_foc->out_cap_first.value("CESRO");
 
     m_psolve->m_rs.inp_voltage = m_psolve->m_indata.input_volt_ac_min;
     m_psolve->m_rs.prim_turns = m_psolve->m_ptpe->actual_num_primary;
@@ -637,10 +829,13 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_lc.lcf_ind = m_psolve->m_of->inductor;
     m_psolve->m_lc.lcf_cap = m_psolve->m_of->capacitor;
     m_psolve->m_lc.lcf_cap_esr = convertToValues(static_cast<QString>(ui->CapFilterESR->text()));
+    emit initOptoFeedbStageComplete();
 }
 
 void FLySMPS::setOptoFeedbStage()
 {
+    ui->OptoGraph->replot();
+
     ui->ResLed->setNum(m_psolve->m_ofs->of_opto_led_res);
     ui->ResBias->setNum(m_psolve->m_ofs->of_opto_bias_res);
     ui->ResUp->setNum(m_psolve->m_ofs->of_up_divide_res);
@@ -663,9 +858,11 @@ void FLySMPS::setOptoFeedbPlot()
 
     ui->OptoGraph->addGraph(ui->OptoGraph->xAxis, ui->OptoGraph->yAxis);
     ui->OptoGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->OptoGraph->graph(0)->setName("Mag.");
 
     ui->OptoGraph->addGraph(ui->OptoGraph->xAxis2, ui->OptoGraph->yAxis2);
     ui->OptoGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->OptoGraph->graph(1)->setName("Phs.");
 
     //configure right and top axis to show ticks but no labels:
     ui->OptoGraph->xAxis2->setVisible(true);
@@ -681,11 +878,27 @@ void FLySMPS::setOptoFeedbPlot()
     ui->OptoGraph->yAxis->setLabel("Mag. dB");
     ui->OptoGraph->yAxis2->setLabel("Deg. ");
 
+    ui->OptoGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->OptoGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
     //set axes ranges, so we see all data:
-    ui->OptoGraph->yAxis->setRange(-27, 3);
-    ui->OptoGraph->xAxis->setRange(0, 1000000);
-    ui->OptoGraph->yAxis2->setRange(0, -90);
-    ui->OptoGraph->xAxis2->setRange(0, 1000000);
+    ui->OptoGraph->yAxis->setRange(-70, 20);
+    ui->OptoGraph->xAxis->setRange(1e3, 1e5);
+    ui->OptoGraph->yAxis2->setRange(0, -210);
+    ui->OptoGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->OptoGraph->xAxis->setNumberFormat("eb");
+    ui->OptoGraph->xAxis->setNumberPrecision(0);
+
+    ui->OptoGraph->xAxis2->setNumberFormat("eb");
+    ui->OptoGraph->xAxis2->setNumberPrecision(0);
+
+    ui->OptoGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
+    ui->OptoGraph->legend->setVisible(true);
+    ui->OptoGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
+    ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
     m_psolve->m_ofs->of_freq_array.clear();

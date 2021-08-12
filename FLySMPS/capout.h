@@ -25,32 +25,37 @@
 struct CapOutProp
 {
     int16_t co_volts_out;//Secondary output voltage
-    int16_t co_curr_peak_out;//Secondary current peak
+    float co_curr_peak_out;//Secondary current peak
     float co_volts_rippl;//Ripple voltage of the secondary side
-    float co_esr_perc;//ESR percentage(0.1–1.5 ohm)
+    float co_esr_perc;//ESR percentage(0.006–0.025 ohm)
     float co_cros_frq_start_val;//Crossover frequency(1/20 to 1/10 from working frequency)
 };
 
+/**
+ * @brief The CapOut class
+ *        See more:
+ *        UCC28722-UCC28720 5W USB BJT Flyback Design Example
+ *        MAXREFDES1036.-20.25W Offline Flyback Converter Using MAX17595
+ */
 class CapOut
 {
 private:
     CapOutProp m_cop;
     /**
-     * @brief ocTimeCapCharg - time charging
+     * @brief ocTimeResponse - time charging
      * @param freq_switch - operating switch frequency
      * @return charg time
      */
-    inline double ocTimeCapCharg(int16_t freq_switch) const
+    inline double ocTimeResponse(uint32_t freq_switch) const
     {
-        double cross_frq = static_cast<double>(m_cop.co_cros_frq_start_val * freq_switch);
-        return (1/(4*cross_frq))+(1/freq_switch);
+        return (0.33/m_cop.co_cros_frq_start_val)+(1/freq_switch);
     }
 
     /**
-     * @brief ocCurrCap - peak-to-peak ripple current value
+     * @brief ocCurrStep - peak-to-peak ripple current value
      * @return current p-t-p
      */
-    inline double ocCurrCap() const
+    inline double ocCurrStep() const
     {
         return m_cop.co_curr_peak_out/2;
     }
@@ -66,19 +71,19 @@ public:
       */
     inline double ocESRCapOut() const
     {
-        double result = static_cast<double>((m_cop.co_volts_rippl * m_cop.co_esr_perc)/m_cop.co_curr_peak_out);
-        return result;
+        return static_cast<double>(((m_cop.co_volts_rippl * m_cop.co_volts_out) * m_cop.co_esr_perc)/m_cop.co_curr_peak_out);
     }
 
     /**
-     * @brief CapOut::ocCapOutValue - design the minimun output capacitor value
+     * @brief ocCapOutValue - design the minimun output capacitor value
      * @param freq_switch - operating switch frequency
      * @return output capacitor
      */
-    inline double ocCapOutValue(int16_t freq_switch) const
+    inline double ocCapOutValue(uint32_t freq_switch) const
     {
-        double result = (ocCurrCap()*ocTimeCapCharg(freq_switch))/static_cast<double>((2*(m_cop.co_volts_out * m_cop.co_volts_rippl)));
-        return result;
+        double num = ocCurrStep() * ocTimeResponse(freq_switch);
+        double dnm = static_cast<double>(m_cop.co_volts_out * m_cop.co_volts_rippl);
+        return num / dnm;
     }
 
     /**
@@ -86,9 +91,11 @@ public:
      * @param actual_max_duty_cycle - actual switching duty cycle
      * @return rms current in A
      */
-    inline double ocCurrOurRMS(float actual_max_duty_cycle) const
+    inline double ocCurrOurRMS(double curr_pri_peak, float trn_rat_curr) const
     {
-        return m_cop.co_curr_peak_out * qSqrt((static_cast<double>(actual_max_duty_cycle)/3.)) - m_cop.co_curr_peak_out;
+        double num = 2. * curr_pri_peak;
+        double dnm = 3. * trn_rat_curr * m_cop.co_curr_peak_out;
+        return m_cop.co_curr_peak_out * qSqrt((num / dnm) - 1);
     }
 
     /**
@@ -96,7 +103,7 @@ public:
      * @param freq_switch - operating switch frequency
      * @return
      */
-    inline double ocZeroFreqCapOut(int16_t freq_switch) const
+    inline double ocZeroFreqCapOut(uint32_t freq_switch) const
     {
         return 1./(2.*M_PI*ocESRCapOut()*ocCapOutValue(freq_switch));
     }
@@ -107,9 +114,11 @@ public:
      * @param ncap
      * @return
      */
-    inline double ocOutRippleVolt(double curout, int16_t ncap) const
+    inline double ocOutRippleVolt(double curr_pri_peak, double cap_out, float trn_rat, uint32_t freq_switch) const
     {
-        return (curout*ocESRCapOut())/ncap;
+        double num = 4.5 * qPow((curr_pri_peak - (trn_rat * 4.5)), 2);
+        double dnm = qPow(curr_pri_peak, 2) * freq_switch * cap_out;
+        return num / dnm;
     }
 
     /**
@@ -117,9 +126,9 @@ public:
      * @param actual_max_duty_cycle  - actual_max_duty_cycle for rms current
      * @return losses in W
      */
-    inline double ocCapOutLoss(float actual_max_duty_cycle) const
+    inline double ocCapOutLoss(double cur_cap_rms) const
     {
-        return qPow(ocCurrOurRMS(actual_max_duty_cycle), 2)*ocESRCapOut();
+        return qPow(cur_cap_rms, 2)*ocESRCapOut();
     }
 };
 

@@ -32,7 +32,11 @@
    <bool>false</bool>
   </property>
   <property name="windowTitle">
-   <string>FBSMPS</string>
+   <string>FLYSMPS</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="res/flsmps_res.qrc">
+    <normaloff>:/icons/32-32.ico</normaloff>:/icons/32-32.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
@@ -75,52 +79,17 @@
         <x>20</x>
         <y>10</y>
         <width>781</width>
-        <height>175</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="title">
        <string>Specification:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_11">
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_6">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_25">
          <property name="text">
-          <string>VOut1 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>VOut3 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="Tamb">
-         <property name="text">
-          <string>50</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="VOut2">
-         <property name="text">
-          <string>5</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="IOut1">
-         <property name="text">
-          <string>1</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="8">
-        <widget class="QLabel" name="label_22">
-         <property name="text">
-          <string>IAux [V]</string>
+          <string>T.amb [C]</string>
          </property>
         </widget>
        </item>
@@ -131,59 +100,24 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>VACmax [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>IOut1 [A]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="8">
-        <widget class="QLabel" name="label_21">
-         <property name="text">
-          <string>VAux [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="VOut1">
-         <property name="text">
-          <string>12</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
-        <widget class="QLineEdit" name="VOut3">
+       <item row="0" column="5">
+        <widget class="QLineEdit" name="VOut2">
          <property name="text">
           <string>5</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="9">
-        <widget class="QLineEdit" name="VAux">
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="FSw">
+         <property name="text">
+          <string>50K</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="9">
+        <widget class="QLineEdit" name="IAux">
          <property name="text">
           <string>0.2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="8">
-        <widget class="QLabel" name="label_19">
-         <property name="text">
-          <string>VOut4 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="9">
-        <widget class="QLineEdit" name="IOut4">
-         <property name="text">
-          <string>0</string>
          </property>
         </widget>
        </item>
@@ -201,45 +135,10 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_8">
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>VOut2 [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>FLine [Hz]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="9">
-        <widget class="QLineEdit" name="IAux">
-         <property name="text">
-          <string>15</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>VACmin [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="FLine">
-         <property name="text">
-          <string>50</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>T.amb [C]</string>
+          <string>IOut1 [A]</string>
          </property>
         </widget>
        </item>
@@ -250,31 +149,80 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>VOut1 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLineEdit" name="VOut3">
+         <property name="text">
+          <string>5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="VOut1">
+         <property name="text">
+          <string>12</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>VACmin [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>VACmax [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>VOut4 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="8">
+        <widget class="QLabel" name="label_21">
+         <property name="text">
+          <string>VAux [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>VOut3 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>VOut2 [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="9">
+        <widget class="QLineEdit" name="VAux">
+         <property name="text">
+          <string>15</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="1">
         <widget class="QLineEdit" name="VACmin">
          <property name="text">
           <string>90</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="9">
-        <widget class="QLineEdit" name="VOut4">
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="FSw">
-         <property name="text">
-          <string>50K</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="8">
-        <widget class="QLabel" name="label_20">
-         <property name="text">
-          <string>IOut4 [A]</string>
          </property>
         </widget>
        </item>
@@ -285,10 +233,80 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>FLine [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="9">
+        <widget class="QLineEdit" name="IOut4">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="8">
+        <widget class="QLabel" name="label_22">
+         <property name="text">
+          <string>IAux [V]</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="6">
         <widget class="QLabel" name="label_11">
          <property name="text">
           <string>IOut3 [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="FLine">
+         <property name="text">
+          <string>50</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="8">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>IOut4 [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="9">
+        <widget class="QLineEdit" name="VOut4">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="IOut1">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="Tamb">
+         <property name="text">
+          <string>50</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="KRF">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_31">
+         <property name="text">
+          <string>Ripple Factor</string>
          </property>
         </widget>
        </item>
@@ -298,7 +316,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>190</y>
+        <y>210</y>
         <width>253</width>
         <height>203</height>
        </rect>
@@ -331,7 +349,7 @@
        <item row="1" column="1">
         <widget class="QLineEdit" name="EffTransf">
          <property name="text">
-          <string>0.95</string>
+          <string>0.85</string>
          </property>
         </widget>
        </item>
@@ -397,9 +415,9 @@
       <property name="geometry">
        <rect>
         <x>290</x>
-        <y>190</y>
+        <y>210</y>
         <width>241</width>
-        <height>91</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="title">
@@ -1128,7 +1146,7 @@
         <x>19</x>
         <y>229</y>
         <width>281</width>
-        <height>171</height>
+        <height>161</height>
        </rect>
       </property>
       <property name="title">
@@ -1166,7 +1184,7 @@
        <item row="2" column="0">
         <widget class="QLabel" name="label_64">
          <property name="text">
-          <string>Jm - max. curr. dens. use &lt;5 [A/m2]</string>
+          <string>Jm - max. curr. dens. &lt;5 [A/mm2]</string>
          </property>
         </widget>
        </item>
@@ -1180,14 +1198,14 @@
        <item row="3" column="0">
         <widget class="QLabel" name="label_77">
          <property name="text">
-          <string>AL - inductance factor [nH/turn]</string>
+          <string>AL - inductance factor [H/turn]</string>
          </property>
         </widget>
        </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="InductanceFact">
          <property name="text">
-          <string>0.0</string>
+          <string>0.000000185</string>
          </property>
         </widget>
        </item>
@@ -1198,8 +1216,8 @@
        <rect>
         <x>310</x>
         <y>230</y>
-        <width>491</width>
-        <height>171</height>
+        <width>481</width>
+        <height>201</height>
        </rect>
       </property>
       <property name="title">
@@ -1213,59 +1231,17 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_124">
-         <property name="text">
-          <string>Ve [m3]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QLineEdit" name="Esize"/>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="WA"/>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="Dsize"/>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLineEdit" name="RGDiam"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_69">
-         <property name="text">
-          <string>Ae [m2]</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="3">
-        <widget class="QLineEdit" name="Fsize"/>
-       </item>
-       <item row="3" column="2">
-        <widget class="QLabel" name="label_128">
+        <widget class="QLineEdit" name="Fsize">
          <property name="text">
-          <string>E [m]</string>
+          <string>0.008</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="VE"/>
-       </item>
-       <item row="4" column="2">
-        <widget class="QLabel" name="label_130">
+        <widget class="QLineEdit" name="VE">
          <property name="text">
-          <string>Diam round gap [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="MLT"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_73">
-         <property name="text">
-          <string>MLT [m]</string>
+          <string>0.00000302</string>
          </property>
         </widget>
        </item>
@@ -1276,33 +1252,17 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="AE"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_125">
-         <property name="text">
-          <string>D [m]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="MPL"/>
-       </item>
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="Csize"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLabel" name="label_126">
-         <property name="text">
-          <string>C [m]</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0">
         <widget class="QLabel" name="label_68">
          <property name="text">
           <string>MPL [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="AE">
+         <property name="text">
+          <string>0.000052</string>
          </property>
         </widget>
        </item>
@@ -1320,6 +1280,114 @@
          </property>
          <property name="checked">
           <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_124">
+         <property name="text">
+          <string>Ve [m3]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLineEdit" name="Dsize">
+         <property name="text">
+          <string>0.007</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="RGDiam"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_73">
+         <property name="text">
+          <string>MLT [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_128">
+         <property name="text">
+          <string>E [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_126">
+         <property name="text">
+          <string>C [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="WA">
+         <property name="text">
+          <string>0.000061</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="MLT">
+         <property name="text">
+          <string>0.05</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="Csize">
+         <property name="text">
+          <string>0.007</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="Esize">
+         <property name="text">
+          <string>0.017</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_130">
+         <property name="text">
+          <string>Diam round gap [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_69">
+         <property name="text">
+          <string>Ae [m2]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="MPL">
+         <property name="text">
+          <string>0.057</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_125">
+         <property name="text">
+          <string>D [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="MUE">
+         <property name="text">
+          <string>1620</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_116">
+         <property name="text">
+          <string>μ_e</string>
          </property>
         </widget>
        </item>
@@ -1349,6 +1417,9 @@
       </property>
       <property name="text">
        <string>Use AL</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
       </property>
      </widget>
      <widget class="QCheckBox" name="AEUse">
@@ -1380,7 +1451,7 @@
      <widget class="QPushButton" name="UpdateCoreParamPushButton">
       <property name="geometry">
        <rect>
-        <x>720</x>
+        <x>220</x>
         <y>410</y>
         <width>80</width>
         <height>22</height>
@@ -1399,9 +1470,9 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>130</y>
+        <y>154</y>
         <width>781</width>
-        <height>195</height>
+        <height>171</height>
        </rect>
       </property>
       <property name="title">
@@ -1610,13 +1681,6 @@
         <widget class="QLabel" name="label_76">
          <property name="text">
           <string>OD</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_88">
-         <property name="text">
-          <string>DS [mm]</string>
          </property>
         </widget>
        </item>
@@ -2030,6 +2094,13 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_88">
+         <property name="text">
+          <string>DS [mm]</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QGroupBox" name="groupBox_11">
@@ -2195,106 +2266,20 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>781</width>
-        <height>111</height>
+        <width>661</width>
+        <height>131</height>
        </rect>
       </property>
       <property name="title">
        <string>Winding set:</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="1" column="3">
-        <widget class="QLineEdit" name="AFOut2"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_95">
-         <property name="text">
-          <string>Out1</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="8">
-        <widget class="QLineEdit" name="InM"/>
-       </item>
-       <item row="0" column="9">
-        <widget class="QLabel" name="label_103">
+        <widget class="QLineEdit" name="InM">
          <property name="text">
-          <string>BWe</string>
+          <string>0.003</string>
          </property>
         </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_97">
-         <property name="text">
-          <string>AF</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QLineEdit" name="AFAux"/>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_100">
-         <property name="text">
-          <string>Aux</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="AFOut1"/>
-       </item>
-       <item row="1" column="8">
-        <widget class="QLineEdit" name="Fcu"/>
-       </item>
-       <item row="0" column="5">
-        <widget class="QLabel" name="label_99">
-         <property name="text">
-          <string>Out4</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLineEdit" name="AFOut3"/>
-       </item>
-       <item row="1" column="9">
-        <widget class="QLabel" name="label_104">
-         <property name="text">
-          <string>Wae</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
-        <widget class="QLabel" name="label_101">
-         <property name="text">
-          <string>M</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="AFNPm"/>
-       </item>
-       <item row="1" column="5">
-        <widget class="QLineEdit" name="AFOut4"/>
-       </item>
-       <item row="0" column="4">
-        <widget class="QLabel" name="label_98">
-         <property name="text">
-          <string>Out3</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QLabel" name="label_96">
-         <property name="text">
-          <string>Out2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="10">
-        <widget class="QLineEdit" name="BWe"/>
-       </item>
-       <item row="1" column="10">
-        <widget class="QLineEdit" name="Wae"/>
        </item>
        <item row="0" column="1">
         <widget class="QLabel" name="label_94">
@@ -2310,6 +2295,44 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="3">
+        <widget class="QLineEdit" name="INSOut2">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10">
+        <widget class="QLineEdit" name="BWe"/>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_96">
+         <property name="text">
+          <string>Out2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_97">
+         <property name="text">
+          <string>AF</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_95">
+         <property name="text">
+          <string>Out1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QLineEdit" name="AFOut4">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_133">
          <property name="text">
@@ -2317,32 +2340,191 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="INSPm"/>
+       <item row="0" column="9">
+        <widget class="QLabel" name="label_103">
+         <property name="text">
+          <string>BWe [m]</string>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QLineEdit" name="INSOut1"/>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_100">
+         <property name="text">
+          <string>Aux</string>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="INSOut2"/>
-       </item>
-       <item row="2" column="4">
-        <widget class="QLineEdit" name="INSOut3"/>
+       <item row="1" column="9">
+        <widget class="QLabel" name="label_104">
+         <property name="text">
+          <string>Wae</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="5">
-        <widget class="QLineEdit" name="INSOut4"/>
+        <widget class="QLineEdit" name="INSOut4">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QLabel" name="label_98">
+         <property name="text">
+          <string>Out3</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="AFOut3">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="INSOut1">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="10">
+        <widget class="QLineEdit" name="Wae"/>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="INSOut3">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QLineEdit" name="AFAux">
+         <property name="text">
+          <string>0.05</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="AFOut1">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="6">
-        <widget class="QLineEdit" name="INSAux"/>
-       </item>
-       <item row="2" column="10">
-        <widget class="QPushButton" name="CalcWindingPushButton">
+        <widget class="QLineEdit" name="INSAux">
          <property name="text">
-          <string>Calculate</string>
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_101">
+         <property name="text">
+          <string>M [m]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="AFNPm">
+         <property name="text">
+          <string>0.5</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_134">
+         <property name="text">
+          <string>NPW</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="INSPm">
+         <property name="text">
+          <string>0.02</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLineEdit" name="AFOut2">
+         <property name="text">
+          <string>0.1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="8">
+        <widget class="QLineEdit" name="Fcu">
+         <property name="text">
+          <string>0.4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QLabel" name="label_99">
+         <property name="text">
+          <string>Out4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="NPWPrim">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="NPWOut1">
+         <property name="text">
+          <string>4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLineEdit" name="NPWOut2">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLineEdit" name="NPWOut3">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="QLineEdit" name="NPWOut4">
+         <property name="text">
+          <string>1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="6">
+        <widget class="QLineEdit" name="NPWAux">
+         <property name="text">
+          <string>1</string>
          </property>
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QPushButton" name="CalcWindingPushButton">
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>30</y>
+        <width>80</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Calculate</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="Mosfet">
@@ -2353,9 +2535,9 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>120</y>
+        <y>190</y>
         <width>771</width>
-        <height>161</height>
+        <height>151</height>
        </rect>
       </property>
       <property name="title">
@@ -2368,6 +2550,16 @@
        <property name="bottomMargin">
         <number>9</number>
        </property>
+       <item row="7" column="7">
+        <widget class="QLabel" name="MosCapL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
        <item row="8" column="6">
         <widget class="QLabel" name="label_241">
          <property name="text">
@@ -2375,8 +2567,56 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="3">
-        <widget class="QLabel" name="Trise_fall">
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_122">
+         <property name="text">
+          <string>Time Off [s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="MosCondL">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLabel" name="Trise">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_123">
+         <property name="text">
+          <string>VDSnom [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="6">
+        <widget class="QLabel" name="label_237">
+         <property name="text">
+          <string>Mosfet conduct loss [W]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QLabel" name="label_120">
+         <property name="text">
+          <string>Rise Time [s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="IDSmax">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -2395,27 +2635,20 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="2">
-        <widget class="QLabel" name="label_115">
+       <item row="7" column="6">
+        <widget class="QLabel" name="label_240">
          <property name="text">
-          <string>Trise/fall [s]</string>
+          <string>Mosfet capacit loss [W]</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
-        <widget class="QLabel" name="Ttot">
+       <item row="4" column="1">
+        <widget class="QLabel" name="VDSnom">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
          <property name="text">
           <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="6">
-        <widget class="QLabel" name="label_239">
-         <property name="text">
-          <string>Mosfet switch loss [W]</string>
          </property>
         </widget>
        </item>
@@ -2429,15 +2662,22 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_237">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_113">
          <property name="text">
-          <string>Mosfet conduct loss [W]</string>
+          <string>VDSmax [V]</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="7">
-        <widget class="QLabel" name="MosDL">
+       <item row="6" column="6">
+        <widget class="QLabel" name="label_239">
+         <property name="text">
+          <string>Mosfet switch loss [W]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="7">
+        <widget class="QLabel" name="MosSL">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -2446,17 +2686,10 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="6">
-        <widget class="QLabel" name="label_240">
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_114">
          <property name="text">
-          <string>Mosfet capacit loss [W]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_122">
-         <property name="text">
-          <string>Time Off</string>
+          <string>IDSmax [A]</string>
          </property>
         </widget>
        </item>
@@ -2477,57 +2710,6 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="7">
-        <widget class="QLabel" name="MosCapL">
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_113">
-         <property name="text">
-          <string>VDSmax [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QLabel" name="label_121">
-         <property name="text">
-          <string>Time On</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="7">
-        <widget class="QLabel" name="MosCondL">
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="7">
-        <widget class="QLabel" name="MosSL">
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QLabel" name="label_120">
-         <property name="text">
-          <string>Total Period</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QLabel" name="VDSmax">
          <property name="frameShape">
@@ -2538,15 +2720,8 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="label_123">
-         <property name="text">
-          <string>VDSnom [V]</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="VDSnom">
+       <item row="4" column="7">
+        <widget class="QLabel" name="MosDL">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -2555,15 +2730,22 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_114">
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_121">
          <property name="text">
-          <string>IDSmax [A]</string>
+          <string>Time On [s]</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="IDSmax">
+       <item row="7" column="2">
+        <widget class="QLabel" name="label_115">
+         <property name="text">
+          <string>Fall Time [s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="QLabel" name="Tfall">
          <property name="frameShape">
           <enum>QFrame::Box</enum>
          </property>
@@ -2578,9 +2760,9 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>290</y>
+        <y>350</y>
         <width>771</width>
-        <height>91</height>
+        <height>81</height>
        </rect>
       </property>
       <property name="title">
@@ -2696,8 +2878,8 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>771</width>
-        <height>101</height>
+        <width>681</width>
+        <height>171</height>
        </rect>
       </property>
       <property name="title">
@@ -2710,84 +2892,202 @@
        <property name="verticalSpacing">
         <number>6</number>
        </property>
-       <item row="0" column="2">
-        <widget class="QLabel" name="label_143">
+       <item row="1" column="3">
+        <widget class="QLabel" name="label_144">
          <property name="text">
-          <string>CurrDrv [A]</string>
+          <string>Qgd [nC]</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <widget class="QLabel" name="label_140">
+       <item row="1" column="4">
+        <widget class="QLineEdit" name="QGD">
          <property name="text">
-          <string>Rdson [R]</string>
+          <string>10n</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="4">
+       <item row="1" column="0">
         <widget class="QLabel" name="label_142">
          <property name="text">
           <string>Qg [nC]</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QLineEdit" name="CurrDrv"/>
-       </item>
-       <item row="0" column="6">
-        <widget class="QLabel" name="label_155">
+       <item row="1" column="7">
+        <widget class="QLabel" name="label_156">
          <property name="text">
-          <string>Coss [pF]</string>
+          <string>Qgs [nC]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="SnubbVoltRipp">
+         <property name="text">
+          <string>45</string>
          </property>
         </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_164">
          <property name="text">
-          <string>VGS [V]</string>
+          <string>Vgs [V]</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="5">
-        <widget class="QLineEdit" name="QGate"/>
+       <item row="1" column="8">
+        <widget class="QLineEdit" name="QGS">
+         <property name="text">
+          <string>6n</string>
+         </property>
+        </widget>
        </item>
-       <item row="0" column="7">
-        <widget class="QLineEdit" name="COss"/>
-       </item>
-       <item row="0" column="9">
-        <widget class="QLineEdit" name="RdsOn"/>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_553">
+         <property name="text">
+          <string>Volt. CS  [V]</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="VGS"/>
+        <widget class="QLineEdit" name="VGS">
+         <property name="text">
+          <string>10</string>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="SnubbVoltRipp"/>
+       <item row="0" column="4">
+        <widget class="QLineEdit" name="CurrDrv">
+         <property name="text">
+          <string>0.25</string>
+         </property>
+        </widget>
        </item>
-       <item row="2" column="0">
+       <item row="3" column="0">
         <widget class="QLabel" name="label_552">
          <property name="text">
           <string>Snubb. volt. ripple [V]</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="CSVolt"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QLabel" name="label_553">
+       <item row="3" column="4">
+        <widget class="QLineEdit" name="CSVolt">
          <property name="text">
-          <string>Volt. Current Sense  [V]</string>
+          <string>1</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="9">
-        <widget class="QPushButton" name="CalcSwitchPushButton">
+       <item row="0" column="3">
+        <widget class="QLabel" name="label_143">
          <property name="text">
-          <string>Calculate</string>
+          <string>CurrDrv [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="QGate">
+         <property name="text">
+          <string>16n</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="11">
+        <widget class="QLineEdit" name="RGate">
+         <property name="text">
+          <string>15</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="10">
+        <widget class="QLabel" name="label_157">
+         <property name="text">
+          <string>Rgate [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_158">
+         <property name="text">
+          <string>Vmiller [V]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="Vmill">
+         <property name="text">
+          <string>4.4</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="label_155">
+         <property name="text">
+          <string>Coss [pF]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="7">
+        <widget class="QLabel" name="label_140">
+         <property name="text">
+          <string>Rdson [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QLineEdit" name="CurrDSMax">
+         <property name="text">
+          <string>6</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <widget class="QLabel" name="label_159">
+         <property name="text">
+          <string>CurrDSMax [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="11">
+        <widget class="QLineEdit" name="CurrDSMin">
+         <property name="text">
+          <string>10</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10">
+        <widget class="QLabel" name="label_160">
+         <property name="text">
+          <string>CurrDSMin [A]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="COss">
+         <property name="text">
+          <string>100p</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="8">
+        <widget class="QLineEdit" name="RdsOn">
+         <property name="text">
+          <string>1.0</string>
          </property>
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QPushButton" name="CalcSwitchPushButton">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>30</y>
+        <width>80</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Calculate</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="DiodeAndCapOut">
@@ -2799,7 +3099,7 @@
        <rect>
         <x>20</x>
         <y>10</y>
-        <width>591</width>
+        <width>691</width>
         <height>181</height>
        </rect>
       </property>
@@ -3192,7 +3492,11 @@
         </widget>
        </item>
        <item row="14" column="2">
-        <widget class="QLineEdit" name="AuxESRPerc"/>
+        <widget class="QLineEdit" name="AuxESRPerc">
+         <property name="text">
+          <string>0.9</string>
+         </property>
+        </widget>
        </item>
        <item row="14" column="8">
         <widget class="QLabel" name="AuxCapZF">
@@ -3226,7 +3530,11 @@
         </widget>
        </item>
        <item row="11" column="1">
-        <widget class="QLineEdit" name="Out2VRip"/>
+        <widget class="QLineEdit" name="Out2VRip">
+         <property name="text">
+          <string>0.03</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_270">
@@ -3253,10 +3561,18 @@
         </widget>
        </item>
        <item row="10" column="2">
-        <widget class="QLineEdit" name="Out1ESRPerc"/>
+        <widget class="QLineEdit" name="Out1ESRPerc">
+         <property name="text">
+          <string>0.9</string>
+         </property>
+        </widget>
        </item>
        <item row="12" column="2">
-        <widget class="QLineEdit" name="Out3ESRPerc"/>
+        <widget class="QLineEdit" name="Out3ESRPerc">
+         <property name="text">
+          <string>0.9</string>
+         </property>
+        </widget>
        </item>
        <item row="12" column="5">
         <widget class="QLabel" name="Out3CapEsr">
@@ -3276,7 +3592,11 @@
         </widget>
        </item>
        <item row="12" column="3">
-        <widget class="QLineEdit" name="Out3ZFC"/>
+        <widget class="QLineEdit" name="Out3ZFC">
+         <property name="text">
+          <string>5000</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="4">
         <widget class="QLabel" name="label_303">
@@ -3404,7 +3724,11 @@
         </widget>
        </item>
        <item row="12" column="1">
-        <widget class="QLineEdit" name="Out3VRip"/>
+        <widget class="QLineEdit" name="Out3VRip">
+         <property name="text">
+          <string>0.03</string>
+         </property>
+        </widget>
        </item>
        <item row="14" column="5">
         <widget class="QLabel" name="AuxCapEsr">
@@ -3417,7 +3741,11 @@
         </widget>
        </item>
        <item row="11" column="2">
-        <widget class="QLineEdit" name="Out2ESRPerc"/>
+        <widget class="QLineEdit" name="Out2ESRPerc">
+         <property name="text">
+          <string>0.9</string>
+         </property>
+        </widget>
        </item>
        <item row="11" column="4">
         <widget class="QLabel" name="Out2Cap">
@@ -3430,7 +3758,11 @@
         </widget>
        </item>
        <item row="10" column="3">
-        <widget class="QLineEdit" name="Out1ZFC"/>
+        <widget class="QLineEdit" name="Out1ZFC">
+         <property name="text">
+          <string>5000</string>
+         </property>
+        </widget>
        </item>
        <item row="12" column="10">
         <widget class="QLabel" name="Out3CapDiss">
@@ -3463,7 +3795,11 @@
         </widget>
        </item>
        <item row="14" column="3">
-        <widget class="QLineEdit" name="AuxZFC"/>
+        <widget class="QLineEdit" name="AuxZFC">
+         <property name="text">
+          <string>5000</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="3">
         <widget class="QLabel" name="label_307">
@@ -3493,10 +3829,18 @@
         </widget>
        </item>
        <item row="13" column="1">
-        <widget class="QLineEdit" name="Out4VRip"/>
+        <widget class="QLineEdit" name="Out4VRip">
+         <property name="text">
+          <string>0.03</string>
+         </property>
+        </widget>
        </item>
        <item row="13" column="2">
-        <widget class="QLineEdit" name="Out4ESRPerc"/>
+        <widget class="QLineEdit" name="Out4ESRPerc">
+         <property name="text">
+          <string>0.9</string>
+         </property>
+        </widget>
        </item>
        <item row="13" column="9">
         <widget class="QLabel" name="Out4CapVRip">
@@ -3546,10 +3890,18 @@
         </widget>
        </item>
        <item row="11" column="3">
-        <widget class="QLineEdit" name="Out2ZFC"/>
+        <widget class="QLineEdit" name="Out2ZFC">
+         <property name="text">
+          <string>5000</string>
+         </property>
+        </widget>
        </item>
        <item row="13" column="3">
-        <widget class="QLineEdit" name="Out4ZFC"/>
+        <widget class="QLineEdit" name="Out4ZFC">
+         <property name="text">
+          <string>5000</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="9">
         <widget class="QLabel" name="label_310">
@@ -3559,10 +3911,18 @@
         </widget>
        </item>
        <item row="14" column="1">
-        <widget class="QLineEdit" name="AuxVRip"/>
+        <widget class="QLineEdit" name="AuxVRip">
+         <property name="text">
+          <string>0.03</string>
+         </property>
+        </widget>
        </item>
        <item row="10" column="1">
-        <widget class="QLineEdit" name="Out1VRip"/>
+        <widget class="QLineEdit" name="Out1VRip">
+         <property name="text">
+          <string>0.03</string>
+         </property>
+        </widget>
        </item>
        <item row="14" column="6">
         <widget class="QLabel" name="AuxCurrRMS">
@@ -3629,7 +3989,7 @@
      <widget class="QPushButton" name="CalcOutPushButton">
       <property name="geometry">
        <rect>
-        <x>630</x>
+        <x>720</x>
         <y>30</y>
         <width>80</width>
         <height>22</height>
@@ -3667,14 +4027,14 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_766">
          <property name="text">
-          <string>AngCutFrq [Hz]</string>
+          <string>AngCutFrq [ω]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="label_777">
          <property name="text">
-          <string>Cutoff Freq. [Hz]</string>
+          <string>Cutoff Freq. [ω]</string>
          </property>
         </widget>
        </item>
@@ -3800,6 +4160,9 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="text">
+       <string>50000</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_764">
       <property name="geometry">
@@ -3824,7 +4187,7 @@
        </rect>
       </property>
       <property name="text">
-       <string/>
+       <string>100</string>
       </property>
      </widget>
      <widget class="QCustomPlot" name="LCFilterGraph" native="true">
@@ -4065,46 +4428,58 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_802">
          <property name="text">
-          <string>Cap Filter ESR</string>
+          <string>Cap Filter ESR [R]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_795">
          <property name="text">
-          <string>Down Res</string>
+          <string>Down Res [R]</string>
          </property>
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QLineEdit" name="GainMarg"/>
+        <widget class="QLineEdit" name="GainMarg">
+         <property name="text">
+          <string>-16</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="ResPullUp"/>
+        <widget class="QLineEdit" name="ResPullUp">
+         <property name="text">
+          <string>4700</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
         <widget class="QLineEdit" name="OptoInnerCap">
          <property name="text">
-          <string/>
+          <string>5.2p</string>
          </property>
         </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_796">
          <property name="text">
-          <string>Pull-Up Res</string>
+          <string>Pull-Up Res [R]</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
         <widget class="QLabel" name="label_798">
          <property name="text">
-          <string>Gain Marg</string>
+          <string>Phase Shift</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="PhaseMarg"/>
+        <widget class="QLineEdit" name="PhaseMarg">
+         <property name="text">
+          <string>70</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_797">
@@ -4114,7 +4489,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="OptoCTR"/>
+        <widget class="QLineEdit" name="OptoCTR">
+         <property name="text">
+          <string>0.8</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_800">
@@ -4126,15 +4505,23 @@
        <item row="1" column="2">
         <widget class="QLabel" name="label_801">
          <property name="text">
-          <string>Inner Opto Cap</string>
+          <string>Inner Opto Cap [F]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QLineEdit" name="ResDown"/>
+        <widget class="QLineEdit" name="ResDown">
+         <property name="text">
+          <string>10000</string>
+         </property>
+        </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="CapFilterESR"/>
+        <widget class="QLineEdit" name="CapFilterESR">
+         <property name="text">
+          <string>0.02</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -4144,360 +4531,218 @@
         <x>450</x>
         <y>160</y>
         <width>401</width>
-        <height>211</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="title">
        <string>Optocouple Circuit</string>
       </property>
-      <widget class="QLabel" name="ResLed">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_799">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Led</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_803">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Bias</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResBias">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResUp">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_807">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Up</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Quality">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_808">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Q</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_811">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Se</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SE">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_812">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>120</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_cross</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_813">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Sn</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SN">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="FCross">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>120</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_814">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>180</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_p</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_815">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>150</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_z</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Fzero">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>150</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Fpole">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>180</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_805">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res zero</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="CapZero">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResZero">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_806">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap zero</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_816">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap opto</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="CapOpto">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_17">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_799">
+         <property name="text">
+          <string>Res Led [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="ResLed">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_816">
+         <property name="text">
+          <string>Cap opto [F]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="CapOpto">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_803">
+         <property name="text">
+          <string>Res Bias [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="ResBias">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_805">
+         <property name="text">
+          <string>Res zero [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="ResZero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_807">
+         <property name="text">
+          <string>Res Up [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="ResUp">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_806">
+         <property name="text">
+          <string>Cap zero [F]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="CapZero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_808">
+         <property name="text">
+          <string>Q</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="Quality">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_812">
+         <property name="text">
+          <string>F_cross [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="FCross">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_811">
+         <property name="text">
+          <string>Se [V/s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="SE">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_815">
+         <property name="text">
+          <string>F_z [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="Fzero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_813">
+         <property name="text">
+          <string>Sn [V/s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="SN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLabel" name="label_814">
+         <property name="text">
+          <string>F_p [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QLabel" name="Fpole">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QPushButton" name="CalcOptoPushButton">
       <property name="geometry">

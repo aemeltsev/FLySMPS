@@ -30,24 +30,7 @@ private:
     float efficiency;
     float pow_max_out;
     float freq_line;
-
-    /**
-     * @brief VRRMS
-     * @return
-     */
-    double VRRMS() const
-    {
-        return (ac_inp_volt_min*(1./(qSqrt(2))))-(ac_inp_volt_min*(2./M_PI));
-    }
-
-    /**
-     * @brief VDOut
-     * @return
-     */
-    double VDOut() const
-    {
-        return (ac_inp_volt_min*qSqrt(2.))-VRRMS();
-    }
+    int16_t v_dc_in_rippl = 30;
 
 public:
     /**
@@ -74,7 +57,9 @@ public:
      */
     double DeltaT() const
     {
-        return (qAsin(VDOut()/(ac_inp_volt_min*qSqrt(2))))/(2.*M_PI*(static_cast<double>(freq_line)));
+        double num = qAsin(ac_inp_volt_min / (ac_inp_volt_min * M_SQRT2));
+        double dnm = 2.0 * M_PI * (static_cast<double>(freq_line));
+        return num/dnm;
     }
 
     /**
@@ -83,7 +68,8 @@ public:
      */
     double ChargTime() const
     {
-        return ((1./(4.*static_cast<double>(freq_line)))-(DeltaT()));
+        double frq_coeff = 1.0 / (4.0 * static_cast<double>(freq_line));
+        return frq_coeff - DeltaT();
     }
 
     /**
@@ -92,8 +78,14 @@ public:
      */
     double CapValue() const
     {
-        return ((2.*static_cast<double>(pow_max_out))*(1./(4.*static_cast<double>(freq_line)))+DeltaT())/(static_cast<double>(efficiency)*(qPow(VRRMS(),2))-(qPow(VDOut(),2)));
-    }
+        double pwr_coeff = 2.0 * static_cast<double>(pow_max_out);
+        double frq_coeff = 1.0 / (4.0 * static_cast<double>(freq_line));
+        double num = pwr_coeff * (frq_coeff + DeltaT());
+        double v_dc_min = ac_inp_volt_min * M_SQRT2 * 0.75;
+        double v_min_pre = v_dc_min - v_dc_in_rippl;
+        double dnm = static_cast<double>(efficiency) * (qPow(v_dc_min, 2) - qPow(v_min_pre, 2));
+        return num / dnm;
+     }
 
     /**
      * @brief ILoadMax - Load peak current value
@@ -119,7 +111,7 @@ public:
      */
     double IBulkCapPeak() const
     {
-        return 2. * M_PI * static_cast<double>(freq_line) * CapValue() * VDOut() * (qCos(2. * M_PI * static_cast<double>(freq_line) * DeltaT()));
+        return 2. * M_PI * static_cast<double>(freq_line) * CapValue() * (ac_inp_volt_min * M_SQRT2) * (qCos(2. * M_PI * static_cast<double>(freq_line) * DeltaT()));
     }
 
     /**
@@ -139,7 +131,7 @@ public:
      */
     double VMinInp() const
     {
-        return qSqrt(qPow(VDOut(),2)-((2.*static_cast<double>(pow_max_out)*((1./(4.*static_cast<double>(freq_line))-DeltaT())))/CapValue()));
+        return qSqrt(qPow((ac_inp_volt_min * M_SQRT2),2)-((2.*static_cast<double>(pow_max_out)*((1./(4.*static_cast<double>(freq_line))-DeltaT())))/CapValue()));
     }
 
     /**
@@ -148,7 +140,7 @@ public:
      */
     double VDCMin() const
     {
-        return (VDOut()+CapValue())/2.;
+        return 0.5 * ((ac_inp_volt_min * M_SQRT2) + VMinInp());
     }
 };
 #endif // BULKCAP_H
