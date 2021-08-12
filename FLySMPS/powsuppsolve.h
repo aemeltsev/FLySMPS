@@ -22,12 +22,12 @@
 
 #include <QObject>
 #include <QScopedPointer>
-#include <QSharedPointer>
+#include <QThread>
 #include <QMutex>
 #include <QVector>
-#include <QList>
 #include <QHash>
 #include <QtMath>
+#include <QDebug>
 #include "diodebridge.h"
 #include "bulkcap.h"
 #include "fbptransformer.h"
@@ -36,8 +36,6 @@
 #include "capout.h"
 #include "outfilter.h"
 #include "controlout.h"
-#include <QDebug>
-#include <QThread>
 
 #define SET_SECONDARY_WIRED 4
 #define SET_FREQ_SIZE 1*1E7 //10MHz
@@ -67,27 +65,17 @@ public slots:
 
 signals:
     void calcRequested();
-    void startCalcInputNetwork();
     void finishedInputNetwork();
-    void startCalcElectricalPrimarySide();
     void finishedCalcElectricalPrimarySide();
-    void startCalcArea();
     void finishedCalcArea();
-    void startCalcElectroMagProperties();
     void finishedCalcElectroMagProperties();
-    void startCalcTransformerWired();
     void finishedCalcTransformerWired();
-    void startCalcSwitchNetwork();
     void finishedCalcSwitchNetwork();
-    void startCalcOtputNetwork();
     void finishedCalcOtputNetwork();
-    void startCalcOutputFilter();
     void finishedCalcOutputFilter();
-    void startCalcPowerStageModel();
     void finishedCalcPowerStageModel();
-    void startCalcOptocouplerFeedback();
     void finishedCalcOptocouplerFeedback();
-    void calcCanceled();
+    void calcFinished();
 
 private:
     //input containers
@@ -232,8 +220,8 @@ private:
 
     struct FullOutFilter
      {
-         int16_t frequency;
-         int16_t load_resistance;
+         int32_t frequency;
+         int32_t load_resistance;
          double angular_cut_freq;
          double capacitor;
          double inductor;
@@ -262,9 +250,9 @@ private:
 
     struct OptocouplerFedbackStage
     {
-        int16_t of_opto_led_res;
-        int16_t of_opto_bias_res;
-        int16_t of_up_divide_res;
+        double of_opto_led_res;
+        double of_opto_bias_res;
+        double of_up_divide_res;
         double of_quality;
         double of_ext_ramp_slope;
         double of_ind_on_slope;
@@ -331,9 +319,10 @@ private:
     };
     // out containers
 
-    bool m_isSolveRunning;
-    bool m_isSolveAbort;
+    bool m_abort;
+    bool m_working;
     QMutex m_mutex;
+
     QScopedPointer<FBPTCore> m_core;
     QVector<QSharedPointer<FBPTSecondary>> m_sec;
     QVector<QSharedPointer<FBPTWinding>> m_wind;

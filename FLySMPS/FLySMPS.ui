@@ -4027,14 +4027,14 @@
        <item row="0" column="0">
         <widget class="QLabel" name="label_766">
          <property name="text">
-          <string>AngCutFrq [Hz]</string>
+          <string>AngCutFrq [ω]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="5">
         <widget class="QLabel" name="label_777">
          <property name="text">
-          <string>Cutoff Freq. [Hz]</string>
+          <string>Cutoff Freq. [ω]</string>
          </property>
         </widget>
        </item>
@@ -4160,6 +4160,9 @@
         <height>20</height>
        </rect>
       </property>
+      <property name="text">
+       <string>50000</string>
+      </property>
      </widget>
      <widget class="QLabel" name="label_764">
       <property name="geometry">
@@ -4184,7 +4187,7 @@
        </rect>
       </property>
       <property name="text">
-       <string/>
+       <string>100</string>
       </property>
      </widget>
      <widget class="QCustomPlot" name="LCFilterGraph" native="true">
@@ -4425,46 +4428,58 @@
        <item row="4" column="0">
         <widget class="QLabel" name="label_802">
          <property name="text">
-          <string>Cap Filter ESR</string>
+          <string>Cap Filter ESR [R]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="2">
         <widget class="QLabel" name="label_795">
          <property name="text">
-          <string>Down Res</string>
+          <string>Down Res [R]</string>
          </property>
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QLineEdit" name="GainMarg"/>
+        <widget class="QLineEdit" name="GainMarg">
+         <property name="text">
+          <string>-16</string>
+         </property>
+        </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="ResPullUp"/>
+        <widget class="QLineEdit" name="ResPullUp">
+         <property name="text">
+          <string>4700</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="3">
         <widget class="QLineEdit" name="OptoInnerCap">
          <property name="text">
-          <string/>
+          <string>5.2p</string>
          </property>
         </widget>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_796">
          <property name="text">
-          <string>Pull-Up Res</string>
+          <string>Pull-Up Res [R]</string>
          </property>
         </widget>
        </item>
        <item row="2" column="2">
         <widget class="QLabel" name="label_798">
          <property name="text">
-          <string>Gain Marg</string>
+          <string>Phase Shift</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="PhaseMarg"/>
+        <widget class="QLineEdit" name="PhaseMarg">
+         <property name="text">
+          <string>70</string>
+         </property>
+        </widget>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_797">
@@ -4474,7 +4489,11 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="OptoCTR"/>
+        <widget class="QLineEdit" name="OptoCTR">
+         <property name="text">
+          <string>0.8</string>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_800">
@@ -4486,15 +4505,23 @@
        <item row="1" column="2">
         <widget class="QLabel" name="label_801">
          <property name="text">
-          <string>Inner Opto Cap</string>
+          <string>Inner Opto Cap [F]</string>
          </property>
         </widget>
        </item>
        <item row="0" column="3">
-        <widget class="QLineEdit" name="ResDown"/>
+        <widget class="QLineEdit" name="ResDown">
+         <property name="text">
+          <string>10000</string>
+         </property>
+        </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="CapFilterESR"/>
+        <widget class="QLineEdit" name="CapFilterESR">
+         <property name="text">
+          <string>0.02</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -4504,360 +4531,218 @@
         <x>450</x>
         <y>160</y>
         <width>401</width>
-        <height>211</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="title">
        <string>Optocouple Circuit</string>
       </property>
-      <widget class="QLabel" name="ResLed">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_799">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Led</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_803">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Bias</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResBias">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResUp">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_807">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res Up</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Quality">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_808">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Q</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_811">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Se</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SE">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_812">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>120</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_cross</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_813">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Sn</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="SN">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="FCross">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>120</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_814">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>180</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_p</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_815">
-       <property name="geometry">
-        <rect>
-         <x>130</x>
-         <y>150</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>F_z</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Fzero">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>150</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="Fpole">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>180</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_805">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>60</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Res zero</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="CapZero">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>90</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="ResZero">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>60</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_806">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>90</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap zero</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_816">
-       <property name="geometry">
-        <rect>
-         <x>260</x>
-         <y>30</y>
-         <width>56</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Cap opto</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="CapOpto">
-       <property name="geometry">
-        <rect>
-         <x>320</x>
-         <y>30</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Box</enum>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_17">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_799">
+         <property name="text">
+          <string>Res Led [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="ResLed">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="label_816">
+         <property name="text">
+          <string>Cap opto [F]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="CapOpto">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_803">
+         <property name="text">
+          <string>Res Bias [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="ResBias">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_805">
+         <property name="text">
+          <string>Res zero [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QLabel" name="ResZero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_807">
+         <property name="text">
+          <string>Res Up [R]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="ResUp">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLabel" name="label_806">
+         <property name="text">
+          <string>Cap zero [F]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QLabel" name="CapZero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_808">
+         <property name="text">
+          <string>Q</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="Quality">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLabel" name="label_812">
+         <property name="text">
+          <string>F_cross [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="FCross">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_811">
+         <property name="text">
+          <string>Se [V/s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="SE">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLabel" name="label_815">
+         <property name="text">
+          <string>F_z [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="Fzero">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_813">
+         <property name="text">
+          <string>Sn [V/s]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="SN">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLabel" name="label_814">
+         <property name="text">
+          <string>F_p [Hz]</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QLabel" name="Fpole">
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QPushButton" name="CalcOptoPushButton">
       <property name="geometry">

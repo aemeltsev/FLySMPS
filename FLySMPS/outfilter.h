@@ -1,4 +1,4 @@
-/**
+ /**
   Copyright 2021 Anton Emeltsev
 
   This file is part of FSMPS - asymmetrical converter model estimate.
@@ -21,7 +21,9 @@
 #define OUTFILTER_H
 #include <QtMath>
 #include <QVector>
+#include <QDebug>
 #include <cstdint>
+#include <complex>
 
 #define M_PI_DEG    180
 
@@ -33,7 +35,7 @@ public:
          * @param fr -
          * @param cap -
          */
-        OutFilter(int16_t fr, int16_t rload):
+        OutFilter(int32_t fr, int32_t rload):
             m_freq(fr), m_rload(rload)
         {}
 
@@ -62,7 +64,7 @@ public:
          * @brief ofDampingRatio - The damping ratio(\zeta)
          * @return
          */
-        inline double ofDampingRatio(){return 1./(2 * ofQualityFactor());}
+        inline double ofDampingRatio(){return ofInductor()/(2 * ofQualityFactor())/**1./(2 * ofQualityFactor())*/;}
         /**
          * @brief ofCutOffFreq - Cutoff Frequency
          * @return
@@ -90,16 +92,15 @@ public:
             {
                 freq_vector.push_back(ind);
                 mag_vector.push_back(ofTFMagnitudeGain(ind));
-                phase_vector.push_back(ofTFphase(ind));
+                phase_vector.push_back(ofTFPhaseAng(ind));
             }
         }
 private:
         inline double ofTFMagnitude(double freq)
         {
-            double omega = (2*M_PI*freq)/ofAngularCutFreq();
-            double first_denom = 1-qPow(omega, 2);
-            double second_denom = (1/ofQualityFactor())*omega;
-            return 1./(first_denom+second_denom);
+            double omega = (2*M_PI*freq);
+            return (1/(ofInductor()*ofCapacitor())) / (1/(ofInductor()*ofCapacitor()) + omega*(m_rload/ofInductor()) + qPow(omega, 2));
+
         }
 
         inline double ofTFMagnitudeGain(double freq)
@@ -107,16 +108,19 @@ private:
             return 20*std::log10(ofTFMagnitude(freq));
         }
 
-        inline double ofTFphase(double freq)
+        inline double ofTFPhaseAng(double freq)
         {
-            double omega = (2*M_PI*freq)/ofAngularCutFreq();
-            double numerator = (1/ofQualityFactor())*omega;
-            double denominator = 1-qPow(omega, 2);
-            return (-1)*qAtan(numerator/denominator);
+            return /*(-1) * */ofTFphase(freq);
         }
 
-        int16_t m_freq=0;
-        int16_t m_rload=0;
+        inline double ofTFphase(double freq)
+        {
+            double omega = (2*M_PI*freq);
+            return qAtan(((ofInductor() * omega) / m_rload) - (1. / ofInductor() * omega * ofCapacitor())) * (M_PI_DEG/M_PI);
+        }
+
+        int32_t m_freq=0;
+        int32_t m_rload=0;
 };
 
 #endif // OUTFILTER_H
