@@ -47,6 +47,7 @@ private slots:
 
     void initTransValues();
     void setInitialiseTransProp();
+    void setCoreAreaProp();
 
     void initTransCoreValues();
     void setTransPrimaryProp();
@@ -75,6 +76,16 @@ private slots:
 
     void setUpdateInputValues();
 
+signals:
+    void initTransValuesComplete();
+    void initTransCoreValuesComplete();
+    void initTransWiredsComplete();
+    void initMosfetValuesComplete();
+    void initOutCapValuesComplete();
+    void initOutFilterComplete();
+    void initPowerStageModelComplete();
+    void initOptoFeedbStageComplete();
+
 private:
     void initInputValues();
     double convertToValues(const QString& input);   
@@ -94,8 +105,7 @@ private:
     QList<QLabel*> cap_out_four;
     QList<QLabel*> cap_out_aux;
 
-
-    QThread *m_psworker;
+    QThread *m_psthread;
 };
 
 #endif // FLYSMPS_H
