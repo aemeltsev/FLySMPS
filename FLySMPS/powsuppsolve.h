@@ -46,8 +46,7 @@ class PowSuppSolve: public QObject
 public:
     explicit PowSuppSolve(QObject *parent = nullptr);
     ~PowSuppSolve();
-    void requestCalc();
-    void abort();
+
 
 public slots:
     void calcInputNetwork();
@@ -64,8 +63,7 @@ public slots:
     void calcOptocouplerFeedback();
 
 signals:
-    void calcRequested();
-    void finishedInputNetwork();
+    void finishedCalcInputNetwork();
     void finishedCalcElectricalPrimarySide();
     void finishedCalcArea();
     void finishedCalcElectroMagProperties();
@@ -220,51 +218,103 @@ private:
 
     struct FullOutFilter
      {
-         int32_t frequency;
-         int32_t load_resistance;
-         double angular_cut_freq;
-         double capacitor;
-         double inductor;
-         double q_factor;
-         double damping;
-         double cut_freq;
-         double out_ripp_voltage;
-         QVector<double> of_freq_array;
-         QVector<double> of_magnitude_array;
-         QVector<double> of_phase_array;
+        static constexpr int16_t HASH_SIZE {7};
+
+        int32_t m_frequency;
+        int32_t m_load_resistance;
+
+        QHash<QString, double> m_of_var_filter;
+        QVector<double> m_of_freq_array;
+        QVector<double> m_of_magnitude_array;
+        QVector<double> m_of_phase_array;
+
+        explicit FullOutFilter(int32_t frq, int32_t r_load) noexcept
+            :m_frequency(frq)
+            ,m_load_resistance(r_load)
+        {}
+
+        void ofAddData(double angular_cut_freq,
+                       double capacitor,
+                       double inductor,
+                       double q_factor,
+                       double damping,
+                       double cut_freq,
+                       double out_ripp_voltage)
+        {
+            m_of_var_filter.insert("ACF", angular_cut_freq);
+            m_of_var_filter.insert("CAP", capacitor);
+            m_of_var_filter.insert("IND", inductor);
+            m_of_var_filter.insert("QFCT", q_factor);
+            m_of_var_filter.insert("DAMP", damping);
+            m_of_var_filter.insert("CFRQ", cut_freq);
+            m_of_var_filter.insert("ORV", out_ripp_voltage);
+        }
      };
 
     struct PowerStageSmallSignalModel
     {
-        double ps_zero_one;
-        double ps_pole_one;
-        double ps_dcm_zero_two;
-        double ps_dcm_pole_two;
-        double ps_ccm_zero_two;
-        double ps_ccm_pole_two;
-        double ps_gain_cmc_mod;
-        QVector<double> ps_freq_array;
-        QVector<double> ps_magnitude_array;
-        QVector<double> ps_phase_array;
+        QHash<QString, double> m_ps_ssm;
+        QVector<double> m_ps_freq_array;
+        QVector<double> m_ps_magnitude_array;
+        QVector<double> m_ps_phase_array;
+
+        PowerStageSmallSignalModel() noexcept
+        {}
+
+        void ssmAddData(double ps_zero_one,
+                        double ps_pole_one,
+                        double ps_dcm_zero_two,
+                        double ps_dcm_pole_two,
+                        double ps_ccm_zero_two,
+                        double ps_ccm_pole_two,
+                        double ps_gain_cmc_mod)
+        {
+            m_ps_ssm.insert("ZONE", ps_zero_one);
+            m_ps_ssm.insert("PONE", ps_pole_one);
+            m_ps_ssm.insert("DCMZT", ps_dcm_zero_two);
+            m_ps_ssm.insert("DCMPT", ps_dcm_pole_two);
+            m_ps_ssm.insert("CCMZT", ps_ccm_zero_two);
+            m_ps_ssm.insert("CCMPT", ps_ccm_pole_two);
+            m_ps_ssm.insert("GCMC", ps_gain_cmc_mod);
+        }
     };
 
     struct OptocouplerFedbackStage
     {
-        double of_opto_led_res;
-        double of_opto_bias_res;
-        double of_up_divide_res;
-        double of_quality;
-        double of_ext_ramp_slope;
-        double of_ind_on_slope;
-        double of_freq_cross_sect;
-        double of_zero;
-        double of_pole;
-        double of_cap_opto;
-        double of_res_err_amp;
-        double of_cap_err_amp;
-        QVector<double> of_freq_array;
-        QVector<double> of_magnitude_array;
-        QVector<double> of_phase_array;
+        QHash<QString, double> m_ofs_data;
+        QVector<double> m_ofs_freq_array;
+        QVector<double> m_ofs_magnitude_array;
+        QVector<double> m_ofs_phase_array;
+
+        OptocouplerFedbackStage() noexcept
+        {}
+
+        void ofsAddData(double ofs_opto_led_res,
+                        double ofs_opto_bias_res,
+                        double ofs_up_divide_res,
+                        double ofs_quality,
+                        double ofs_ext_ramp_slope,
+                        double ofs_ind_on_slope,
+                        double ofs_freq_cross_sect,
+                        double ofs_zero,
+                        double ofs_pole,
+                        double ofs_cap_opto,
+                        double ofs_res_err_amp,
+                        double ofs_cap_err_amp)
+        {
+            m_ofs_data.insert("RESOPTLED", ofs_opto_led_res);
+            m_ofs_data.insert("RESOPTBIAS", ofs_opto_bias_res);
+            m_ofs_data.insert("RESUPDIV", ofs_up_divide_res);
+            m_ofs_data.insert("QUAL", ofs_quality);
+            m_ofs_data.insert("RS", ofs_ext_ramp_slope);
+            m_ofs_data.insert("IOS", ofs_ind_on_slope);
+            m_ofs_data.insert("FCS", ofs_freq_cross_sect);
+            m_ofs_data.insert("OFSZ", ofs_zero);
+            m_ofs_data.insert("OFSP", ofs_pole);
+            m_ofs_data.insert("CAPOPTO", ofs_cap_opto);
+            m_ofs_data.insert("RESERR", ofs_res_err_amp);
+            m_ofs_data.insert("CAPERR", ofs_cap_err_amp);
+        }
     };
 
     struct PulseTransPrimaryElectr
