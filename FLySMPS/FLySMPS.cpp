@@ -23,14 +23,12 @@
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FLySMPS),
-    m_psolve(new PowSuppSolve),
-    m_psthread(new QThread)
+    m_psolve(new PowSuppSolve)
 {
     ui->setupUi(this);
 
     initInputValues();
 
-    m_psolve->moveToThread(m_psthread);
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
@@ -60,34 +58,33 @@ FLySMPS::FLySMPS(QWidget *parent) :
         setOutCap();
     });
 
-    //connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
-    //connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
-    //connect(this, SIGNAL(initOutFilterComplete()), m_psworker, SLOT(start()));
-    //connect(m_psworker, SIGNAL(started()), m_psolve.data(), SLOT(calcOutputFilter()));
-    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, m_psworker, &QThread::quit, Qt::DirectConnection);
-
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setSolveLCFilter);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setLCPlot);
+    connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
+    connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, [this]()
+    {
+        setLCPlot();
+        setSolveLCFilter();
+    });
 
     connect(ui->CalcPSMPushButton, &QPushButton::clicked, this, &FLySMPS::initPowerStageModel);
     connect(this, &FLySMPS::initPowerStageModelComplete, m_psolve.data(), &PowSuppSolve::calcPowerStageModel);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStageModel);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStagePlot);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, [this]()
+    {
+        setPowerStagePlot();
+        setPowerStageModel();
+    });
 
     connect(ui->CalcOptoPushButton, &QPushButton::clicked, this, &FLySMPS::initOptoFeedbStage);
     connect(this, &FLySMPS::initOptoFeedbStageComplete, m_psolve.data(), &PowSuppSolve::calcOptocouplerFeedback);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbStage);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbPlot);
-
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, [this]()
+    {
+        setOptoFeedbPlot();
+        setOptoFeedbStage();
+    });
 }
 
 FLySMPS::~FLySMPS()
-{
-    m_psolve->abort();
-    m_psthread->wait();
-    qDebug()<<"Deleting thread and worker in Thread "<<this->QObject::thread()->currentThreadId();
-    delete m_psthread;
-}
+{}
 
 void FLySMPS::initInputValues()
 {
@@ -477,11 +474,9 @@ void FLySMPS::initMosfetValues()
 
 void FLySMPS::setSolveMosfet()
 {
-    /**Todo move to transformer calc section*/
     ui->VDSmax->setNum(m_psolve->m_pm->mosfet_voltage_max);
     ui->VDSnom->setNum(m_psolve->m_pm->mosfet_voltage_nom);
     ui->IDSmax->setNum(m_psolve->m_pm->mosfet_ds_curr);
-    /***/
 
     ui->Toff->setNum(m_psolve->m_pm->mosfet_off_time);
     ui->Ton->setNum(m_psolve->m_pm->mosfet_on_time);
@@ -640,6 +635,7 @@ void FLySMPS::setSolveLCFilter()
     ui->LCDamp->setNum(m_psolve->m_of->damping);
     ui->LCCutFreq->setNum(m_psolve->m_of->cut_freq);
     ui->LCOutRippVolt->setNum(m_psolve->m_of->out_ripp_voltage);
+
 }
 
 void FLySMPS::setLCPlot()
