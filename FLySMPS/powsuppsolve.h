@@ -70,8 +70,14 @@ signals:
     void finishedCalcTransformerWired();
     void finishedCalcSwitchNetwork();
     void finishedCalcOtputNetwork();
+    void newOFDataHash(QHash<QString, double>);
+    void newOFDataPlot(QVector<double>, QVector<double>);
     void finishedCalcOutputFilter();
+    void newPSMDataHash(QHash<QString, double>);
+    void newPSMDataPlot(QVector<double>, QVector<double>);
     void finishedCalcPowerStageModel();
+    void newOCFDataHash(QHash<QString, double>);
+    void newOCFDataPlot(QVector<double>, QVector<double>);
     void finishedCalcOptocouplerFeedback();
     void calcFinished();
 
@@ -110,6 +116,10 @@ private:
         float sec_esr_perc;
         double sec_crfq_value;
         float mrgn; /**< margin of the output power */
+        //for out filter
+        int32_t fl_freq;
+        int32_t fl_lres;
+        
     };
 
     struct TransWired
@@ -218,8 +228,6 @@ private:
 
     struct FullOutFilter
      {
-        static constexpr int16_t HASH_SIZE {7};
-
         int32_t m_frequency;
         int32_t m_load_resistance;
 
@@ -263,11 +271,11 @@ private:
 
         void ssmAddData(double ps_zero_one,
                         double ps_pole_one,
-                        double ps_dcm_zero_two,
-                        double ps_dcm_pole_two,
-                        double ps_ccm_zero_two,
-                        double ps_ccm_pole_two,
-                        double ps_gain_cmc_mod)
+                        double ps_gain_cmc_mod=0.0,
+                        double ps_dcm_zero_two=0.0,
+                        double ps_dcm_pole_two=0.0,
+                        double ps_ccm_zero_two=0.0,
+                        double ps_ccm_pole_two=0.0)
         {
             m_ps_ssm.insert("ZONE", ps_zero_one);
             m_ps_ssm.insert("PONE", ps_pole_one);
