@@ -19,9 +19,10 @@
 
 #ifndef OUTFILTER_H
 #define OUTFILTER_H
+#include <QObject>
 #include <QtMath>
 #include <QVector>
-#include <QDebug>
+//#include <QDebug>
 #include <cstdint>
 
 #define M_PI_DEG    180
@@ -29,7 +30,6 @@
 class OutFilter : public QObject
 {
     Q_OBJECT
-
 signals:
     void arrayComplete();
 
