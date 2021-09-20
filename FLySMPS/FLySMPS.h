@@ -63,16 +63,16 @@ private slots:
     void setOutCap();
 
     void initOutFilter();
-    void setSolveLCFilter();
-    void setLCPlot();
+    void setSolveLCFilter(QHash<QString, double> h_data);
+    void setLCPlot(QVector<double> mg_data, QVector<double> ph_data);
 
     void initPowerStageModel();
-    void setPowerStageModel();
-    void setPowerStagePlot();
+    void setPowerStageModel(QHash<QString, double> h_data);
+    void setPowerStagePlot(QVector<double> mg_data, QVector<double> ph_data);
 
     void initOptoFeedbStage();
-    void setOptoFeedbStage();
-    void setOptoFeedbPlot();
+    void setOptoFeedbStage(QHash<QString, double> h_data);
+    void setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data);
 
     void setUpdateInputValues();
 

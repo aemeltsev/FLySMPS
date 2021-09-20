@@ -30,8 +30,8 @@ FLySMPS::FLySMPS(QWidget *parent) :
     initInputValues();
 
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, this, &FLySMPS::setInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectricalPrimarySide, this, &FLySMPS::setInitialiseTransProp);
 
     connect(ui->CalcPrimarySidePushButton, &QPushButton::clicked, this, &FLySMPS::initTransValues);
@@ -60,27 +60,15 @@ FLySMPS::FLySMPS(QWidget *parent) :
 
     connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
     connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, [this]()
-    {
-        setLCPlot();
-        setSolveLCFilter();
-    });
+    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter,);
 
     connect(ui->CalcPSMPushButton, &QPushButton::clicked, this, &FLySMPS::initPowerStageModel);
     connect(this, &FLySMPS::initPowerStageModelComplete, m_psolve.data(), &PowSuppSolve::calcPowerStageModel);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, [this]()
-    {
-        setPowerStagePlot();
-        setPowerStageModel();
-    });
+    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, );
 
     connect(ui->CalcOptoPushButton, &QPushButton::clicked, this, &FLySMPS::initOptoFeedbStage);
     connect(this, &FLySMPS::initOptoFeedbStageComplete, m_psolve.data(), &PowSuppSolve::calcOptocouplerFeedback);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, [this]()
-    {
-        setOptoFeedbPlot();
-        setOptoFeedbStage();
-    });
+    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, );
 }
 
 FLySMPS::~FLySMPS()
@@ -619,26 +607,26 @@ void FLySMPS::setOutCap()
 
 void FLySMPS::initOutFilter()
 {
-    m_psolve->m_of->frequency = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
-    m_psolve->m_of->load_resistance = convertToValues(static_cast<QString>(ui->LCF_ResLoad->text()));
+    m_psolve->m_indata.fl_freq = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
+    m_psolve->m_indata.fl_lres = convertToValues(static_cast<QString>(ui->LCF_ResLoad->text()));
     emit initOutFilterComplete();
 }
 
-void FLySMPS::setSolveLCFilter()
+void FLySMPS::setSolveLCFilter(QHash<QString, double> h_data)
 {
     ui->LCFilterGraph->replot();
 
-    ui->LCAngCutFreq->setNum(m_psolve->m_of->angular_cut_freq);
-    ui->LCInd->setNum(m_psolve->m_of->inductor);
-    ui->LCCap->setNum(m_psolve->m_of->capacitor);
-    ui->LCQual->setNum(m_psolve->m_of->q_factor);
-    ui->LCDamp->setNum(m_psolve->m_of->damping);
-    ui->LCCutFreq->setNum(m_psolve->m_of->cut_freq);
-    ui->LCOutRippVolt->setNum(m_psolve->m_of->out_ripp_voltage);
+    ui->LCAngCutFreq->setNum(h_data.value("ACF"));
+    ui->LCInd->setNum(h_data.value("IND"));
+    ui->LCCap->setNum(h_data.value("CAP"));
+    ui->LCQual->setNum(h_data.value("QFCT"));
+    ui->LCDamp->setNum(h_data.value("DAMP"));
+    ui->LCCutFreq->setNum(h_data.value("CFRQ"));
+    ui->LCOutRippVolt->setNum(h_data.value("ORV "));
 
 }
 
-void FLySMPS::setLCPlot()
+void FLySMPS::setLCPlot(QVector<double> mg_data, QVector<double> ph_data)
 {
     //add two new graphs and set their look:
     ui->LCFilterGraph->clearGraphs();
@@ -656,8 +644,8 @@ void FLySMPS::setLCPlot()
     ui->LCFilterGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_magnitude_array);
-    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_phase_array);
+    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_of->m_of_freq_array, mg_data);
+    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_of->m_of_freq_array, ph_data);
     ui->LCFilterGraph->replot();
 
     //give the axis some labels:
@@ -688,9 +676,9 @@ void FLySMPS::setLCPlot()
     ui->LCFilterGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_of->of_freq_array.clear();
-    m_psolve->m_of->of_magnitude_array.clear();
-    m_psolve->m_of->of_phase_array.clear();
+    m_psolve->m_of->m_of_freq_array.clear();
+    m_psolve->m_of->m_of_magnitude_array.clear();
+    m_psolve->m_of->m_of_phase_array.clear();
 }
 
 void FLySMPS::initPowerStageModel()
@@ -732,20 +720,20 @@ void FLySMPS::initPowerStageModel()
     emit initPowerStageModelComplete();
 }
 
-void FLySMPS::setPowerStageModel()
+void FLySMPS::setPowerStageModel(QHash<QString, double> h_data)
 {
     ui->PSMGraph->replot();
 
-    ui->PSMFz1->setNum(m_psolve->m_pssm->ps_zero_one);
-    ui->PSMFp1->setNum(m_psolve->m_pssm->ps_pole_one);
-    ui->PSMFz2dcm->setNum(m_psolve->m_pssm->ps_dcm_zero_two);
-    ui->PSMFp2dcm->setNum(m_psolve->m_pssm->ps_dcm_pole_two);
-    ui->PSMFz2ccm->setNum(m_psolve->m_pssm->ps_ccm_zero_two);
-    ui->PSMFp2ccm->setNum(m_psolve->m_pssm->ps_ccm_pole_two);
-    ui->PSMGf->setNum(m_psolve->m_pssm->ps_gain_cmc_mod);
+    ui->PSMFz1->setNum(h_data.value("ZONE"));
+    ui->PSMFp1->setNum(h_data.value("PONE"));
+    ui->PSMFz2dcm->setNum(h_data.value("DCMZT"));
+    ui->PSMFp2dcm->setNum(h_data.value("DCMPT"));
+    ui->PSMFz2ccm->setNum(h_data.value("CCMZT"));
+    ui->PSMFp2ccm->setNum(h_data.value("CCMPT"));
+    ui->PSMGf->setNum(h_data.value("GCMC"));
 }
 
-void FLySMPS::setPowerStagePlot()
+void FLySMPS::setPowerStagePlot(QVector<double> mg_data, QVector<double> ph_data)
 {
     ui->PSMGraph->clearGraphs();
 
@@ -762,8 +750,8 @@ void FLySMPS::setPowerStagePlot()
     ui->PSMGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_magnitude_array);
-    ui->PSMGraph->graph(1)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_phase_array);
+    ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->m_ps_freq_array, mg_data);
+    ui->PSMGraph->graph(1)->setData(m_psolve->m_pssm->m_ps_freq_array, ph_data);
     ui->PSMGraph->replot();
 
     //give the axis some labels:
@@ -794,9 +782,9 @@ void FLySMPS::setPowerStagePlot()
     ui->PSMGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_pssm->ps_freq_array.clear();
-    m_psolve->m_pssm->ps_magnitude_array.clear();
-    m_psolve->m_pssm->ps_phase_array.clear();
+    m_psolve->m_pssm->m_ps_freq_array.clear();
+    m_psolve->m_pssm->m_ps_magnitude_array.clear();
+    m_psolve->m_pssm->m_ps_phase_array.clear();
 
 }
 
@@ -822,33 +810,33 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_rs.primary_ind = m_psolve->m_ptpe->primary_induct;
     m_psolve->m_rs.res_sense = m_psolve->m_pm->curr_sense_res;
 
-    m_psolve->m_lc.lcf_ind = m_psolve->m_of->inductor;
-    m_psolve->m_lc.lcf_cap = m_psolve->m_of->capacitor;
+    m_psolve->m_lc.lcf_ind = m_psolve->m_of->m_of_var_filter.value("CAP");
+    m_psolve->m_lc.lcf_cap = m_psolve->m_of->m_of_var_filter.value("IND");
     m_psolve->m_lc.lcf_cap_esr = convertToValues(static_cast<QString>(ui->CapFilterESR->text()));
     emit initOptoFeedbStageComplete();
 }
 
-void FLySMPS::setOptoFeedbStage()
+void FLySMPS::setOptoFeedbStage(QHash<QString, double> h_data)
 {
     ui->OptoGraph->replot();
 
-    ui->ResLed->setNum(m_psolve->m_ofs->of_opto_led_res);
-    ui->ResBias->setNum(m_psolve->m_ofs->of_opto_bias_res);
-    ui->ResUp->setNum(m_psolve->m_ofs->of_up_divide_res);
+    ui->ResLed->setNum(h_data.value("RESOPTLED"));
+    ui->ResBias->setNum(h_data.value("RESOPTBIAS"));
+    ui->ResUp->setNum(h_data.value("RESUPDIV"));
 
-    ui->Quality->setNum(m_psolve->m_ofs->of_quality);
-    ui->SE->setNum(m_psolve->m_ofs->of_ext_ramp_slope);
-    ui->SN->setNum(m_psolve->m_ofs->of_ind_on_slope);
-    ui->FCross->setNum(m_psolve->m_ofs->of_freq_cross_sect);
-    ui->Fzero->setNum(m_psolve->m_ofs->of_zero);
-    ui->Fpole->setNum(m_psolve->m_ofs->of_pole);
+    ui->Quality->setNum(h_data.value("QUAL"));
+    ui->SE->setNum(h_data.value("RS"));
+    ui->SN->setNum(h_data.value("IOS"));
+    ui->FCross->setNum(h_data.value("FCS"));
+    ui->Fzero->setNum(h_data.value("OFSZ"));
+    ui->Fpole->setNum(h_data.value("OFSP"));
 
-    ui->CapOpto->setNum(m_psolve->m_ofs->of_cap_opto);
-    ui->ResZero->setNum(m_psolve->m_ofs->of_res_err_amp);
-    ui->CapZero->setNum(m_psolve->m_ofs->of_cap_err_amp);
+    ui->CapOpto->setNum(h_data.value("CAPOPTO"));
+    ui->ResZero->setNum(h_data.value("RESERR"));
+    ui->CapZero->setNum(h_data.value("CAPERR"));
 }
 
-void FLySMPS::setOptoFeedbPlot()
+void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
 {
     ui->OptoGraph->clearGraphs();
 
@@ -865,8 +853,8 @@ void FLySMPS::setOptoFeedbPlot()
     ui->OptoGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_magnitude_array);
-    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_phase_array);
+    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofs->m_ofs_freq_array, mg_data);
+    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofs->m_ofs_freq_array, ph_data);
     ui->OptoGraph->replot();
 
     //give the axis some labels:
@@ -897,9 +885,9 @@ void FLySMPS::setOptoFeedbPlot()
     ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_ofs->of_freq_array.clear();
-    m_psolve->m_ofs->of_magnitude_array.clear();
-    m_psolve->m_ofs->of_phase_array.clear();
+    m_psolve->m_ofs->m_ofs_freq_array.clear();
+    m_psolve->m_ofs->m_ofs_magnitude_array.clear();
+    m_psolve->m_ofs->m_ofs_phase_array.clear();
 }
 
 void FLySMPS::setUpdateInputValues()
