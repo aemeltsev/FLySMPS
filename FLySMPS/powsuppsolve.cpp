@@ -33,8 +33,17 @@ PowSuppSolve::PowSuppSolve(QObject *parent)
     m_fod.reset(new FullOutDiode);
     m_foc.reset(new FullOutCap);
     //m_of.reset(new FullOutFilter());
-    m_pssm.reset(new PowerStageSmallSignalModel);
-    m_ofs.reset(new OptocouplerFedbackStage);
+    //m_pssm.reset(new PowerStageSmallSignalModel);
+    //m_ofs.reset(new OptocouplerFedbackStage);
+
+    m_ssmfrq.reserve(SET_FREQ_SIZE/100);
+    m_ofsfrq.reserve(SET_FREQ_SIZE/100);
+
+    for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
+    {
+        m_ssmfrq.push_back(indx);
+        m_ofsfrq.push_back(indx);
+    }
 
     m_working = false;
     m_abort = false;
@@ -728,30 +737,22 @@ void PowSuppSolve::calcOutputFilter()
 {
     qDebug() << "Start calculate output filter in Thread " << thread()->currentThreadId();
     
-    m_of.reset(new FullOutFilter(m_indata.fl_freq, m_indata.fl_lres));
-
-    QThread ofthread;
     QScopedPointer<OutFilter> out_fl(new OutFilter(m_indata.fl_freq,m_indata.fl_lres));
 
     qDebug() << "Initialise OutFilter object in Thread " << out_fl->thread()->currentThreadId();
-    
-    out_fl->moveToThread(&ofthread);
-    m_of->ofAddData(out_fl->ofAngularCutFreq(),
-                    out_fl->ofCapacitor(),
-                    out_fl->ofInductor(),
-                    out_fl->ofQualityFactor(),
-                    out_fl->ofDampingRatio(),
-                    out_fl->ofAngularCutFreq(),
-                    out_fl->ofOutRipplVolt()
-                    );
-    out_fl->ofPlotArray(m_of->m_of_freq_array, m_of->m_of_magnitude_array, m_of->m_of_phase_array, 10, 1000000, 10);
-    
-    //connect(&ofthread, &QThread::finished, out_fl.data(), &QObject::deleteLater);
-    connect(out_fl.data(), &OutFilter::arrayComplete, &ofthread, &QThread::quit);
-    ofthread.start();
-    
-    emit newOFDataHash(m_of->m_of_var_filter);
-    emit newOFDataPlot(m_of->m_of_magnitude_array, m_of->m_of_phase_array);
+
+    m_ofhshdata.insert("ACF", out_fl->ofAngularCutFreq());
+    m_ofhshdata.insert("CAP", out_fl->ofCapacitor());
+    m_ofhshdata.insert("IND", out_fl->ofInductor());
+    m_ofhshdata.insert("QFCT", out_fl->ofQualityFactor());
+    m_ofhshdata.insert("DAMP", out_fl->ofDampingRatio());
+    m_ofhshdata.insert("CFRQ", out_fl->ofAngularCutFreq());
+    m_ofhshdata.insert("ORV", out_fl->ofOutRipplVolt());
+
+    out_fl->ofPlotArray(m_offrq, m_ofmag, m_ofphs, 10, 1000000, 10);
+        
+    emit newOFDataHash(m_ofhshdata);
+    emit newOFDataPlot(m_ofmag, m_ofphs);
 
     qDebug() << "Finished calculate output filter in Thread " << thread()->currentThreadId();
 
@@ -763,34 +764,31 @@ void PowSuppSolve::calcPowerStageModel()
     qDebug() << "Start calculate power stage model in Thread " << thread()->currentThreadId();
 
     m_pcssm.reset(new PCSSM(m_ssm));
-    QThread pssmthread;
 
     qDebug() << "Initialise PCSSM object in Thread " << thread()->currentThreadId();
 
-    m_pcssm->moveToThread(&pssmthread);
-    m_pssm->ssmAddData(m_pcssm->coZeroOneAngFreq(),
-                       m_pcssm->coPoleOneAngFreq(),
-                       m_pcssm->coDCMZeroTwoAngFreq(),
-                       m_pcssm->coDCMPoleTwoAngFreq(),
-                       m_pcssm->coGainCurrModeContrModulator());
+    m_ssmhshdata.insert("ZONE", m_pcssm->coZeroOneAngFreq());
+    m_ssmhshdata.insert("PONE", m_pcssm->coPoleOneAngFreq());
+    m_ssmhshdata.insert("DCMZT", m_pcssm->coDCMZeroTwoAngFreq());
+    m_ssmhshdata.insert("DCMPT", m_pcssm->coDCMPoleTwoAngFreq());
+    //m_ssmhshdata.insert("CCMZT", );
+    //m_ssmhshdata.insert("CCMPT", );
+    m_ssmhshdata.insert("GCMC", m_pcssm->coGainCurrModeContrModulator());
 
-    m_pssm->m_ps_freq_array.reserve(SET_FREQ_SIZE/100);
-    m_pssm->m_ps_magnitude_array.reserve(SET_FREQ_SIZE/100);
-    m_pssm->m_ps_phase_array.reserve(SET_FREQ_SIZE/100);
+    //m_ssmfrq.reserve(SET_FREQ_SIZE/100);
+    m_ssmmag.reserve(SET_FREQ_SIZE/100);
+    m_ssmphs.reserve(SET_FREQ_SIZE/100);
 
-    for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
+    /*for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
     {
-        m_pssm->m_ps_freq_array.push_back(indx);
-    }
+        m_ssmfrq.push_back(indx);
+    }*/
 
-    m_pcssm->coGainControlToOutTransfFunct(m_pssm->m_ps_freq_array, m_pssm->m_ps_magnitude_array);
-    m_pcssm->coPhaseControlToOutTransfFunct(m_pssm->m_ps_freq_array, m_pssm->m_ps_phase_array);
+    m_pcssm->coGainControlToOutTransfFunct(m_ssmfrq, m_ssmmag);
+    m_pcssm->coPhaseControlToOutTransfFunct(m_ssmfrq, m_ssmphs);
 
-    connect(m_pcssm.data(), &PCSSM::arrayPhaseSSMComplete, &pssmthread, &QThread::quit);
-    pssmthread.start();
-
-    emit newPSMDataHash(m_pssm->m_ps_ssm);
-    emit newPSMDataPlot(m_pssm->m_ps_magnitude_array, m_pssm->m_ps_phase_array);
+    emit newPSMDataHash(m_ssmhshdata);
+    emit newPSMDataPlot(m_ssmmag, m_ssmphs);
 
     qDebug() << "Finished calculate power stage model in Thread " << thread()->currentThreadId();
 
@@ -802,38 +800,36 @@ void PowSuppSolve::calcOptocouplerFeedback()
     qDebug() << "Start calculate optocoupler feedback in Thread " << thread()->currentThreadId();
 
     m_fccd.reset(new FCCD(m_fc, m_rs, m_lc));
-    QThread ocfthread;
 
     qDebug() << "Initialise FCCD object in Thread " << thread()->currentThreadId();
 
-    m_fccd->moveToThread(&ocfthread);
-    m_ofs->ofsAddData(m_fccd->coResOptoDiode(),
-                      m_fccd->coResOptoBias(),
-                      m_fccd->coResUp(),
-                      m_fccd->coQuality(),
-                      m_fccd->coExterRampSlope(),
-                      m_fccd->coIndOnTimeSlope(),
-                      m_fccd->coFreqCrossSection(),
-                      m_fccd->coFreqZero(),
-                      m_fccd->coFreqPole(),
-                      m_fccd->coCapPoleOpto(),
-                      m_fccd->coResZero(),
-                      m_fccd->coCapZero());
+    m_ofshshdata.value("RESOPTLED", m_fccd->coResOptoDiode());
+    m_ofshshdata.value("RESOPTBIAS", m_fccd->coResOptoBias());
+    m_ofshshdata.value("RESUPDIV", m_fccd->coResUp());
+    m_ofshshdata.value("QUAL", m_fccd->coQuality());
+    m_ofshshdata.value("RS", m_fccd->coExterRampSlope());
+    m_ofshshdata.value("IOS", m_fccd->coIndOnTimeSlope());
+    m_ofshshdata.value("FCS", m_fccd->coFreqCrossSection());
+    m_ofshshdata.value("OFSZ", m_fccd->coFreqZero());
+    m_ofshshdata.value("OFSP", m_fccd->coFreqPole());
+    m_ofshshdata.value("CAPOPTO", m_fccd->coCapPoleOpto());
+    m_ofshshdata.value("RESERR", m_fccd->coResZero());
+    m_ofshshdata.value("CAPERR", m_fccd->coCapZero());
 
-    m_ofs->m_ofs_freq_array.reserve(SET_FREQ_SIZE/100);
-    m_ofs->m_ofs_magnitude_array.reserve(SET_FREQ_SIZE/100);
-    m_ofs->m_ofs_phase_array.reserve(SET_FREQ_SIZE/100);
+    //m_ofsfrq.reserve(SET_FREQ_SIZE/100);
+    m_ofsmag.reserve(SET_FREQ_SIZE/100);
+    m_ofsphs.reserve(SET_FREQ_SIZE/100);
 
-    for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
+    /*for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
     {
-        m_ofs->m_ofs_freq_array.push_back(indx);
-    }
+        m_ofsfrq.push_back(indx);
+    }*/
 
-    m_fccd->coGainOptoFeedbTransfFunc(m_ofs->m_ofs_freq_array, m_ofs->m_ofs_magnitude_array);
-    m_fccd->coPhaseOptoFeedbTransfFunc(m_ofs->m_ofs_freq_array, m_ofs->m_ofs_phase_array);
+    m_fccd->coGainOptoFeedbTransfFunc(m_ofsfrq, m_ofsmag);
+    m_fccd->coPhaseOptoFeedbTransfFunc(m_ofsfrq, m_ofsphs);
 
-    emit newOCFDataHash(m_ofs->m_ofs_data);
-    emit newOCFDataPlot(m_ofs->m_ofs_magnitude_array, m_ofs->m_ofs_phase_array);
+    emit newOCFDataHash(m_ofshshdata);
+    emit newOCFDataPlot(m_ofsmag, m_ofsphs);
 
     qDebug() << "Finished calculate optocoupler feedback in Thread " << thread()->currentThreadId();
 

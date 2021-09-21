@@ -226,105 +226,6 @@ private:
         QHash<QString, float> out_cap_aux;
     };
 
-    struct FullOutFilter
-     {
-        int32_t m_frequency;
-        int32_t m_load_resistance;
-
-        QHash<QString, double> m_of_var_filter;
-        QVector<double> m_of_freq_array;
-        QVector<double> m_of_magnitude_array;
-        QVector<double> m_of_phase_array;
-
-        explicit FullOutFilter(int32_t frq, int32_t r_load) noexcept
-            :m_frequency(frq)
-            ,m_load_resistance(r_load)
-        {}
-
-        void ofAddData(double angular_cut_freq,
-                       double capacitor,
-                       double inductor,
-                       double q_factor,
-                       double damping,
-                       double cut_freq,
-                       double out_ripp_voltage)
-        {
-            m_of_var_filter.insert("ACF", angular_cut_freq);
-            m_of_var_filter.insert("CAP", capacitor);
-            m_of_var_filter.insert("IND", inductor);
-            m_of_var_filter.insert("QFCT", q_factor);
-            m_of_var_filter.insert("DAMP", damping);
-            m_of_var_filter.insert("CFRQ", cut_freq);
-            m_of_var_filter.insert("ORV", out_ripp_voltage);
-        }
-     };
-
-    struct PowerStageSmallSignalModel
-    {
-        QHash<QString, double> m_ps_ssm;
-        QVector<double> m_ps_freq_array;
-        QVector<double> m_ps_magnitude_array;
-        QVector<double> m_ps_phase_array;
-
-        PowerStageSmallSignalModel() noexcept
-        {}
-
-        void ssmAddData(double ps_zero_one,
-                        double ps_pole_one,
-                        double ps_gain_cmc_mod=0.0,
-                        double ps_dcm_zero_two=0.0,
-                        double ps_dcm_pole_two=0.0,
-                        double ps_ccm_zero_two=0.0,
-                        double ps_ccm_pole_two=0.0)
-        {
-            m_ps_ssm.insert("ZONE", ps_zero_one);
-            m_ps_ssm.insert("PONE", ps_pole_one);
-            m_ps_ssm.insert("DCMZT", ps_dcm_zero_two);
-            m_ps_ssm.insert("DCMPT", ps_dcm_pole_two);
-            m_ps_ssm.insert("CCMZT", ps_ccm_zero_two);
-            m_ps_ssm.insert("CCMPT", ps_ccm_pole_two);
-            m_ps_ssm.insert("GCMC", ps_gain_cmc_mod);
-        }
-    };
-
-    struct OptocouplerFedbackStage
-    {
-        QHash<QString, double> m_ofs_data;
-        QVector<double> m_ofs_freq_array;
-        QVector<double> m_ofs_magnitude_array;
-        QVector<double> m_ofs_phase_array;
-
-        OptocouplerFedbackStage() noexcept
-        {}
-
-        void ofsAddData(double ofs_opto_led_res,
-                        double ofs_opto_bias_res,
-                        double ofs_up_divide_res,
-                        double ofs_quality,
-                        double ofs_ext_ramp_slope,
-                        double ofs_ind_on_slope,
-                        double ofs_freq_cross_sect,
-                        double ofs_zero,
-                        double ofs_pole,
-                        double ofs_cap_opto,
-                        double ofs_res_err_amp,
-                        double ofs_cap_err_amp)
-        {
-            m_ofs_data.insert("RESOPTLED", ofs_opto_led_res);
-            m_ofs_data.insert("RESOPTBIAS", ofs_opto_bias_res);
-            m_ofs_data.insert("RESUPDIV", ofs_up_divide_res);
-            m_ofs_data.insert("QUAL", ofs_quality);
-            m_ofs_data.insert("RS", ofs_ext_ramp_slope);
-            m_ofs_data.insert("IOS", ofs_ind_on_slope);
-            m_ofs_data.insert("FCS", ofs_freq_cross_sect);
-            m_ofs_data.insert("OFSZ", ofs_zero);
-            m_ofs_data.insert("OFSP", ofs_pole);
-            m_ofs_data.insert("CAPOPTO", ofs_cap_opto);
-            m_ofs_data.insert("RESERR", ofs_res_err_amp);
-            m_ofs_data.insert("CAPERR", ofs_cap_err_amp);
-        }
-    };
-
     struct PulseTransPrimaryElectr
     {
         double max_duty_cycle;//Max duty cycle
@@ -404,6 +305,53 @@ public:
     RampSlopePreDesign m_rs;
     LCSecondStage m_lc;
 
+    /*
+    "ACF" - angular_cut_freq
+    "CAP" - capacitor
+    "IND" - inductor
+    "QFCT" - q_factor
+    "DAMP" - damping
+    "CFRQ" - cut_freq
+    "ORV" - out_ripp_voltage
+    */
+    QHash<QString, double> m_ofhshdata;
+    QVector<double> m_offrq;
+    QVector<double> m_ofmag;
+    QVector<double> m_ofphs;
+
+    /*
+    "ZONE" - ps_zero_one
+    "PONE" - ps_pole_one
+    "DCMZT" - ps_dcm_zero_two
+    "DCMPT" - ps_dcm_pole_two
+    "CCMZT" - ps_ccm_zero_two
+    "CCMPT" - ps_ccm_pole_two
+    "GCMC" - ps_gain_cmc_mod
+    */
+    QHash<QString, double> m_ssmhshdata;
+    QVector<double> m_ssmfrq;
+    QVector<double> m_ssmmag;
+    QVector<double> m_ssmphs;
+
+    /*
+    "RESOPTLED" - ofs_opto_led_res
+    "RESOPTBIAS" - ofs_opto_bias_res
+    "RESUPDIV" - ofs_up_divide_res
+    "QUAL" - ofs_quality
+    "RS" - ofs_ext_ramp_slope
+    "IOS" - ofs_ind_on_slope
+    "FCS" - ofs_freq_cross_sect
+    "OFSZ" - ofs_zero
+    "OFSP" - ofs_pole
+    "CAPOPTO" - ofs_cap_opto
+    "RESERR" - ofs_res_err_amp
+     "CAPERR" - ofs_cap_err_amp
+    */
+    QHash<QString, double> m_ofshshdata;
+    QVector<double> m_ofsfrq;
+    QVector<double> m_ofsmag;
+    QVector<double> m_ofsphs;
+
     QScopedPointer<BCap> m_bc;
     QScopedPointer<DBridge> m_db;
     QScopedPointer<PMosfet> m_pm;
@@ -411,8 +359,8 @@ public:
     QScopedPointer<PulseTransWires> m_ptsw;
     QScopedPointer<FullOutDiode> m_fod;
     QScopedPointer<FullOutCap> m_foc;
-    QScopedPointer<FullOutFilter> m_of;
-    QScopedPointer<PowerStageSmallSignalModel> m_pssm;
-    QScopedPointer<OptocouplerFedbackStage> m_ofs;
+    //QScopedPointer<FullOutFilter> m_of;
+    //QScopedPointer<PowerStageSmallSignalModel> m_pssm;
+    //QScopedPointer<OptocouplerFedbackStage> m_ofs;
 };
 #endif // POWSUPPSOLVE_H
