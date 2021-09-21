@@ -644,8 +644,8 @@ void FLySMPS::setLCPlot(QVector<double> mg_data, QVector<double> ph_data)
     ui->LCFilterGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_of->m_of_freq_array, mg_data);
-    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_of->m_of_freq_array, ph_data);
+    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_offrq, mg_data);
+    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_offrq, ph_data);
     ui->LCFilterGraph->replot();
 
     //give the axis some labels:
@@ -676,9 +676,9 @@ void FLySMPS::setLCPlot(QVector<double> mg_data, QVector<double> ph_data)
     ui->LCFilterGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_of->m_of_freq_array.clear();
-    m_psolve->m_of->m_of_magnitude_array.clear();
-    m_psolve->m_of->m_of_phase_array.clear();
+    m_psolve->m_offrq.clear();
+    m_psolve->m_ofmag.clear();
+    m_psolve->m_ofphs.clear();
 }
 
 void FLySMPS::initPowerStageModel()
@@ -750,8 +750,8 @@ void FLySMPS::setPowerStagePlot(QVector<double> mg_data, QVector<double> ph_data
     ui->PSMGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->m_ps_freq_array, mg_data);
-    ui->PSMGraph->graph(1)->setData(m_psolve->m_pssm->m_ps_freq_array, ph_data);
+    ui->PSMGraph->graph(0)->setData(m_psolve->m_ssmfrq, mg_data);
+    ui->PSMGraph->graph(1)->setData(m_psolve->m_ssmfrq, ph_data);
     ui->PSMGraph->replot();
 
     //give the axis some labels:
@@ -782,9 +782,9 @@ void FLySMPS::setPowerStagePlot(QVector<double> mg_data, QVector<double> ph_data
     ui->PSMGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_pssm->m_ps_freq_array.clear();
-    m_psolve->m_pssm->m_ps_magnitude_array.clear();
-    m_psolve->m_pssm->m_ps_phase_array.clear();
+    m_psolve->m_ssmfrq.clear();
+    m_psolve->m_ssmmag.clear();
+    m_psolve->m_ssmphs.clear();
 
 }
 
@@ -810,8 +810,8 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_rs.primary_ind = m_psolve->m_ptpe->primary_induct;
     m_psolve->m_rs.res_sense = m_psolve->m_pm->curr_sense_res;
 
-    m_psolve->m_lc.lcf_ind = m_psolve->m_of->m_of_var_filter.value("CAP");
-    m_psolve->m_lc.lcf_cap = m_psolve->m_of->m_of_var_filter.value("IND");
+    m_psolve->m_lc.lcf_ind = m_psolve->m_ofhshdata.value("CAP");
+    m_psolve->m_lc.lcf_cap = m_psolve->m_ofhshdata.value("IND");
     m_psolve->m_lc.lcf_cap_esr = convertToValues(static_cast<QString>(ui->CapFilterESR->text()));
     emit initOptoFeedbStageComplete();
 }
@@ -853,8 +853,8 @@ void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
     ui->OptoGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofs->m_ofs_freq_array, mg_data);
-    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofs->m_ofs_freq_array, ph_data);
+    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofsfrq, mg_data);
+    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofsfrq, ph_data);
     ui->OptoGraph->replot();
 
     //give the axis some labels:
@@ -885,9 +885,9 @@ void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
     ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
 
     //
-    m_psolve->m_ofs->m_ofs_freq_array.clear();
-    m_psolve->m_ofs->m_ofs_magnitude_array.clear();
-    m_psolve->m_ofs->m_ofs_phase_array.clear();
+    m_psolve->m_ofsfrq.clear();
+    m_psolve->m_ofsmag.clear();
+    m_psolve->m_ofsphs.clear();
 }
 
 void FLySMPS::setUpdateInputValues()
