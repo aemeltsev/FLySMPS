@@ -393,7 +393,7 @@ double FCCD::coQualityLC() const
     return (m_fcvar.out_voltage / m_fcvar.out_current) / m_lcfvar.lcf_ind;
 }
 
-inline double FCCD::coIndOnTimeSlope() const
+double FCCD::coIndOnTimeSlope() const
 {
     return (m_rsvar.inp_voltage * m_rsvar.res_sense)/m_rsvar.primary_ind;
 }
@@ -405,7 +405,7 @@ double FCCD::coCompRamp() const
     return (coeff  * m_fcvar.out_voltage)/m_rsvar.inp_voltage;
 }
 
-inline double FCCD::coExterRampSlope() const
+double FCCD::coExterRampSlope() const
 {
     return 0.5 * ((m_fcvar.out_voltage / ((m_rsvar.prim_turns/m_rsvar.sec_turns_to_control) * m_rsvar.primary_ind)) * m_rsvar.res_sense);
     //return (coCompRamp()-1)*coIndOnTimeSlope();
