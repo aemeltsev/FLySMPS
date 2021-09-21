@@ -6,11 +6,6 @@ OutFilter::OutFilter(int32_t fr, int32_t rload, QObject *parent) noexcept
     ,m_rload(rload)
 {}
 
-inline double OutFilter::ofOutRipplVolt() const
-{
-    return (1./(ofAngularCutFreq()*ofCapacitor()))/((1./(ofAngularCutFreq()*ofCapacitor()))+(ofAngularCutFreq()*ofInductor()));
-}
-
 void  OutFilter::ofPlotArray(QVector<double> &freq_vector, QVector<double> &mag_vector, QVector<double> &phase_vector, int32_t begin, int32_t end, int32_t step)
 {
     for(int32_t ind=begin; ind<end; ind+=step)

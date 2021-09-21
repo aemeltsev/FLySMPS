@@ -82,7 +82,10 @@ public:
      * @brief ofOutRipplVolt - Output ripple voltage
      * @return
      */
-    inline double ofOutRipplVolt() const;
+    inline double ofOutRipplVolt()
+    {
+        return (1./(ofAngularCutFreq()*ofCapacitor()))/((1./(ofAngularCutFreq()*ofCapacitor()))+(ofAngularCutFreq()*ofInductor()));
+    }
 
     /**
      * @brief ofPlotArray - Filling of data table
