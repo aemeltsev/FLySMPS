@@ -46,6 +46,7 @@ private slots:
     void setInputNetwork();
 
     void initTransValues();
+
     void setInitialiseTransProp();
     void setCoreAreaProp();
 
@@ -88,10 +89,14 @@ signals:
 
 private:
     void initInputValues();
+    void initLCPlot();
+    void initFCPlot();
+    void initSSMplot();
     double convertToValues(const QString& input);   
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
+    QThread* m_sthread;
 
     QList<QLabel*> d_out_one;
     QList<QLabel*> d_out_two;
