@@ -18,7 +18,6 @@
 */
 
 #include "FLySMPS.h"
-//#include <QDebug>
 
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
@@ -84,10 +83,10 @@ FLySMPS::FLySMPS(QWidget *parent) :
 
 FLySMPS::~FLySMPS()
 {
-    m_sthread->quit();
-    m_sthread->wait();
-    qDebug() << "Deleting thread and worker in Thread" << this->QObject::thread()->currentThreadId();
-    delete m_sthread;
+    if(m_sthread->isRunning()) {
+        m_sthread->quit();
+    }
+    m_sthread->deleteLater();
 }
 
 void FLySMPS::initInputValues()
@@ -911,7 +910,6 @@ void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
     ui->OptoGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
     ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
     ui->OptoGraph->replot();
-
     //
     //m_psolve->m_ofsfrq.clear();
     //m_psolve->m_ofsmag.clear();
