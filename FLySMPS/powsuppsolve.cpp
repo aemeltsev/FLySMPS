@@ -32,9 +32,6 @@ PowSuppSolve::PowSuppSolve(QObject *parent)
     m_ptsw.reset(new PulseTransWires());
     m_fod.reset(new FullOutDiode);
     m_foc.reset(new FullOutCap);
-    //m_of.reset(new FullOutFilter());
-    //m_pssm.reset(new PowerStageSmallSignalModel);
-    //m_ofs.reset(new OptocouplerFedbackStage);
 
     m_ssmfrq.reserve(SET_FREQ_SIZE/100);
     m_ofsfrq.reserve(SET_FREQ_SIZE/100);
@@ -45,8 +42,8 @@ PowSuppSolve::PowSuppSolve(QObject *parent)
         m_ofsfrq.push_back(indx);
     }
 
-    m_working = false;
-    m_abort = false;
+    //m_working = false;
+    //m_abort = false;
 }
 
 PowSuppSolve::~PowSuppSolve()
@@ -54,17 +51,11 @@ PowSuppSolve::~PowSuppSolve()
 
 void PowSuppSolve::calcInputNetwork()
 {
-    //emit startCalcInputNetwork();
-    qDebug() << "Start calculate input network in Thread " << this->QObject::thread()->currentThreadId();
-
     QScopedPointer<BulkCap> b_cap(new BulkCap(m_indata.input_volt_ac_max,
                                               m_indata.input_volt_ac_min,
                                               static_cast<float>(m_indata.eff),
                                               static_cast<float>(m_indata.power_out_max),
                                               m_indata.freq_line));
-    qDebug() << "Initialize BulkCap object in Thread " << this->QObject::thread()->currentThreadId();
-
-    qDebug() << "Working with BulkCap in Thread " << this->QObject::thread()->currentThreadId();
 
     /**< Fill the structure */
     m_bc->delta_t = b_cap->DeltaT();
@@ -81,9 +72,6 @@ void PowSuppSolve::calcInputNetwork()
                                                         static_cast<float>(m_indata.eff),
                                                         static_cast<float>(m_indata.power_out_max),
                                                         m_indata.freq_line));
-    qDebug() << "Initialize DiodeBridge object in Thread " << this->QObject::thread()->currentThreadId();
-
-    qDebug() << "Working with DiodeBridge in Thread " << this->QObject::thread()->currentThreadId();
 
     /**< 1. Set capacitor params */
     b_diode->setBcapParam(static_cast<float>(m_bc->bcapacitor_peak_curr) , m_bc->charg_time);
@@ -100,32 +88,16 @@ void PowSuppSolve::calcInputNetwork()
     /**< 3. Set capacitor RMS current */
     m_bc->bcapacitor_rms_curr = b_cap->IBulkCapRMS(m_db->diode_avg_curr, m_db->diode_cond_time);
 
-    qDebug() << "Finished calculate input network in Thread " << this->QObject::thread()->currentThreadId();
-
     emit finishedCalcInputNetwork();
 }
 
 void PowSuppSolve::calcElectricalPrimarySide()
 {
-    //emit startCalcElectricalPrimarySide();
-    qDebug() << "Start calculate electrical primary side in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate electrical primary side in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     QScopedPointer<FBPTPrimary> t_prim(new FBPTPrimary(static_cast<double>(m_indata.ripple_fact),
                                                        m_indata.refl_volt_max,
                                                        m_indata.power_out_max,
                                                        static_cast<float>(m_indata.eff),
                                                        m_indata.freq_switch));
-    qDebug() << "Initialize FBPTPrimary object in Thread " << thread()->currentThreadId();
 
     /**< 1. Set input voltage */
     m_ptpe->inp_power = t_prim->InputPower();
@@ -143,63 +115,23 @@ void PowSuppSolve::calcElectricalPrimarySide()
     m_ptpe->curr_primary_valley = t_prim->CurrPriValley();
     m_ptpe->curr_primary_rms = t_prim->CurrPriRMS();
 
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate electrical primary side in Thread " << thread()->currentThreadId();
-
     emit finishedCalcElectricalPrimarySide();
 }
 
 void PowSuppSolve::calcArea()
 {
-    //emit startCalcArea();
-    qDebug() << "Start calculate area in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate area in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     m_core.reset(new FBPTCore(m_ca, m_ptpe->primary_induct,
                               m_ptpe->curr_primary_peak, m_ptpe->curr_primary_rms,
                               m_ptpe->curr_primary_peak_peak, m_indata.power_out_max));
 
-    qDebug() << "Initialize FBPTCore object in Thread " << thread()->currentThreadId();
-
     m_ptpe->core_area_product = m_core->CoreAreaProd();
     m_ptpe->core_geom_coeff = m_core->CoreGeometryCoeff(m_indata.power_out_max);
-
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate area in Thread " << thread()->currentThreadId();
 
     emit finishedCalcArea();
 }
 
 void PowSuppSolve::calcElectroMagProperties()
 {
-    //emit startCalcElectroMagProperties();
-    qDebug() << "Start calculate magnetic properties in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate magnetic properties in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     QVector<QPair<float, float>> out_vlcr;
     out_vlcr.reserve(4);
 
@@ -242,31 +174,11 @@ void PowSuppSolve::calcElectroMagProperties()
                                                            static_cast<float>(m_indata.power_out_max),
                                                            m_ptpe->primary_induct,
                                                            m_indata.freq_switch);
-
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate magnetic properties in Thread " << thread()->currentThreadId();
-
     emit finishedCalcElectroMagProperties();
 }
 
 void PowSuppSolve::calcTransformerWired()
 {
-    //emit startCalcTransformerWired();
-    qDebug() << "Start calculate transformer wired in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate transformer wired in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     // Make secondary side objects
     QSharedPointer<FBPTSecondary> sec_one = QSharedPointer<FBPTSecondary>(new FBPTSecondary(m_indata.curr_out_one,
                                                                                             m_indata.volt_out_one,
@@ -308,16 +220,11 @@ void PowSuppSolve::calcTransformerWired()
                                                                                             static_cast<float>(m_ptpe->actual_max_duty_cycle),
                                                                                             m_indata.volt_diode_drop_sec));
 
-    qDebug() << "Make secondary side objects in Thread " << thread()->currentThreadId();
-
     // Packing of the secondary side objects
     m_sec.push_back(sec_one);
     m_sec.push_back(sec_two);
     m_sec.push_back(sec_three);
     m_sec.push_back(sec_four);
-
-    qDebug() << "Packing of the secondary side objects in Thread " << thread()->currentThreadId();
-
 
     // Make winding objects
     QSharedPointer<FBPTWinding> wind_prim = QSharedPointer<FBPTWinding>(new FBPTWinding(m_indata.freq_switch,
@@ -350,8 +257,6 @@ void PowSuppSolve::calcTransformerWired()
                                                                                        static_cast<double>(m_psw.m_fcu),
                                                                                        static_cast<double>(m_psw.m_ins[5])));
 
-    qDebug() << "Make winding objects in Thread " << thread()->currentThreadId();
-
     // Packing of the winding objects in to sequence container
     m_wind.push_back(wind_prim);
     m_wind.push_back(wind_sec_one);
@@ -359,8 +264,6 @@ void PowSuppSolve::calcTransformerWired()
     m_wind.push_back(wind_sec_three);
     m_wind.push_back(wind_sec_four);
     m_wind.push_back(wind_aux);
-
-    qDebug() << "Packing of the winding objects in to sequence container in Thread " << thread()->currentThreadId();
 
     // Packing winding properties of the primary side
     m_ptsw->primary_wind.insert("AP", static_cast<float>(m_wind[0]->wCoperWireCrossSectArea(m_cs,
@@ -483,30 +386,11 @@ void PowSuppSolve::calcTransformerWired()
     m_ptsw->out_aux_wind.insert("OD", static_cast<float>(m_wind[5]->wOuterDiam()));
     m_ptsw->out_aux_wind.insert("NTL", static_cast<float>(m_wind[5]->wNumTurnToLay(m_md, m_psw.m_npw[5])));
 
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate transformer wired in Thread " << thread()->currentThreadId();
-
     emit finishedCalcTransformerWired();
 }
 
 void PowSuppSolve::calcSwitchNetwork()
 {
-    //emit startCalcSwitchNetwork();
-    qDebug() << "Start calculate switch network in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate switch network in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     auto vmaxrms = static_cast<uint16_t>(m_indata.input_volt_ac_max * M_SQRT2);
     //int16_t vminrms = static_cast<int16_t>(m_indata.input_volt_ac_min * M_SQRT2);
 
@@ -516,8 +400,6 @@ void PowSuppSolve::calcSwitchNetwork()
                                                  m_ptpe->actual_volt_reflected,
                                                  m_ptpe->primary_induct,
                                                  m_ptpe->curr_primary_peak_peak));
-
-    qDebug() << "Initialise switching mosfet object in Thread " << thread()->currentThreadId();
 
     m_pm->mosfet_voltage_nom = static_cast<int16_t>(sw_mos->swMosfetVoltageNom());
     m_pm->mosfet_voltage_max = static_cast<int16_t>(sw_mos->swMosfetVoltageMax());
@@ -541,30 +423,11 @@ void PowSuppSolve::calcSwitchNetwork()
     m_pm->curr_sense_res = static_cast<float>(sw_mos->csCurrRes(m_ccsp));
     m_pm->curr_sense_res_loss = static_cast<float>(sw_mos->csCurrResLoss(m_ccsp));
 
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate switch network in Thread " << thread()->currentThreadId();
-
     emit finishedCalcSwitchNetwork();
 }
 
 void PowSuppSolve::calcOtputNetwork()
 {
-    //emit startCalcOtputNetwork();
-    qDebug() << "Start calculate output network in Thread " << thread()->currentThreadId();
-
-//    m_mutex.lock();
-//    bool abort = m_abort;
-//    m_mutex.unlock();
-
-//    if(abort)
-//    {
-//        qDebug()<<"Aborting calculate output network in Thread "<<thread()->currentThreadId();
-//        return;
-//    }
-
     auto turnRatio = [=](uint32_t num_pr, uint32_t num_sec, bool volt_rt = true)
     {
         if((num_pr != 0)&&(num_sec != 0))
@@ -618,8 +481,6 @@ void PowSuppSolve::calcOtputNetwork()
     QScopedPointer<CapOut> c_out_three(new CapOut(m_cop[2]));
     QScopedPointer<CapOut> c_out_four(new CapOut(m_cop[3]));
     QScopedPointer<CapOut> c_out_aux(new CapOut(m_cop[4]));
-
-    qDebug() << "Calculate output diodes and capacitors in Thread " << thread()->currentThreadId();
 
     //Packing output diode values
     m_fod->out_diode_first.insert("SOP", outPwr(m_indata.curr_out_one,
@@ -724,22 +585,12 @@ void PowSuppSolve::calcOtputNetwork()
                                                                  m_indata.freq_switch));
     m_foc->out_cap_aux.insert("COL", c_out_aux->ocCapOutLoss(m_foc->out_cap_aux.value("CCRMS")));
 
-//    m_mutex.lock();
-//    m_working = false;
-//    m_mutex.unlock();
-
-    qDebug() << "Finished calculate output network in Thread " << thread()->currentThreadId();
-
     emit finishedCalcOtputNetwork();
 }
 
 void PowSuppSolve::calcOutputFilter()
-{
-    qDebug() << "Start calculate output filter in Thread " << thread()->currentThreadId();
-    
+{    
     QScopedPointer<OutFilter> out_fl(new OutFilter(m_indata.fl_freq,m_indata.fl_lres));
-
-    qDebug() << "Initialise OutFilter object in Thread " << out_fl->thread()->currentThreadId();
 
     m_ofhshdata.insert("ACF", out_fl->ofAngularCutFreq());
     m_ofhshdata.insert("CAP", out_fl->ofCapacitor());
@@ -754,18 +605,12 @@ void PowSuppSolve::calcOutputFilter()
     emit newOFDataHash(m_ofhshdata);
     emit newOFDataPlot(m_ofmag, m_ofphs);
 
-    qDebug() << "Finished calculate output filter in Thread " << thread()->currentThreadId();
-
     emit finishedCalcOutputFilter();
 }
 
 void PowSuppSolve::calcPowerStageModel()
 {
-    qDebug() << "Start calculate power stage model in Thread " << thread()->currentThreadId();
-
     m_pcssm.reset(new PCSSM(m_ssm));
-
-    qDebug() << "Initialise PCSSM object in Thread " << thread()->currentThreadId();
 
     m_ssmhshdata.insert("ZONE", m_pcssm->coZeroOneAngFreq());
     m_ssmhshdata.insert("PONE", m_pcssm->coPoleOneAngFreq());
@@ -775,14 +620,8 @@ void PowSuppSolve::calcPowerStageModel()
     //m_ssmhshdata.insert("CCMPT", );
     m_ssmhshdata.insert("GCMC", m_pcssm->coGainCurrModeContrModulator());
 
-    //m_ssmfrq.reserve(SET_FREQ_SIZE/100);
     m_ssmmag.reserve(SET_FREQ_SIZE/100);
     m_ssmphs.reserve(SET_FREQ_SIZE/100);
-
-    /*for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
-    {
-        m_ssmfrq.push_back(indx);
-    }*/
 
     m_pcssm->coGainControlToOutTransfFunct(m_ssmfrq, m_ssmmag);
     m_pcssm->coPhaseControlToOutTransfFunct(m_ssmfrq, m_ssmphs);
@@ -790,48 +629,34 @@ void PowSuppSolve::calcPowerStageModel()
     emit newPSMDataHash(m_ssmhshdata);
     emit newPSMDataPlot(m_ssmmag, m_ssmphs);
 
-    qDebug() << "Finished calculate power stage model in Thread " << thread()->currentThreadId();
-
     emit finishedCalcPowerStageModel();
 }
 
 void PowSuppSolve::calcOptocouplerFeedback()
 {
-    qDebug() << "Start calculate optocoupler feedback in Thread " << thread()->currentThreadId();
-
     m_fccd.reset(new FCCD(m_fc, m_rs, m_lc));
 
-    qDebug() << "Initialise FCCD object in Thread " << thread()->currentThreadId();
+    m_ofshshdata.insert("RESOPTLED", m_fccd->coResOptoDiode());
+    m_ofshshdata.insert("RESOPTBIAS", m_fccd->coResOptoBias());
+    m_ofshshdata.insert("RESUPDIV", m_fccd->coResUp());
+    m_ofshshdata.insert("QUAL", m_fccd->coQuality());
+    m_ofshshdata.insert("RS", m_fccd->coExterRampSlope());
+    m_ofshshdata.insert("IOS", m_fccd->coIndOnTimeSlope());
+    m_ofshshdata.insert("FCS", m_fccd->coFreqCrossSection());
+    m_ofshshdata.insert("OFSZ", m_fccd->coFreqZero());
+    m_ofshshdata.insert("OFSP", m_fccd->coFreqPole());
+    m_ofshshdata.insert("CAPOPTO", m_fccd->coCapPoleOpto());
+    m_ofshshdata.insert("RESERR", m_fccd->coResZero());
+    m_ofshshdata.insert("CAPERR", m_fccd->coCapZero());
 
-    m_ofshshdata.value("RESOPTLED", m_fccd->coResOptoDiode());
-    m_ofshshdata.value("RESOPTBIAS", m_fccd->coResOptoBias());
-    m_ofshshdata.value("RESUPDIV", m_fccd->coResUp());
-    m_ofshshdata.value("QUAL", m_fccd->coQuality());
-    m_ofshshdata.value("RS", m_fccd->coExterRampSlope());
-    m_ofshshdata.value("IOS", m_fccd->coIndOnTimeSlope());
-    m_ofshshdata.value("FCS", m_fccd->coFreqCrossSection());
-    m_ofshshdata.value("OFSZ", m_fccd->coFreqZero());
-    m_ofshshdata.value("OFSP", m_fccd->coFreqPole());
-    m_ofshshdata.value("CAPOPTO", m_fccd->coCapPoleOpto());
-    m_ofshshdata.value("RESERR", m_fccd->coResZero());
-    m_ofshshdata.value("CAPERR", m_fccd->coCapZero());
-
-    //m_ofsfrq.reserve(SET_FREQ_SIZE/100);
     m_ofsmag.reserve(SET_FREQ_SIZE/100);
     m_ofsphs.reserve(SET_FREQ_SIZE/100);
-
-    /*for(int32_t indx =0; indx<SET_FREQ_SIZE; indx +=100)
-    {
-        m_ofsfrq.push_back(indx);
-    }*/
 
     m_fccd->coGainOptoFeedbTransfFunc(m_ofsfrq, m_ofsmag);
     m_fccd->coPhaseOptoFeedbTransfFunc(m_ofsfrq, m_ofsphs);
 
     emit newOCFDataHash(m_ofshshdata);
     emit newOCFDataPlot(m_ofsmag, m_ofsphs);
-
-    qDebug() << "Finished calculate optocoupler feedback in Thread " << thread()->currentThreadId();
 
     emit finishedCalcOptocouplerFeedback();
 }

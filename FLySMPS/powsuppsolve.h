@@ -278,9 +278,9 @@ private:
     };
     // out containers
 
-    bool m_abort;
-    bool m_working;
-    QMutex m_mutex;
+    //bool m_abort;
+    //bool m_working;
+    //QMutex m_mutex;
 
     QScopedPointer<FBPTCore> m_core;
     QVector<QSharedPointer<FBPTSecondary>> m_sec;
@@ -359,8 +359,5 @@ public:
     QScopedPointer<PulseTransWires> m_ptsw;
     QScopedPointer<FullOutDiode> m_fod;
     QScopedPointer<FullOutCap> m_foc;
-    //QScopedPointer<FullOutFilter> m_of;
-    //QScopedPointer<PowerStageSmallSignalModel> m_pssm;
-    //QScopedPointer<OptocouplerFedbackStage> m_ofs;
 };
 #endif // POWSUPPSOLVE_H
