@@ -19,21 +19,25 @@
 
 #include "FLySMPS.h"
 
-
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FLySMPS),
-    m_psolve(new PowSuppSolve),
-    m_psthread(new QThread)
+    m_psolve(new PowSuppSolve)
 {
+
     ui->setupUi(this);
+
+    m_sthread = new QThread();
+    qRegisterMetaType<QVector<double>>("QVector<double>");
+    qRegisterMetaType<QHash<QString, double>>("QHash<QString, double>");
 
     initInputValues();
 
-    m_psolve->moveToThread(m_psthread);
+    m_psolve->moveToThread(m_sthread);
+
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, this, &FLySMPS::setInputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, this, &FLySMPS::setInputNetwork);
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, m_psolve.data(), &PowSuppSolve::calcElectricalPrimarySide);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcElectricalPrimarySide, this, &FLySMPS::setInitialiseTransProp);
 
     connect(ui->CalcPrimarySidePushButton, &QPushButton::clicked, this, &FLySMPS::initTransValues);
@@ -60,33 +64,29 @@ FLySMPS::FLySMPS(QWidget *parent) :
         setOutCap();
     });
 
-    //connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
-    //connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
-    //connect(this, SIGNAL(initOutFilterComplete()), m_psworker, SLOT(start()));
-    //connect(m_psworker, SIGNAL(started()), m_psolve.data(), SLOT(calcOutputFilter()));
-    //connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, m_psworker, &QThread::quit, Qt::DirectConnection);
-
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setSolveLCFilter);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOutputFilter, this, &FLySMPS::setLCPlot);
+    connect(ui->CalcLCFilterPushButton, &QPushButton::clicked, this, &FLySMPS::initOutFilter);
+    connect(this, &FLySMPS::initOutFilterComplete, m_psolve.data(), &PowSuppSolve::calcOutputFilter);
+    connect(m_psolve.data(), &PowSuppSolve::newOFDataPlot, this, &FLySMPS::setLCPlot);
+    connect(m_psolve.data(), &PowSuppSolve::newOFDataHash, this, &FLySMPS::setSolveLCFilter);
 
     connect(ui->CalcPSMPushButton, &QPushButton::clicked, this, &FLySMPS::initPowerStageModel);
     connect(this, &FLySMPS::initPowerStageModelComplete, m_psolve.data(), &PowSuppSolve::calcPowerStageModel);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStageModel);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcPowerStageModel, this, &FLySMPS::setPowerStagePlot);
+    connect(m_psolve.data(), &PowSuppSolve::newPSMDataPlot, this, &FLySMPS::setPowerStagePlot);
+    connect(m_psolve.data(), &PowSuppSolve::newPSMDataHash, this, &FLySMPS::setPowerStageModel);
 
     connect(ui->CalcOptoPushButton, &QPushButton::clicked, this, &FLySMPS::initOptoFeedbStage);
     connect(this, &FLySMPS::initOptoFeedbStageComplete, m_psolve.data(), &PowSuppSolve::calcOptocouplerFeedback);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbStage);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOptocouplerFeedback, this, &FLySMPS::setOptoFeedbPlot);
-
+    connect(m_psolve.data(), &PowSuppSolve::newOCFDataPlot, this, &FLySMPS::setOptoFeedbPlot);
+    connect(m_psolve.data(), &PowSuppSolve::newOCFDataHash, this, &FLySMPS::setOptoFeedbStage);
+    m_sthread->start();
 }
 
 FLySMPS::~FLySMPS()
 {
-    m_psolve->abort();
-    m_psthread->wait();
-    qDebug()<<"Deleting thread and worker in Thread "<<this->QObject::thread()->currentThreadId();
-    delete m_psthread;
+    if(m_sthread->isRunning()) {
+        m_sthread->quit();
+    }
+    m_sthread->deleteLater();
 }
 
 void FLySMPS::initInputValues()
@@ -94,7 +94,7 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.input_volt_ac_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmax->text())));
     m_psolve->m_indata.input_volt_ac_min = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmin->text())));
     m_psolve->m_indata.freq_line = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->FLine->text())));
-    m_psolve->m_indata.freq_switch = static_cast<int32_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
+    m_psolve->m_indata.freq_switch = static_cast<uint32_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
     m_psolve->m_indata.temp_amb = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->Tamb->text())));
     m_psolve->m_indata.volt_out_one = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut1->text())));
     m_psolve->m_indata.curr_out_one = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut1->text())));
@@ -195,6 +195,129 @@ void FLySMPS::initInputValues()
     cap_out_aux.append(ui->AuxCapZF);
     cap_out_aux.append(ui->AuxCapVRip);
     cap_out_aux.append(ui->AuxCapDiss);
+
+    initLCPlot();
+    initSSMplot();
+    initFCPlot();
+}
+
+void FLySMPS::initLCPlot()
+{
+    //add two new graphs and set their look:
+    ui->LCFilterGraph->clearGraphs();
+
+    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis, ui->LCFilterGraph->yAxis);
+    ui->LCFilterGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->LCFilterGraph->graph(0)->setName("Mag.");
+
+    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis2, ui->LCFilterGraph->yAxis2);
+    ui->LCFilterGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->LCFilterGraph->graph(1)->setName("Phs.");
+
+    //configure right and top axis to show ticks but no labels:
+    ui->LCFilterGraph->xAxis2->setVisible(true);
+    ui->LCFilterGraph->yAxis2->setVisible(true);
+
+    //give the axis some labels:
+    ui->LCFilterGraph->xAxis->setLabel("Freq. Hz");
+    ui->LCFilterGraph->yAxis->setLabel("Mag. dB");
+    ui->LCFilterGraph->yAxis2->setLabel("Deg. ");
+
+    ui->LCFilterGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->LCFilterGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->LCFilterGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->LCFilterGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
+    //set axes ranges, so we see all data:
+    ui->LCFilterGraph->yAxis->setRange(-60, 3);
+    ui->LCFilterGraph->xAxis->setRange(1e3, 1e5);
+    ui->LCFilterGraph->yAxis2->setRange(0, -90);
+    ui->LCFilterGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->LCFilterGraph->xAxis->setNumberFormat("eb");
+    ui->LCFilterGraph->xAxis->setNumberPrecision(0);
+
+    ui->LCFilterGraph->xAxis2->setNumberFormat("eb");
+    ui->LCFilterGraph->xAxis2->setNumberPrecision(0);
+}
+
+void FLySMPS::initSSMplot()
+{
+    ui->PSMGraph->clearGraphs();
+
+    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis, ui->PSMGraph->yAxis);
+    ui->PSMGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->PSMGraph->graph(0)->setName("Mag.");
+
+    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis2, ui->PSMGraph->yAxis2);
+    ui->PSMGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->PSMGraph->graph(1)->setName("Phs.");
+
+    //configure right and top axis to show ticks but no labels:
+    ui->PSMGraph->xAxis2->setVisible(true);
+    ui->PSMGraph->yAxis2->setVisible(true);
+
+    //give the axis some labels:
+    ui->PSMGraph->xAxis->setLabel("Freq. Hz");
+    ui->PSMGraph->yAxis->setLabel("Mag. dB");
+    ui->PSMGraph->yAxis2->setLabel("Deg. ");
+
+    ui->PSMGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->PSMGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->PSMGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->PSMGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
+    //set axes ranges, so we see all data:
+    ui->PSMGraph->yAxis->setRange(-100,-30);
+    ui->PSMGraph->xAxis->setRange(1e3, 1e5);
+    ui->PSMGraph->yAxis2->setRange(0, -210);
+    ui->PSMGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->PSMGraph->xAxis->setNumberFormat("eb");
+    ui->PSMGraph->xAxis->setNumberPrecision(0);
+
+    ui->PSMGraph->xAxis2->setNumberFormat("eb");
+    ui->PSMGraph->xAxis2->setNumberPrecision(0);
+}
+
+void FLySMPS::initFCPlot()
+{
+    ui->OptoGraph->clearGraphs();
+
+    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis, ui->OptoGraph->yAxis);
+    ui->OptoGraph->graph(0)->setPen(QPen(Qt::blue));
+    ui->OptoGraph->graph(0)->setName("Mag.");
+
+    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis2, ui->OptoGraph->yAxis2);
+    ui->OptoGraph->graph(1)->setPen(QPen(Qt::red));
+    ui->OptoGraph->graph(1)->setName("Phs.");
+
+    //configure right and top axis to show ticks but no labels:
+    ui->OptoGraph->xAxis2->setVisible(true);
+    ui->OptoGraph->yAxis2->setVisible(true);
+
+    //give the axis some labels:
+    ui->OptoGraph->xAxis->setLabel("Freq. Hz");
+    ui->OptoGraph->yAxis->setLabel("Mag. dB");
+    ui->OptoGraph->yAxis2->setLabel("Deg. ");
+
+    ui->OptoGraph->yAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->grid()->setSubGridVisible(true);
+    ui->OptoGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
+    ui->OptoGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
+
+    //set axes ranges, so we see all data:
+    ui->OptoGraph->yAxis->setRange(-70, 20);
+    ui->OptoGraph->xAxis->setRange(1e3, 1e5);
+    ui->OptoGraph->yAxis2->setRange(0, -210);
+    ui->OptoGraph->xAxis2->setRange(1e3, 1e5);
+
+    ui->OptoGraph->xAxis->setNumberFormat("eb");
+    ui->OptoGraph->xAxis->setNumberPrecision(0);
+
+    ui->OptoGraph->xAxis2->setNumberFormat("eb");
+    ui->OptoGraph->xAxis2->setNumberPrecision(0);
+
 }
 
 void FLySMPS::setInputNetwork()
@@ -477,11 +600,9 @@ void FLySMPS::initMosfetValues()
 
 void FLySMPS::setSolveMosfet()
 {
-    /**Todo move to transformer calc section*/
     ui->VDSmax->setNum(m_psolve->m_pm->mosfet_voltage_max);
     ui->VDSnom->setNum(m_psolve->m_pm->mosfet_voltage_nom);
     ui->IDSmax->setNum(m_psolve->m_pm->mosfet_ds_curr);
-    /***/
 
     ui->Toff->setNum(m_psolve->m_pm->mosfet_off_time);
     ui->Ton->setNum(m_psolve->m_pm->mosfet_on_time);
@@ -624,77 +745,40 @@ void FLySMPS::setOutCap()
 
 void FLySMPS::initOutFilter()
 {
-    m_psolve->m_of->frequency = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
-    m_psolve->m_of->load_resistance = convertToValues(static_cast<QString>(ui->LCF_ResLoad->text()));
+    m_psolve->m_indata.fl_freq = convertToValues(static_cast<QString>(ui->LCF_Freq->text()));
+    m_psolve->m_indata.fl_lres = convertToValues(static_cast<QString>(ui->LCF_ResLoad->text()));
     emit initOutFilterComplete();
 }
 
-void FLySMPS::setSolveLCFilter()
+void FLySMPS::setSolveLCFilter(QHash<QString, double> h_data)
 {
     ui->LCFilterGraph->replot();
 
-    ui->LCAngCutFreq->setNum(m_psolve->m_of->angular_cut_freq);
-    ui->LCInd->setNum(m_psolve->m_of->inductor);
-    ui->LCCap->setNum(m_psolve->m_of->capacitor);
-    ui->LCQual->setNum(m_psolve->m_of->q_factor);
-    ui->LCDamp->setNum(m_psolve->m_of->damping);
-    ui->LCCutFreq->setNum(m_psolve->m_of->cut_freq);
-    ui->LCOutRippVolt->setNum(m_psolve->m_of->out_ripp_voltage);
+    ui->LCAngCutFreq->setNum(h_data.value("ACF"));
+    ui->LCInd->setNum(h_data.value("IND"));
+    ui->LCCap->setNum(h_data.value("CAP"));
+    ui->LCQual->setNum(h_data.value("QFCT"));
+    ui->LCDamp->setNum(h_data.value("DAMP"));
+    ui->LCCutFreq->setNum(h_data.value("CFRQ"));
+    ui->LCOutRippVolt->setNum(h_data.value("ORV "));
+
 }
 
-void FLySMPS::setLCPlot()
+void FLySMPS::setLCPlot(QVector<double> mg_data, QVector<double> ph_data)
 {
-    //add two new graphs and set their look:
-    ui->LCFilterGraph->clearGraphs();
-
-    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis, ui->LCFilterGraph->yAxis);
-    ui->LCFilterGraph->graph(0)->setPen(QPen(Qt::blue));
-    ui->LCFilterGraph->graph(0)->setName("Mag.");
-
-    ui->LCFilterGraph->addGraph(ui->LCFilterGraph->xAxis2, ui->LCFilterGraph->yAxis2);
-    ui->LCFilterGraph->graph(1)->setPen(QPen(Qt::red));
-    ui->LCFilterGraph->graph(1)->setName("Phs.");
-
-    //configure right and top axis to show ticks but no labels:
-    ui->LCFilterGraph->xAxis2->setVisible(true);
-    ui->LCFilterGraph->yAxis2->setVisible(true);
-
     //pass data points to graphs:
-    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_magnitude_array);
-    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_of->of_freq_array, m_psolve->m_of->of_phase_array);
-    ui->LCFilterGraph->replot();
-
-    //give the axis some labels:
-    ui->LCFilterGraph->xAxis->setLabel("Freq. Hz");
-    ui->LCFilterGraph->yAxis->setLabel("Mag. dB");
-    ui->LCFilterGraph->yAxis2->setLabel("Deg. ");
-
-    ui->LCFilterGraph->yAxis->grid()->setSubGridVisible(true);
-    ui->LCFilterGraph->xAxis->grid()->setSubGridVisible(true);
-    ui->LCFilterGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    ui->LCFilterGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
-
-    //set axes ranges, so we see all data:
-    ui->LCFilterGraph->yAxis->setRange(-60, 3);
-    ui->LCFilterGraph->xAxis->setRange(1e3, 1e5);
-    ui->LCFilterGraph->yAxis2->setRange(0, -90);
-    ui->LCFilterGraph->xAxis2->setRange(1e3, 1e5);
-
-    ui->LCFilterGraph->xAxis->setNumberFormat("eb");
-    ui->LCFilterGraph->xAxis->setNumberPrecision(0);
-
-    ui->LCFilterGraph->xAxis2->setNumberFormat("eb");
-    ui->LCFilterGraph->xAxis2->setNumberPrecision(0);
+    ui->LCFilterGraph->graph(0)->setData(m_psolve->m_offrq, mg_data);
+    ui->LCFilterGraph->graph(1)->setData(m_psolve->m_offrq, ph_data);
 
     ui->LCFilterGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
     ui->LCFilterGraph->legend->setVisible(true);
     ui->LCFilterGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
     ui->LCFilterGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
-
+    ui->LCFilterGraph->replot();
     //
-    m_psolve->m_of->of_freq_array.clear();
-    m_psolve->m_of->of_magnitude_array.clear();
-    m_psolve->m_of->of_phase_array.clear();
+    //m_psolve->m_offrq.clear();
+    //m_psolve->m_ofmag.clear();
+    //m_psolve->m_ofphs.clear();
 }
 
 void FLySMPS::initPowerStageModel()
@@ -736,72 +820,35 @@ void FLySMPS::initPowerStageModel()
     emit initPowerStageModelComplete();
 }
 
-void FLySMPS::setPowerStageModel()
+void FLySMPS::setPowerStageModel(QHash<QString, double> h_data)
 {
     ui->PSMGraph->replot();
 
-    ui->PSMFz1->setNum(m_psolve->m_pssm->ps_zero_one);
-    ui->PSMFp1->setNum(m_psolve->m_pssm->ps_pole_one);
-    ui->PSMFz2dcm->setNum(m_psolve->m_pssm->ps_dcm_zero_two);
-    ui->PSMFp2dcm->setNum(m_psolve->m_pssm->ps_dcm_pole_two);
-    ui->PSMFz2ccm->setNum(m_psolve->m_pssm->ps_ccm_zero_two);
-    ui->PSMFp2ccm->setNum(m_psolve->m_pssm->ps_ccm_pole_two);
-    ui->PSMGf->setNum(m_psolve->m_pssm->ps_gain_cmc_mod);
+    ui->PSMFz1->setNum(h_data.value("ZONE"));
+    ui->PSMFp1->setNum(h_data.value("PONE"));
+    ui->PSMFz2dcm->setNum(h_data.value("DCMZT"));
+    ui->PSMFp2dcm->setNum(h_data.value("DCMPT"));
+    ui->PSMFz2ccm->setNum(h_data.value("CCMZT"));
+    ui->PSMFp2ccm->setNum(h_data.value("CCMPT"));
+    ui->PSMGf->setNum(h_data.value("GCMC"));
 }
 
-void FLySMPS::setPowerStagePlot()
+void FLySMPS::setPowerStagePlot(QVector<double> mg_data, QVector<double> ph_data)
 {
-    ui->PSMGraph->clearGraphs();
-
-    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis, ui->PSMGraph->yAxis);
-    ui->PSMGraph->graph(0)->setPen(QPen(Qt::blue));
-    ui->PSMGraph->graph(0)->setName("Mag.");
-
-    ui->PSMGraph->addGraph(ui->PSMGraph->xAxis2, ui->PSMGraph->yAxis2);
-    ui->PSMGraph->graph(1)->setPen(QPen(Qt::red));
-    ui->PSMGraph->graph(1)->setName("Phs.");
-
-    //configure right and top axis to show ticks but no labels:
-    ui->PSMGraph->xAxis2->setVisible(true);
-    ui->PSMGraph->yAxis2->setVisible(true);
 
     //pass data points to graphs:
-    ui->PSMGraph->graph(0)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_magnitude_array);
-    ui->PSMGraph->graph(1)->setData(m_psolve->m_pssm->ps_freq_array, m_psolve->m_pssm->ps_phase_array);
-    ui->PSMGraph->replot();
-
-    //give the axis some labels:
-    ui->PSMGraph->xAxis->setLabel("Freq. Hz");
-    ui->PSMGraph->yAxis->setLabel("Mag. dB");
-    ui->PSMGraph->yAxis2->setLabel("Deg. ");
-
-    ui->PSMGraph->yAxis->grid()->setSubGridVisible(true);
-    ui->PSMGraph->xAxis->grid()->setSubGridVisible(true);
-    ui->PSMGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    ui->PSMGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
-
-    //set axes ranges, so we see all data:
-    ui->PSMGraph->yAxis->setRange(-100,-30);
-    ui->PSMGraph->xAxis->setRange(1e3, 1e5);
-    ui->PSMGraph->yAxis2->setRange(0, -210);
-    ui->PSMGraph->xAxis2->setRange(1e3, 1e5);
-
-    ui->PSMGraph->xAxis->setNumberFormat("eb");
-    ui->PSMGraph->xAxis->setNumberPrecision(0);
-
-    ui->PSMGraph->xAxis2->setNumberFormat("eb");
-    ui->PSMGraph->xAxis2->setNumberPrecision(0);
+    ui->PSMGraph->graph(0)->setData(m_psolve->m_ssmfrq, mg_data);
+    ui->PSMGraph->graph(1)->setData(m_psolve->m_ssmfrq, ph_data);
 
     ui->PSMGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
     ui->PSMGraph->legend->setVisible(true);
     ui->PSMGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
     ui->PSMGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
-
+    ui->PSMGraph->replot();
     //
-    m_psolve->m_pssm->ps_freq_array.clear();
-    m_psolve->m_pssm->ps_magnitude_array.clear();
-    m_psolve->m_pssm->ps_phase_array.clear();
-
+    //m_psolve->m_ssmfrq.clear();
+    //m_psolve->m_ssmmag.clear();
+    //m_psolve->m_ssmphs.clear();
 }
 
 void FLySMPS::initOptoFeedbStage()
@@ -826,84 +873,47 @@ void FLySMPS::initOptoFeedbStage()
     m_psolve->m_rs.primary_ind = m_psolve->m_ptpe->primary_induct;
     m_psolve->m_rs.res_sense = m_psolve->m_pm->curr_sense_res;
 
-    m_psolve->m_lc.lcf_ind = m_psolve->m_of->inductor;
-    m_psolve->m_lc.lcf_cap = m_psolve->m_of->capacitor;
+    m_psolve->m_lc.lcf_ind = m_psolve->m_ofhshdata.value("CAP");
+    m_psolve->m_lc.lcf_cap = m_psolve->m_ofhshdata.value("IND");
     m_psolve->m_lc.lcf_cap_esr = convertToValues(static_cast<QString>(ui->CapFilterESR->text()));
     emit initOptoFeedbStageComplete();
 }
 
-void FLySMPS::setOptoFeedbStage()
+void FLySMPS::setOptoFeedbStage(QHash<QString, double> h_data)
 {
     ui->OptoGraph->replot();
 
-    ui->ResLed->setNum(m_psolve->m_ofs->of_opto_led_res);
-    ui->ResBias->setNum(m_psolve->m_ofs->of_opto_bias_res);
-    ui->ResUp->setNum(m_psolve->m_ofs->of_up_divide_res);
+    ui->ResLed->setNum(h_data.value("RESOPTLED"));
+    ui->ResBias->setNum(h_data.value("RESOPTBIAS"));
+    ui->ResUp->setNum(h_data.value("RESUPDIV"));
 
-    ui->Quality->setNum(m_psolve->m_ofs->of_quality);
-    ui->SE->setNum(m_psolve->m_ofs->of_ext_ramp_slope);
-    ui->SN->setNum(m_psolve->m_ofs->of_ind_on_slope);
-    ui->FCross->setNum(m_psolve->m_ofs->of_freq_cross_sect);
-    ui->Fzero->setNum(m_psolve->m_ofs->of_zero);
-    ui->Fpole->setNum(m_psolve->m_ofs->of_pole);
+    ui->Quality->setNum(h_data.value("QUAL"));
+    ui->SE->setNum(h_data.value("RS"));
+    ui->SN->setNum(h_data.value("IOS"));
+    ui->FCross->setNum(h_data.value("FCS"));
+    ui->Fzero->setNum(h_data.value("OFSZ"));
+    ui->Fpole->setNum(h_data.value("OFSP"));
 
-    ui->CapOpto->setNum(m_psolve->m_ofs->of_cap_opto);
-    ui->ResZero->setNum(m_psolve->m_ofs->of_res_err_amp);
-    ui->CapZero->setNum(m_psolve->m_ofs->of_cap_err_amp);
+    ui->CapOpto->setNum(h_data.value("CAPOPTO"));
+    ui->ResZero->setNum(h_data.value("RESERR"));
+    ui->CapZero->setNum(h_data.value("CAPERR"));
 }
 
-void FLySMPS::setOptoFeedbPlot()
+void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
 {
-    ui->OptoGraph->clearGraphs();
-
-    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis, ui->OptoGraph->yAxis);
-    ui->OptoGraph->graph(0)->setPen(QPen(Qt::blue));
-    ui->OptoGraph->graph(0)->setName("Mag.");
-
-    ui->OptoGraph->addGraph(ui->OptoGraph->xAxis2, ui->OptoGraph->yAxis2);
-    ui->OptoGraph->graph(1)->setPen(QPen(Qt::red));
-    ui->OptoGraph->graph(1)->setName("Phs.");
-
-    //configure right and top axis to show ticks but no labels:
-    ui->OptoGraph->xAxis2->setVisible(true);
-    ui->OptoGraph->yAxis2->setVisible(true);
-
     //pass data points to graphs:
-    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_magnitude_array);
-    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofs->of_freq_array, m_psolve->m_ofs->of_phase_array);
-    ui->OptoGraph->replot();
-
-    //give the axis some labels:
-    ui->OptoGraph->xAxis->setLabel("Freq. Hz");
-    ui->OptoGraph->yAxis->setLabel("Mag. dB");
-    ui->OptoGraph->yAxis2->setLabel("Deg. ");
-
-    ui->OptoGraph->yAxis->grid()->setSubGridVisible(true);
-    ui->OptoGraph->xAxis->grid()->setSubGridVisible(true);
-    ui->OptoGraph->xAxis->setScaleType(QCPAxis::stLogarithmic);
-    ui->OptoGraph->xAxis2->setScaleType(QCPAxis::stLogarithmic);
-
-    //set axes ranges, so we see all data:
-    ui->OptoGraph->yAxis->setRange(-70, 20);
-    ui->OptoGraph->xAxis->setRange(1e3, 1e5);
-    ui->OptoGraph->yAxis2->setRange(0, -210);
-    ui->OptoGraph->xAxis2->setRange(1e3, 1e5);
-
-    ui->OptoGraph->xAxis->setNumberFormat("eb");
-    ui->OptoGraph->xAxis->setNumberPrecision(0);
-
-    ui->OptoGraph->xAxis2->setNumberFormat("eb");
-    ui->OptoGraph->xAxis2->setNumberPrecision(0);
+    ui->OptoGraph->graph(0)->setData(m_psolve->m_ofsfrq, mg_data);
+    ui->OptoGraph->graph(1)->setData(m_psolve->m_ofsfrq, ph_data);
 
     ui->OptoGraph->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iMultiSelect);
     ui->OptoGraph->legend->setVisible(true);
     ui->OptoGraph->legend->setBrush(QBrush(QColor(255,255,255,150)));
     ui->OptoGraph->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignBottom);
-
+    ui->OptoGraph->replot();
     //
-    m_psolve->m_ofs->of_freq_array.clear();
-    m_psolve->m_ofs->of_magnitude_array.clear();
-    m_psolve->m_ofs->of_phase_array.clear();
+    //m_psolve->m_ofsfrq.clear();
+    //m_psolve->m_ofsmag.clear();
+    //m_psolve->m_ofsphs.clear();
 }
 
 void FLySMPS::setUpdateInputValues()

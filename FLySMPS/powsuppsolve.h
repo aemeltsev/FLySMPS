@@ -46,8 +46,7 @@ class PowSuppSolve: public QObject
 public:
     explicit PowSuppSolve(QObject *parent = nullptr);
     ~PowSuppSolve();
-    void requestCalc();
-    void abort();
+
 
 public slots:
     void calcInputNetwork();
@@ -64,16 +63,21 @@ public slots:
     void calcOptocouplerFeedback();
 
 signals:
-    void calcRequested();
-    void finishedInputNetwork();
+    void finishedCalcInputNetwork();
     void finishedCalcElectricalPrimarySide();
     void finishedCalcArea();
     void finishedCalcElectroMagProperties();
     void finishedCalcTransformerWired();
     void finishedCalcSwitchNetwork();
     void finishedCalcOtputNetwork();
+    void newOFDataHash(QHash<QString, double>);
+    void newOFDataPlot(QVector<double>, QVector<double>);
     void finishedCalcOutputFilter();
+    void newPSMDataHash(QHash<QString, double>);
+    void newPSMDataPlot(QVector<double>, QVector<double>);
     void finishedCalcPowerStageModel();
+    void newOCFDataHash(QHash<QString, double>);
+    void newOCFDataPlot(QVector<double>, QVector<double>);
     void finishedCalcOptocouplerFeedback();
     void calcFinished();
 
@@ -112,6 +116,10 @@ private:
         float sec_esr_perc;
         double sec_crfq_value;
         float mrgn; /**< margin of the output power */
+        //for out filter
+        int32_t fl_freq;
+        int32_t fl_lres;
+        
     };
 
     struct TransWired
@@ -218,55 +226,6 @@ private:
         QHash<QString, float> out_cap_aux;
     };
 
-    struct FullOutFilter
-     {
-         int32_t frequency;
-         int32_t load_resistance;
-         double angular_cut_freq;
-         double capacitor;
-         double inductor;
-         double q_factor;
-         double damping;
-         double cut_freq;
-         double out_ripp_voltage;
-         QVector<double> of_freq_array;
-         QVector<double> of_magnitude_array;
-         QVector<double> of_phase_array;
-     };
-
-    struct PowerStageSmallSignalModel
-    {
-        double ps_zero_one;
-        double ps_pole_one;
-        double ps_dcm_zero_two;
-        double ps_dcm_pole_two;
-        double ps_ccm_zero_two;
-        double ps_ccm_pole_two;
-        double ps_gain_cmc_mod;
-        QVector<double> ps_freq_array;
-        QVector<double> ps_magnitude_array;
-        QVector<double> ps_phase_array;
-    };
-
-    struct OptocouplerFedbackStage
-    {
-        double of_opto_led_res;
-        double of_opto_bias_res;
-        double of_up_divide_res;
-        double of_quality;
-        double of_ext_ramp_slope;
-        double of_ind_on_slope;
-        double of_freq_cross_sect;
-        double of_zero;
-        double of_pole;
-        double of_cap_opto;
-        double of_res_err_amp;
-        double of_cap_err_amp;
-        QVector<double> of_freq_array;
-        QVector<double> of_magnitude_array;
-        QVector<double> of_phase_array;
-    };
-
     struct PulseTransPrimaryElectr
     {
         double max_duty_cycle;//Max duty cycle
@@ -319,9 +278,9 @@ private:
     };
     // out containers
 
-    bool m_abort;
-    bool m_working;
-    QMutex m_mutex;
+    //bool m_abort;
+    //bool m_working;
+    //QMutex m_mutex;
 
     QScopedPointer<FBPTCore> m_core;
     QVector<QSharedPointer<FBPTSecondary>> m_sec;
@@ -346,6 +305,53 @@ public:
     RampSlopePreDesign m_rs;
     LCSecondStage m_lc;
 
+    /*
+    "ACF" - angular_cut_freq
+    "CAP" - capacitor
+    "IND" - inductor
+    "QFCT" - q_factor
+    "DAMP" - damping
+    "CFRQ" - cut_freq
+    "ORV" - out_ripp_voltage
+    */
+    QHash<QString, double> m_ofhshdata;
+    QVector<double> m_offrq;
+    QVector<double> m_ofmag;
+    QVector<double> m_ofphs;
+
+    /*
+    "ZONE" - ps_zero_one
+    "PONE" - ps_pole_one
+    "DCMZT" - ps_dcm_zero_two
+    "DCMPT" - ps_dcm_pole_two
+    "CCMZT" - ps_ccm_zero_two
+    "CCMPT" - ps_ccm_pole_two
+    "GCMC" - ps_gain_cmc_mod
+    */
+    QHash<QString, double> m_ssmhshdata;
+    QVector<double> m_ssmfrq;
+    QVector<double> m_ssmmag;
+    QVector<double> m_ssmphs;
+
+    /*
+    "RESOPTLED" - ofs_opto_led_res
+    "RESOPTBIAS" - ofs_opto_bias_res
+    "RESUPDIV" - ofs_up_divide_res
+    "QUAL" - ofs_quality
+    "RS" - ofs_ext_ramp_slope
+    "IOS" - ofs_ind_on_slope
+    "FCS" - ofs_freq_cross_sect
+    "OFSZ" - ofs_zero
+    "OFSP" - ofs_pole
+    "CAPOPTO" - ofs_cap_opto
+    "RESERR" - ofs_res_err_amp
+     "CAPERR" - ofs_cap_err_amp
+    */
+    QHash<QString, double> m_ofshshdata;
+    QVector<double> m_ofsfrq;
+    QVector<double> m_ofsmag;
+    QVector<double> m_ofsphs;
+
     QScopedPointer<BCap> m_bc;
     QScopedPointer<DBridge> m_db;
     QScopedPointer<PMosfet> m_pm;
@@ -353,8 +359,5 @@ public:
     QScopedPointer<PulseTransWires> m_ptsw;
     QScopedPointer<FullOutDiode> m_fod;
     QScopedPointer<FullOutCap> m_foc;
-    QScopedPointer<FullOutFilter> m_of;
-    QScopedPointer<PowerStageSmallSignalModel> m_pssm;
-    QScopedPointer<OptocouplerFedbackStage> m_ofs;
 };
 #endif // POWSUPPSOLVE_H
