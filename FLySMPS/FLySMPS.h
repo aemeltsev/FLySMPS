@@ -76,6 +76,7 @@ private slots:
     void setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data);
 
     void setUpdateInputValues();
+    void checkCorrect(const QString &text);
 
 signals:
     void initTransValuesComplete();
@@ -88,6 +89,7 @@ signals:
     void initOptoFeedbStageComplete();
 
 private:
+    void initOutDCData();
     void initInputValues();
     void initLCPlot();
     void initFCPlot();
