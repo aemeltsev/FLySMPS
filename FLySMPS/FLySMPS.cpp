@@ -936,13 +936,32 @@ void FLySMPS::setUpdateInputValues()
     connect(ui->VACmin, &QLineEdit::textChanged, this, [this](){
         auto tmp = convertToValues(static_cast<QString>(ui->VACmin->text()));
         if(tmp <= 0)
-            qInfo(logWarning()) << (QString("Input AC max voltage - Incorrect input value")).toStdString().c_str();
+            qInfo(logWarning()) << (QString("Input AC min voltage - Incorrect input value")).toStdString().c_str();
         m_psolve->m_indata.input_volt_ac_max = static_cast<int16_t>(tmp);
     });
-    /*connect(ui->FLine);
-    connect(ui->FSw);
-    connect(ui->Tamb);
-    if(ui->VOut1->isModified() || ui->IOut1->isModified())
+
+    connect(ui->FLine, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->FLine->text()));
+        if(tmp <= 0)
+            qInfo(logWarning()) << (QString("Input line frequency - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.freq_line = static_cast<int16_t>(tmp);
+    });
+
+    connect(ui->FSw, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->FSw->text()));
+        if(tmp <= 0)
+            qInfo(logWarning()) << (QString("Switch frequency - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.freq_switch = static_cast<uint32_t>(tmp);
+    });
+
+    connect(ui->Tamb, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->Tamb->text()));
+        if(tmp <= 0)
+            qInfo(logWarning()) << (QString("Ambient temperature - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.temp_amb = static_cast<int16_t>(tmp);
+    });
+
+    /*if(ui->VOut1->isModified() || ui->IOut1->isModified())
     {
         connect(ui->VOut1, &QLineEdit::textChanged, this, [this](){
             auto tmp = convertToValues(static_cast<QString>(ui->VOut1->text()));
@@ -953,6 +972,7 @@ void FLySMPS::setUpdateInputValues()
         if()
         connect(ui->VOut1);
     }*/
+    initInputValues();
 }
 
 double FLySMPS::convertToValues(const QString &input)
