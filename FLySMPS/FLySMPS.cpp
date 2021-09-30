@@ -119,7 +119,7 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_out_aux = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VAux->text())));
     m_psolve->m_indata.curr_out_aux = static_cast<float>(convertToValues(static_cast<QString>(ui->IAux->text())));
     m_psolve->m_indata.eff = convertToValues(static_cast<QString>(ui->Eff->text()));
-    m_psolve->m_indata.mrgn = convertToValues(static_cast<QString>(ui->Eff->text())); /* TMP after use real value */
+    m_psolve->m_indata.mrgn = static_cast<float>(convertToValues(static_cast<QString>(ui->OutPwrMrg->text())));
 
     auto outPwr =
         [=](float mrg)
@@ -961,7 +961,7 @@ void FLySMPS::setUpdateInputValues()
         m_psolve->m_indata.temp_amb = static_cast<int16_t>(tmp);
     });
 
-    /*if(ui->VOut1->isModified() || ui->IOut1->isModified())
+    if(ui->VOut1->isModified() || ui->IOut1->isModified())
     {
         connect(ui->VOut1, &QLineEdit::textChanged, this, [this](){
             auto tmp = convertToValues(static_cast<QString>(ui->VOut1->text()));
@@ -969,9 +969,73 @@ void FLySMPS::setUpdateInputValues()
                 qInfo(logWarning()) << (QString("First out voltage - Incorrect input value")).toStdString().c_str();
             m_psolve->m_indata.volt_out_one = static_cast<int16_t>(tmp);
         });
-        if()
-        connect(ui->VOut1);
-    }*/
+        //if()
+        //connect(ui->VOut1);
+    }
+
+    connect(ui->Eff, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->Eff->text()));
+        if(tmp <= 0 || tmp >= 1)
+            qInfo(logWarning()) << (QString("Power efficiency - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.eff = tmp;
+    });
+
+    connect(ui->OutPwrMrg, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->OutPwrMrg->text()));
+        if(tmp <= 0 || tmp >= 10)
+            qInfo(logWarning()) << (QString("Full output power margin - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.mrgn = static_cast<float>(tmp);
+    });
+
+    connect(ui->ReflVoltage, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->ReflVoltage->text()));
+        if(tmp <= 0 || tmp >= 150)
+            qInfo(logWarning()) << (QString("Reflected voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(tmp);
+    });
+
+    connect(ui->VSpike, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->VSpike->text()));
+        if(tmp <= 0 || tmp >= 150)
+            qInfo(logWarning()) << (QString("Voltage spike mosfet stress - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.voltage_spike = static_cast<uint16_t>(tmp);
+    });
+
+    connect(ui->KRF, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->KRF->text()));
+        if(tmp <= 0 || tmp >= 1)
+            qInfo(logWarning()) << (QString("Ripple factor - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.ripple_fact = static_cast<float>(tmp);
+    });
+
+    connect(ui->EffTransf, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->EffTransf->text()));
+        if(tmp <= 0 || tmp >= 1)
+            qInfo(logWarning()) << (QString("Transformer efficiency - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.eff_transf = static_cast<float>(tmp);
+    });
+
+    connect(ui->VoltDropSec, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
+        if(tmp <= 0 || tmp >= 1)
+            qInfo(logWarning()) << (QString("Secondary diode voltage drop - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_diode_drop_sec = static_cast<float>(tmp);
+    });
+
+    connect(ui->VoltBridgeDrop, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
+        if(tmp <= 0 || tmp >= 2)
+            qInfo(logWarning()) << (QString("Input diode bridge voltage drop - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_diode_drop_bridge = static_cast<float>(tmp);
+    });
+
+    connect(ui->LeakageInduct, &QLineEdit::textChanged, this, [this](){
+        auto tmp = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
+        if(tmp <= 0 || tmp >= 15)
+            qInfo(logWarning()) << (QString("Leakage inductance - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.leakage_induct = tmp;
+    });
+
     initInputValues();
 }
 
