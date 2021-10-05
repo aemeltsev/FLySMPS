@@ -108,6 +108,7 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.freq_line = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->FLine->text())));
     m_psolve->m_indata.freq_switch = static_cast<uint32_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
     m_psolve->m_indata.temp_amb = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->Tamb->text())));
+
     m_psolve->m_indata.volt_out_one = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut1->text())));
     m_psolve->m_indata.curr_out_one = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut1->text())));
     m_psolve->m_indata.volt_out_two = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut2->text())));
@@ -118,18 +119,9 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.curr_out_four = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut4->text())));
     m_psolve->m_indata.volt_out_aux = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VAux->text())));
     m_psolve->m_indata.curr_out_aux = static_cast<float>(convertToValues(static_cast<QString>(ui->IAux->text())));
+
     m_psolve->m_indata.eff = convertToValues(static_cast<QString>(ui->Eff->text()));
     m_psolve->m_indata.mrgn = static_cast<float>(convertToValues(static_cast<QString>(ui->OutPwrMrg->text())));
-
-    auto outPwr =
-        [=](float mrg)
-    {
-            return ((m_psolve->m_indata.volt_out_one * m_psolve->m_indata.curr_out_one)
-                    +(m_psolve->m_indata.volt_out_two * m_psolve->m_indata.curr_out_two)
-                    +(m_psolve->m_indata.volt_out_three * m_psolve->m_indata.curr_out_three)
-                    +(m_psolve->m_indata.volt_out_four * m_psolve->m_indata.curr_out_four)
-                    +(m_psolve->m_indata.volt_out_aux * m_psolve->m_indata.curr_out_aux)) * mrg;
-    };
     m_psolve->m_indata.power_out_max = outPwr(m_psolve->m_indata.mrgn);
 
     m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->ReflVoltage->text())));
@@ -257,7 +249,6 @@ void FLySMPS::initFCPlot()
 
     ui->OptoGraph->xAxis2->setNumberFormat("eb");
     ui->OptoGraph->xAxis2->setNumberPrecision(0);
-
 }
 
 void FLySMPS::initOutDCData()
@@ -769,7 +760,6 @@ void FLySMPS::setSolveLCFilter(QHash<QString, double> h_data)
     ui->LCDamp->setNum(h_data.value("DAMP"));
     ui->LCCutFreq->setNum(h_data.value("CFRQ"));
     ui->LCOutRippVolt->setNum(h_data.value("ORV "));
-
 }
 
 void FLySMPS::setLCPlot(QVector<double> mg_data, QVector<double> ph_data)
@@ -795,15 +785,13 @@ void FLySMPS::initPowerStageModel()
     // Basso C.-The TL431 in Switch-Mode Power Supplies loops: part V
     auto rsc = [=](int16_t p_vout, float p_diode_drop, float p_rsense,
                      float p_turns_ratio, double p_prim_ind)
-
     {
         return 0.5 * ((p_vout + p_diode_drop)/(p_turns_ratio * p_prim_ind) * p_rsense);
     };
 
     // Determine the turns ratio
     // See Ayachit A.-Magnetising inductance of multiple-output flyback dc–dc convertor for dcm.
-    auto commTR =
-            [=](double amdc, int32_t nump)
+    auto commTR = [=](double amdc, int32_t nump)
     {
         double n_frst = amdc/((1-amdc)*(m_psolve->m_indata.volt_out_one/
                                        (M_SQRT2*m_psolve->m_indata.input_volt_ac_min)));
@@ -924,6 +912,32 @@ void FLySMPS::setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data)
     //m_psolve->m_ofsphs.clear();
 }
 
+/**
+ * @brief FLySMPS::updateVCData
+ * @param input - input string for converted
+ * @param chkval 0 - input voltage value, 1 - input current value
+ * @param err - default false, no errors value from convertion input
+ * @param vo - voltage data out
+ * @param io - current data out
+ */
+void FLySMPS::updateVCData(const QString &input, bool chkval, bool err, int16_t vo, float io)
+{
+    auto tmp = convertToValues(static_cast<QString>(input));
+    if(!chkval)
+    {
+        if(tmp <= 0) err = true;
+        else{
+            vo = static_cast<int16_t>(tmp);
+        }
+    }
+    else{
+        if(tmp <= 0.025) err = true;
+        else{
+            io = static_cast<float>(tmp);
+        }
+    }
+}
+
 void FLySMPS::setUpdateInputValues()
 {
     connect(ui->VACmax, &QLineEdit::textChanged, this, [this](){
@@ -961,17 +975,108 @@ void FLySMPS::setUpdateInputValues()
         m_psolve->m_indata.temp_amb = static_cast<int16_t>(tmp);
     });
 
-    if(ui->VOut1->isModified() || ui->IOut1->isModified())
-    {
-        connect(ui->VOut1, &QLineEdit::textChanged, this, [this](){
-            auto tmp = convertToValues(static_cast<QString>(ui->VOut1->text()));
-            if(tmp <= 0)
-                qInfo(logWarning()) << (QString("First out voltage - Incorrect input value")).toStdString().c_str();
-            m_psolve->m_indata.volt_out_one = static_cast<int16_t>(tmp);
-        });
-        //if()
-        //connect(ui->VOut1);
-    }
+    int16_t v_result=0;
+    float i_result=0.0;
+
+    connect(ui->VOut1, &QLineEdit::textChanged, this, [this, &v_result](){
+        bool check = false;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->VOut1->text()), check, err, v_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The first output voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_out_one = v_result;
+        qInfo(logInfo()) << (QString("Update first output voltage value=\"%1\"").arg(m_psolve->m_indata.volt_out_one)).toStdString().c_str();
+    });
+
+    connect(ui->IOut1, &QLineEdit::textChanged, this, [this, &v_result, &i_result](){
+        bool check = true;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->IOut1->text()), check, err, v_result, i_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The first output current - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.curr_out_one = i_result;
+        qInfo(logInfo()) << (QString("Update first output current value=\"%1\"").arg(m_psolve->m_indata.curr_out_one)).toStdString().c_str();
+    });
+
+    connect(ui->VOut2, &QLineEdit::textChanged, this, [this, &v_result](){
+        bool check = false;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->VOut2->text()), check, err, v_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The second output voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_out_two = v_result;
+        qInfo(logInfo()) << (QString("Update second output voltage value=\"%1\"").arg(m_psolve->m_indata.volt_out_two)).toStdString().c_str();
+    });
+
+    connect(ui->IOut2, &QLineEdit::textChanged, this, [this, &v_result, &i_result](){
+        bool check = true;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->IOut2->text()), check, err, v_result, i_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The second output current - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.curr_out_two = i_result;
+        qInfo(logInfo()) << (QString("Update second output current value=\"%1\"").arg(m_psolve->m_indata.curr_out_two)).toStdString().c_str();
+    });
+
+    connect(ui->VOut3, &QLineEdit::textChanged, this, [this, &v_result](){
+        bool check = false;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->VOut3->text()), check, err, v_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The thrid output voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_out_three = v_result;
+        qInfo(logInfo()) << (QString("Update thrid output voltage value=\"%1\"").arg(m_psolve->m_indata.volt_out_three)).toStdString().c_str();
+    });
+
+    connect(ui->IOut3, &QLineEdit::textChanged, this, [this, &v_result, &i_result](){
+        bool check = true;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->IOut3->text()), check, err, v_result, i_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The thrid output current - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.curr_out_three = i_result;
+        qInfo(logInfo()) << (QString("Update thrid output current value=\"%1\"").arg(m_psolve->m_indata.curr_out_three)).toStdString().c_str();
+    });
+
+    connect(ui->VOut4, &QLineEdit::textChanged, this, [this, &v_result](){
+        bool check = false;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->VOut4->text()), check, err, v_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The fourth output voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_out_four = v_result;
+        qInfo(logInfo()) << (QString("Update fourth output voltage value=\"%1\"").arg(m_psolve->m_indata.volt_out_four)).toStdString().c_str();
+    });
+
+    connect(ui->IOut4, &QLineEdit::textChanged, this, [this, &v_result, &i_result](){
+        bool check = true;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->IOut4->text()), check, err, v_result, i_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The fourth output current - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.curr_out_four = i_result;
+        qInfo(logInfo()) << (QString("Update fourth output current value=\"%1\"").arg(m_psolve->m_indata.curr_out_four)).toStdString().c_str();
+    });
+
+    connect(ui->VAux, &QLineEdit::textChanged, this, [this, &v_result](){
+        bool check = false;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->VAux->text()), check, err, v_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The aux voltage - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.volt_out_aux = v_result;
+        qInfo(logInfo()) << (QString("Update aux voltage value=\"%1\"").arg(m_psolve->m_indata.volt_out_aux)).toStdString().c_str();
+    });
+
+    connect(ui->IAux, &QLineEdit::textChanged, this, [this, &v_result, &i_result](){
+        bool check = true;
+        bool err = false;
+        updateVCData(static_cast<QString>(ui->IAux->text()), check, err, v_result, i_result);
+        if(err)
+            qInfo(logWarning()) << (QString("The aux current - Incorrect input value")).toStdString().c_str();
+        m_psolve->m_indata.curr_out_aux = i_result;
+        qInfo(logInfo()) << (QString("Update aux current value=\"%1\"").arg(m_psolve->m_indata.curr_out_aux)).toStdString().c_str();
+    });
 
     connect(ui->Eff, &QLineEdit::textChanged, this, [this](){
         auto tmp = convertToValues(static_cast<QString>(ui->Eff->text()));
@@ -1035,8 +1140,6 @@ void FLySMPS::setUpdateInputValues()
             qInfo(logWarning()) << (QString("Leakage inductance - Incorrect input value")).toStdString().c_str();
         m_psolve->m_indata.leakage_induct = tmp;
     });
-
-    initInputValues();
 }
 
 double FLySMPS::convertToValues(const QString &input)
@@ -1076,3 +1179,11 @@ double FLySMPS::convertToValues(const QString &input)
     return 0;
 }
 
+double FLySMPS::outPwr(const float mrg)
+{
+    return static_cast<double>(((m_psolve->m_indata.volt_out_one * m_psolve->m_indata.curr_out_one)
+                    +(m_psolve->m_indata.volt_out_two * m_psolve->m_indata.curr_out_two)
+                    +(m_psolve->m_indata.volt_out_three * m_psolve->m_indata.curr_out_three)
+                    +(m_psolve->m_indata.volt_out_four * m_psolve->m_indata.curr_out_four)
+                    +(m_psolve->m_indata.volt_out_aux * m_psolve->m_indata.curr_out_aux)) * mrg);
+}

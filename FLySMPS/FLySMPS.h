@@ -94,7 +94,9 @@ private:
     void initLCPlot();
     void initFCPlot();
     void initSSMplot();
-    double convertToValues(const QString& input);   
+    double convertToValues(const QString& input);
+    void updateVCData(const QString& input, bool chkval, bool err = false, int16_t vo=0, float io=0.0);
+    double outPwr(const float mrg);
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
