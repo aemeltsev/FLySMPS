@@ -2,7 +2,7 @@
   See https://github.com/tvabramov/qt-sample-logging
 */
 #include <QTextStream>
-#include "logfilewriter.h"
+#include "inc/logfilewriter.h"
 
 LogFileWriter::LogFileWriter(QString prefix, qint64 maxsize, QObject *parent)
     :QObject(parent)

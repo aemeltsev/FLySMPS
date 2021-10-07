@@ -17,15 +17,14 @@
   along with this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "FLySMPS.h"
-#include "loggercategories.h"
+#include "inc/FLySMPS.h"
+#include "inc/loggercategories.h"
 
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::FLySMPS),
     m_psolve(new PowSuppSolve)
 {
-
     ui->setupUi(this);
 
     m_sthread = new QThread();
@@ -67,7 +66,7 @@ FLySMPS::FLySMPS(QWidget *parent) :
 
     connect(ui->CalcOutPushButton, &QPushButton::clicked, this, &FLySMPS::initOutCapValues);
     connect(this, &FLySMPS::initOutCapValuesComplete, m_psolve.data(), &PowSuppSolve::calcOtputNetwork);
-    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOtputNetwork, [this]()
+    connect(m_psolve.data(), &PowSuppSolve::finishedCalcOtputNetwork, this, [this]()
     {
         setSolveOutDiode();
         setOutCap();

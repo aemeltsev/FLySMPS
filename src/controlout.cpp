@@ -1,4 +1,4 @@
-#include "controlout.h"
+#include "inc/controlout.h"
 
 PCSSM::PCSSM(SSMPreDesign &ssmvar, PS_MODE mode)
 {

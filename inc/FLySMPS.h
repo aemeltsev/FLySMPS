@@ -114,5 +114,4 @@ private:
     QList<QLabel*> cap_out_four;
     QList<QLabel*> cap_out_aux;
 };
-
 #endif // FLYSMPS_H

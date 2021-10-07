@@ -17,7 +17,7 @@
   along with this program. If not, see http://www.gnu.org/licenses/.
 */
 
-#include "powsuppsolve.h"
+#include "inc/powsuppsolve.h"
 
 PowSuppSolve::PowSuppSolve(QObject *parent)
     :QObject(parent)
