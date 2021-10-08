@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -25,6 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    base/dbmanager.cpp \
     src/FLySMPS.cpp \
     src/bulkcap.cpp \
     src/capout.cpp \
@@ -41,6 +43,7 @@ SOURCES += \
     src/swmosfet.cpp \
 
 HEADERS += \
+    base/dbmanager.h \
     inc/FLySMPS.h \
     inc/bulkcap.h \
     inc/capout.h \
