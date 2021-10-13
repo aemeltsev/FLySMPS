@@ -36,7 +36,7 @@ public:
         uint32_t upperOperatingFrequency; //f_H
     };
 
-    struct Gapped
+    struct Gapping
     {
         QString coreName;
         QString materialName;
@@ -44,6 +44,14 @@ public:
         uint32_t actualRelativePermeability; //mu_e
         double gapLength; //g
         double actualCoreLosses; //P_v
+    };
+
+    enum class CoreType
+    {
+        TOR = 1,
+        UU,
+        EE,
+        ETD
     };
 
     //see Kazimierczuk M.-High-frequency magnetinc components
@@ -62,33 +70,6 @@ public:
         uint16_t F;
         uint16_t E;
         uint16_t G;
-    };
-
-    struct CorePot
-    {
-        QString coreName;
-        uint16_t H;
-        uint16_t G;
-        uint16_t B;
-        uint16_t A;
-        uint16_t C;
-        uint16_t E;
-        uint16_t F;
-        uint16_t D;
-    };
-
-    struct CorePQ
-    {
-        QString coreName;
-        uint16_t C;
-        uint16_t J;
-        uint16_t A;
-        uint16_t G;
-        uint16_t l;
-        uint16_t twB;
-        uint16_t twD;
-        uint16_t E;
-        uint16_t F;
     };
 
     struct CoreEE
@@ -114,6 +95,25 @@ public:
     };
 
     explicit DBManager(QObject *parent = nullptr);
+    bool initSQL(QString dbPath="");
+    bool createTable();
+    bool addCore(const Core& core_data);
+    bool addMaterial(const Material& material_data);
+    bool addGapping(const Gapping& gap_data, bool gapped=true);
+    bool addToroidGeometry(const CoreToroidal& tg);
+    bool addUUGeometry(const CoreToroidal& tg);
+    bool addEEGeometry(const CoreToroidal& tg);
+    bool addETDGeometry(const CoreETD& tg);
+    bool removeCore(const QString& name);
+    bool removeMaterial(const QString& name);
+    bool removeGeometry(const QString& name, CoreType crtype);
+    bool getCoreProperties(const QString& core_name,
+                           const QString& material_name,
+                           Core& out_core,
+                           Material& out_material,
+                           Gapping& out_gapp,
+                           bool gapped=true);
+    bool getCoreGeometry(const QString& core_name, QVector<uint16_t> out_gm);
 };
 
 #endif //DBMANAGER_H
