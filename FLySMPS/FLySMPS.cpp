@@ -923,13 +923,23 @@ void FLySMPS::setUpdateInputValues()
 
 double FLySMPS::convertToValues(const QString &input)
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QRegExp reg = QRegExp("^(.+)([pnμumKM])$");
     reg.indexIn(input);
+#else
+    QRegularExpression reg = QRegularExpression("^(.+)([pnμumKM])$");
+    QRegularExpressionMatch match = reg.match(input);
+#endif
 
     if(reg.captureCount() == 2)
     {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
         QString strValue = reg.cap(1);
         QString unit = reg.cap(2);
+#else
+        QString strValue = match.captured(1);
+        QString unit = match.captured(2);
+#endif
         bool ok = false;
         double value = strValue.toDouble(&ok);
 
