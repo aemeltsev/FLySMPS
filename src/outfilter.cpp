@@ -1,4 +1,4 @@
-#include "outfilter.h"
+#include "inc/outfilter.h"
 
 OutFilter::OutFilter(int32_t fr, int32_t rload, QObject *parent) noexcept
     :QObject(parent)

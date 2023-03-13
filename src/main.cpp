@@ -19,12 +19,12 @@
 /**
   For logging implementation see https://github.com/tvabramov/qt-sample-logging
 */
-#include "FLySMPS.h"
-#include "loggercategories.h"
-#include "logfilewriter.h"
 #include <QApplication>
-#include <QScopedPointer>
+//#include <QScopedPointer>
 #include <QThread>
+#include "inc/FLySMPS.h"
+#include "inc/loggercategories.h"
+#include "inc/logfilewriter.h"
 
 QThread *log_thread;
 LogFileWriter *log_writer;

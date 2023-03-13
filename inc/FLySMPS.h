@@ -84,6 +84,7 @@ private slots:
     void setOptoFeedbPlot(QVector<double> mg_data, QVector<double> ph_data);
 
     void setUpdateInputValues();
+    //void checkCorrect(const QString &text);
 
 signals:
     void initTransValuesComplete();
@@ -96,11 +97,14 @@ signals:
     void initOptoFeedbStageComplete();
 
 private:
+    void initOutDCData();
     void initInputValues();
     void initLCPlot();
     void initFCPlot();
     void initSSMplot();
-    double convertToValues(const QString& input);   
+    double convertToValues(const QString& input);
+    void updateVCData(const QString& input, bool chkval, bool err = false, int16_t vo=0, float io=0.0);
+    double outPwr(const float mrg);
 
     QScopedPointer<Ui::FLySMPS> ui;
     QScopedPointer<PowSuppSolve> m_psolve;
@@ -118,5 +122,4 @@ private:
     QList<QLabel*> cap_out_four;
     QList<QLabel*> cap_out_aux;
 };
-
 #endif // FLYSMPS_H

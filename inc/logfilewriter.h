@@ -5,6 +5,7 @@
 #define LOGFILEWRITER_H
 
 #include <QObject>
+#include <QString>
 #include <QMutex>
 #include <QFile>
 #include <QQueue>
@@ -27,7 +28,6 @@ public:
     ~LogFileWriter();
     void push(QDateTime timestamp, QtMsgType type, QString category, QString msg);
     void abort();
-
 
 signals:
     void finished();

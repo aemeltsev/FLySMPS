@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -25,35 +26,37 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    logfilewriter.cpp \
-    loggercategories.cpp \
-    capout.cpp \
-    controlout.cpp \
-    diodeout.cpp \
-    fbptransformer.cpp \
-    main.cpp \
-    FLySMPS.cpp \
-    diodebridge.cpp \
-    bulkcap.cpp \
-    outfilter.cpp \
-    powsuppsolve.cpp \
-    qcustomplot.cpp \
-    swmosfet.cpp
+    base/dbmanager.cpp \
+    src/FLySMPS.cpp \
+    src/bulkcap.cpp \
+    src/capout.cpp \
+    src/controlout.cpp \
+    src/diodebridge.cpp \
+    src/diodeout.cpp \
+    src/fbptransformer.cpp \
+    src/logfilewriter.cpp \
+    src/loggercategories.cpp \
+    src/main.cpp \
+    src/outfilter.cpp \
+    src/powsuppsolve.cpp \
+    src/qcustomplot.cpp \
+    src/swmosfet.cpp \
 
 HEADERS += \
-    FLySMPS.h \
-    logfilewriter.h \
-    loggercategories.h \
-    capout.h \
-    controlout.h \
-    diodebridge.h \
-    bulkcap.h \
-    diodeout.h \
-    fbptransformer.h \
-    outfilter.h \
-    powsuppsolve.h \
-    qcustomplot.h \
-    swmosfet.h
+    base/dbmanager.h \
+    inc/FLySMPS.h \
+    inc/bulkcap.h \
+    inc/capout.h \
+    inc/controlout.h \
+    inc/diodebridge.h \
+    inc/diodeout.h \
+    inc/fbptransformer.h \
+    inc/logfilewriter.h \
+    inc/loggercategories.h \
+    inc/outfilter.h \
+    inc/powsuppsolve.h \
+    inc/qcustomplot.h \
+    inc/swmosfet.h \
 
 FORMS += \
         FLySMPS.ui
