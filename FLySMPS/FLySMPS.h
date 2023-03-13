@@ -22,8 +22,16 @@
 
 #include <QtWidgets>
 #include <QMainWindow>
+#include <QtGlobal>
 #include <QThread>
 #include <QDebug>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+#include <QRegExp>
+#else
+#include <QRegularExpression>
+#endif
+
 #include "powsuppsolve.h"
 #include "qcustomplot.h"
 
