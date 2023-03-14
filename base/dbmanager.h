@@ -10,6 +10,7 @@
 class DBManager: public QObject
 {
     Q_OBJECT
+    QSqlDatabase m_db;
 
 public:
     struct Core
@@ -24,6 +25,9 @@ public:
         uint32_t resistanceFactor; //P_v
     };
 
+    /* Properties of the magnetic material and using in
+     * medium and high frequency switch-mode power supplies.
+     */
     struct Material
     {
         QString materialName;
@@ -36,6 +40,9 @@ public:
         uint32_t upperOperatingFrequency; //f_H
     };
 
+    /* Properties of the gapped core. Using for saturation prevention,
+     *  and work in the required temperature window.
+     */
     struct Gapping
     {
         QString coreName;
@@ -54,13 +61,13 @@ public:
         ETD
     };
 
-    //see Kazimierczuk M.-High-frequency magnetinc components
+    //see Kazimierczuk M.-High-frequency magnetinc components - 2.11 Core Geometries
     struct CoreToroidal
     {
         QString coreName;
         uint16_t H;
-        uint16_t inDiam;
-        uint16_t exDiam;
+        uint16_t innerDiam;
+        uint16_t outerDiam;
     };
 
     struct CoreUU
@@ -100,10 +107,10 @@ public:
     bool addCore(const Core& core_data);
     bool addMaterial(const Material& material_data);
     bool addGapping(const Gapping& gap_data, bool gapped=true);
-    bool addToroidGeometry(const CoreToroidal& tg);
-    bool addUUGeometry(const CoreToroidal& tg);
-    bool addEEGeometry(const CoreToroidal& tg);
-    bool addETDGeometry(const CoreETD& tg);
+    bool addToroidGeometry(const CoreToroidal& geometry);
+    bool addUUGeometry(const CoreUU& geometry);
+    bool addEEGeometry(const CoreEE& geometry);
+    bool addETDGeometry(const CoreETD& geometry);
     bool removeCore(const QString& name);
     bool removeMaterial(const QString& name);
     bool removeGeometry(const QString& name, CoreType crtype);
