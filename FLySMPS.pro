@@ -27,6 +27,7 @@ CONFIG += c++11
 
 SOURCES += \
     base/dbmanager.cpp \
+    base/singleton.cpp \
     src/FLySMPS.cpp \
     src/bulkcap.cpp \
     src/capout.cpp \
@@ -44,6 +45,8 @@ SOURCES += \
 
 HEADERS += \
     base/dbmanager.h \
+    base/defines.h \
+    base/singleton.h \
     inc/FLySMPS.h \
     inc/bulkcap.h \
     inc/capout.h \
