@@ -5,70 +5,63 @@
 
 namespace db {
 
-//see Kazimierczuk M.-High-frequency magnetinc components - 2.11 Core Geometries
-struct GeometryToroidal
+enum class CoreType
 {
-    int H;
-    int innerDiam;
-    int outerDiam;
-    GeometryToroidal(){}
-    GeometryToroidal(int h, int id, int od)
-        :H(h)
+    TOR = 0x01,
+    UU  = 0x02,
+    EE  = 0x03,
+    ETD = 0x04,
+    RM  = 0x05,
+    PQ  = 0x06,
+    PM  = 0x07,
+    EP  = 0x08,
+    EPX = 0x09,
+    EPO = 0x0A,
+    P   = 0x0B,
+    ELP = 0x0C,
+    EQ  = 0x0D,
+    ER  = 0x0E,
+    EFD = 0x0F,
+    EV  = 0x10,
+    UI  = 0x11,
+    UNDEF = 0x00
+};
+
+
+//see Kazimierczuk M.-High-frequency magnetinc components - 2.11 Core Geometries
+struct Geometry
+{
+    QString model_;
+    CoreType type_ = CoreType::UNDEF;
+    //GeometryToroidal - H, innerDiam, outerDiam
+    //GeometryUU - D, F, E, G
+    //GeometryEE - C, B, F, A, E, D
+    //eometryETD - C, B, F, A, E, D
+    double H;
+    double innerDiam;
+    double outerDiam;
+    double C;
+    double B;
+    double F;
+    double A;
+    double E;
+    double D;
+    double G;
+
+    Geometry(){}
+    Geometry(const QString& model, CoreType type, double h, double id, double od, double c, double b, double f, double a, double e, double d, double g)
+        :model_(model)
+        ,type_(type)
+        ,H(h)
         ,innerDiam(id)
         ,outerDiam(od)
-    {}
-};
-
-struct GeometryUU
-{
-    int D;
-    int F;
-    int E;
-    int G;
-    GeometryUU(){}
-    GeometryUU(int d, int f, int e, int g)
-        :D(d)
+        ,C(c)
+        ,B(b)
         ,F(f)
+        ,A(a)
         ,E(e)
+        ,D(d)
         ,G(g)
-    {}
-};
-
-struct GeometryEE
-{
-    int C;
-    int B;
-    int F;
-    int A;
-    int E;
-    int D;
-    GeometryEE(){}
-    GeometryEE(int c, int b, int f, int a, int e, int d)
-        :C(c)
-        ,B(b)
-        ,F(f)
-        ,A(a)
-        ,E(e)
-        ,D(d)
-    {}
-};
-
-struct GeometryETD
-{
-    int C;
-    int B;
-    int F;
-    int A;
-    int E;
-    int D;
-    GeometryETD(){}
-    GeometryETD(int c, int b, int f, int a, int e, int d)
-        :C(c)
-        ,B(b)
-        ,F(f)
-        ,A(a)
-        ,E(e)
-        ,D(d)
     {}
 };
 
@@ -135,28 +128,6 @@ struct Gapping
     {}
 };
 
-enum class CoreType
-{
-    TOR = 0x01,
-    UU  = 0x02,
-    EE  = 0x03,
-    ETD = 0x04,
-    RM  = 0x05,
-    PQ  = 0x06,
-    PM  = 0x07,
-    EP  = 0x08,
-    EPX = 0x09,
-    EPO = 0x0A,
-    P   = 0x0B,
-    ELP = 0x0C,
-    EQ  = 0x0D,
-    ER  = 0x0E,
-    EFD = 0x0F,
-    EV  = 0x10,
-    UI  = 0x11,
-    UNDEF = 0x00
-};
-
 class CoreModel
 {
 public:
@@ -173,16 +144,13 @@ public:
     void type(const QString& type);
     void coreMaterial(Material material);
     void coreGapping(Gapping gapping);
-    void resistanceFactor(int resistanceFactor){resistanceFactor_ = resistanceFactor;}
+    void resistanceFactor(double resistanceFactor){resistanceFactor_ = resistanceFactor;}
     void effectiveMagneticVolume(int effectiveMagneticVolume){effectiveMagneticVolume_ = effectiveMagneticVolume;}
-    void windowCrossSection(int windowCrossSection){windowCrossSection_ = windowCrossSection;}
+    void windowCrossSection(double windowCrossSection){windowCrossSection_ = windowCrossSection;}
     void effectiveMagneticPathLength(double effectiveMagneticPathLength){effectiveMagneticPathLength_ = effectiveMagneticPathLength;}
     void effectiveMagneticCrossSection(double effectiveMagneticCrossSection){effectiveMagneticCrossSection_ = effectiveMagneticCrossSection;}
     void lenghTurn(double lenghTurn){lenghTurn_ = lenghTurn;}
-    void torGeometry(const GeometryToroidal);
-    void uuGeometry(const GeometryUU);
-    void eeGeometry(const GeometryEE);
-    void etdGeometry(const GeometryETD);
+    void geometry(const Geometry& geom);
 
     const int& id() const {return deviceId_;}
     const QString& name() const {return name_;}
@@ -191,16 +159,13 @@ public:
     const CoreType& type() const {return coreType_;}
     const Material& coreMaterial() const {return coreMaterial_;}
     const Gapping& coreGapping() const {return coreGapping_;}
-    int resistanceFactor() const {return resistanceFactor_;}
+    double resistanceFactor() const {return resistanceFactor_;}
     int effectiveMagneticVolume() const {return effectiveMagneticVolume_;}
-    int windowCrossSection() const {return windowCrossSection_;}
+    double windowCrossSection() const {return windowCrossSection_;}
     double effectiveMagneticPathLength() const {return effectiveMagneticPathLength_;}
     double effectiveMagneticCrossSection() const {return effectiveMagneticCrossSection_;}
     double lenghTurn() const {return lenghTurn_;}
-    const GeometryToroidal& torGeometry() const {return torGeometry_;}
-    const GeometryUU& uuGeometry() const {return uuGeometry_;}
-    const GeometryEE& eeGeometry() const {return eeGeometry_;}
-    const GeometryETD& etdGeometry() const {return etdGeometry_;}
+    const Geometry& geometry() const {return geometry_;}
 
 private:
     int deviceId_;
@@ -210,16 +175,13 @@ private:
     CoreType coreType_;
     Material coreMaterial_;
     Gapping coreGapping_;
-    int resistanceFactor_; //P_v
+    double resistanceFactor_; //P_v
     int effectiveMagneticVolume_; //V_e
-    int windowCrossSection_; //A_N
+    double windowCrossSection_; //A_N
     double effectiveMagneticPathLength_; //l_e
     double effectiveMagneticCrossSection_; //A_e
     double lenghTurn_; //l_N
-    GeometryToroidal torGeometry_;
-    GeometryUU uuGeometry_;
-    GeometryEE eeGeometry_;
-    GeometryETD etdGeometry_;
+    Geometry geometry_;
 };
 
 } // namespace db
