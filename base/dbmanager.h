@@ -18,7 +18,9 @@ class DBManager: public QObject
 
 public:
     bool isOpen() const;
+#if 0
     const QString& lastError() const;
+#endif
     virtual QString dbName() const = 0;
     QString sql(const char* sql) const;
 
