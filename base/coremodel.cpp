@@ -87,6 +87,7 @@ void db::CoreModel::coreGapping(db::Gapping gapping)
 
 void db::CoreModel::geometry(const db::Geometry& geom)
 {
+    geometry_.model_ = geom.model_;
     geometry_.type_ = geom.type_;
     geometry_.H = geom.H;
     geometry_.innerDiam = geom.innerDiam;
