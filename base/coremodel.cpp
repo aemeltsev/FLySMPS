@@ -58,78 +58,7 @@ db::CoreModel::CoreModel(const CoreModel& other)
 
 void db::CoreModel::type(const QString &type)
 {
-    if(type.compare("TOR") == 0){
-        coreType_ = CoreType::TOR;
-        return;
-    }
-    else if(type.compare("UU") == 0){
-        coreType_ = CoreType::UU;
-        return;
-    }
-    else if(type.compare("EE") == 0){
-        coreType_ = CoreType::EE;
-        return;
-    }
-    else if(type.compare("ETD") == 0){
-        coreType_ = CoreType::ETD;
-        return;
-    }
-    else if(type.compare("RM") == 0){
-        coreType_ = CoreType::RM;
-        return;
-    }
-    else if(type.compare("PQ") == 0){
-        coreType_ = CoreType::PQ;
-        return;
-    }
-    else if(type.compare("PM") == 0){
-        coreType_ = CoreType::PM;
-        return;
-    }
-    else if(type.compare("EP") == 0){
-        coreType_ = CoreType::EP;
-        return;
-    }
-    else if(type.compare("EPX") == 0){
-        coreType_ = CoreType::EPX;
-        return;
-    }
-    else if(type.compare("EPO") == 0){
-        coreType_ = CoreType::EPO;
-        return;
-    }
-    else if(type.compare("P") == 0){
-        coreType_ = CoreType::P;
-        return;
-    }
-    else if(type.compare("ELP") == 0){
-        coreType_ = CoreType::ELP;
-        return;
-    }
-    else if(type.compare("EQ") == 0){
-        coreType_ = CoreType::EQ;
-        return;
-    }
-    else if(type.compare("ER") == 0){
-        coreType_ = CoreType::ER;
-        return;
-    }
-    else if(type.compare("EFD") == 0){
-        coreType_ = CoreType::EFD;
-        return;
-    }
-    else if(type.compare("EV") == 0){
-        coreType_ = CoreType::EV;
-        return;
-    }
-    else if(type.compare("UI") == 0){
-        coreType_ = CoreType::UI;
-        return;
-    }
-    else{
-        coreType_ = CoreType::UNDEF;
-        return;
-    }
+    coreType_ = getCoreType(type);
 }
 
 void db::CoreModel::coreMaterial(db::Material material)
@@ -147,6 +76,7 @@ void db::CoreModel::coreMaterial(db::Material material)
 void db::CoreModel::coreGapping(db::Gapping gapping)
 {
     if(gapped_ == true){
+        coreGapping_.modelName = gapping.modelName;
         coreGapping_.actualRelativePermeability = gapping.actualRelativePermeability;
         coreGapping_.inductanceFactor = gapping.inductanceFactor;
         coreGapping_.gapLength = gapping.gapLength;

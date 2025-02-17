@@ -108,25 +108,86 @@ struct Material
      */
 struct Gapping
 {
+    QString modelName;
     int actualRelativePermeability; //mu_e
     double inductanceFactor; //A_L
     double gapLength; //g
     double actualCoreLosses; //P_v
 
     Gapping()
-        :actualRelativePermeability(0)
+        :modelName("")
+        ,actualRelativePermeability(0)
         ,inductanceFactor(0.)
         ,gapLength(0.)
         ,actualCoreLosses(0.)
     {}
 
-    Gapping(int mu_e, double a_l, double g, double p_v)
-        :actualRelativePermeability(mu_e)
+    Gapping(const QString& name, int mu_e, double a_l, double g, double p_v)
+        :modelName(name)
+        ,actualRelativePermeability(mu_e)
         ,inductanceFactor(a_l)
         ,gapLength(g)
         ,actualCoreLosses(p_v)
     {}
 };
+
+CoreType getCoreType(const QString &type)
+{
+    if(type.compare("TOR") == 0){
+        return CoreType::TOR;
+    }
+    else if(type.compare("UU") == 0){
+        return CoreType::UU;
+    }
+    else if(type.compare("EE") == 0){
+        return CoreType::EE;
+    }
+    else if(type.compare("ETD") == 0){
+        return CoreType::ETD;
+    }
+    else if(type.compare("RM") == 0){
+        return CoreType::RM;
+    }
+    else if(type.compare("PQ") == 0){
+        return CoreType::PQ;
+    }
+    else if(type.compare("PM") == 0){
+        return CoreType::PM;
+    }
+    else if(type.compare("EP") == 0){
+        return CoreType::EP;
+    }
+    else if(type.compare("EPX") == 0){
+        return CoreType::EPX;
+    }
+    else if(type.compare("EPO") == 0){
+        return CoreType::EPO;
+    }
+    else if(type.compare("P") == 0){
+        return CoreType::P;
+    }
+    else if(type.compare("ELP") == 0){
+        return CoreType::ELP;
+    }
+    else if(type.compare("EQ") == 0){
+        return CoreType::EQ;
+    }
+    else if(type.compare("ER") == 0){
+        return CoreType::ER;
+    }
+    else if(type.compare("EFD") == 0){
+        return CoreType::EFD;
+    }
+    else if(type.compare("EV") == 0){
+        return CoreType::EV;
+    }
+    else if(type.compare("UI") == 0){
+        return CoreType::UI;
+    }
+    else{
+        return CoreType::UNDEF;
+    }
+}
 
 class CoreModel
 {
