@@ -98,6 +98,10 @@ void db::DBManager::closeAll()
     }
 }
 
+/*!
+ * \brief db::DBManager::setLastError - Sets the last error
+ * \param msg - Error message
+ */
 void db::DBManager::setLastError(const QString &msg)
 {
     if(!msg.isEmpty()){
@@ -105,6 +109,22 @@ void db::DBManager::setLastError(const QString &msg)
     }
 }
 
+/*!
+ * \brief db::DBManager::beginTransaction - The method is designed to
+ *  start a transaction in the database. This method can be used
+ *  before performing a series of database operations that must be atomic.
+ *  if (dbManager.beginTransaction()) {
+ *     // Perform database operations
+ *     if (all operations are successful) {
+ *         dbManager.endTransaction(); // We are fixing the transaction
+ *     } else {
+ *         dbManager.rollback(); // Roll back the transaction in case of an error
+ *     }
+ * } else {
+ *     // Handling transaction start error
+ * }
+ * \return If the transaction is started successfully, the method returns true.
+ */
 bool db::DBManager::beginTransaction()
 {
     if(!m_db.isOpen()){
@@ -118,6 +138,11 @@ bool db::DBManager::beginTransaction()
     return true;
 }
 
+/*!
+ * \brief db::DBManager::rollback - The method is designed to
+ *  roll back a transaction in the database.
+ * \return If the rollback is successful, the method returns true.
+ */
 bool db::DBManager::rollback()
 {
     if(!m_db.isOpen()){
@@ -131,6 +156,11 @@ bool db::DBManager::rollback()
     return true;
 }
 
+/*!
+ * \brief db::DBManager::endTransaction - The method is designed to
+ *  commit a transaction to the database.
+ * \return If the commit is successful, the method returns true.
+ */
 bool db::DBManager::endTransaction()
 {
     if(!m_db.isOpen()){
@@ -144,6 +174,19 @@ bool db::DBManager::endTransaction()
     return true;
 }
 
+/*!
+ * \brief db::DBManager::dropTable - The method is designed to delete
+ *  a table from the database. The method creates a SQL query to delete
+ *  the table using the sql() method, which formats the query string.
+ * \param table - The name of table who is being deleted. Typical, it used
+ *  to remove a table from the database if it is no longer needed.
+ * if (dbManager.dropTable("table_name")) {
+ *     // Table successfully deleted
+ * } else {
+ *     // Handling table deletion error
+ * }
+ * \return If the request is successful, the method returns true.
+ */
 bool db::DBManager::dropTable(const QString &table)
 {
     QString sqlQuery = sql("DROP TABLE %1").arg(table);
@@ -155,6 +198,22 @@ bool db::DBManager::dropTable(const QString &table)
     return true;
 }
 
+/*!
+ * \brief db::DBManager::allocateDb - The method is designed to
+ *  configure and open a connection to the SQLite database.
+ *  The method adds a SQLite database using QSqlDatabase::addDatabase(),
+ *  passing the connection name returned by the connectionName() method.
+ *  Sets the name of the database file using the dbName() method.
+ *  Attempts to open the database. If opening fails, sets an error message.
+ *  Executes the SQL query PRAGMA foreign_keys = ON to enable
+ *  foreign key support in SQLite.
+ * dbManager.allocateDb();
+ * if (dbManager.isOpen()) {
+ *     // Perform database operations
+ * } else {
+ *     // Handling database open error
+ * }
+ */
 void db::DBManager::allocateDb()
 {
     m_db = QSqlDatabase::addDatabase("QSQLITE", connectionName());
