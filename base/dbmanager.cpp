@@ -84,12 +84,18 @@ QSqlDatabase &db::DBManager::db()
  */
 void db::DBManager::closeAll()
 {
-    // Gets the name of the current database connection.
-    QString connectionName = m_db.connectionName();
-    // Closes the database connection.
-    m_db.close();
-    // Removes the connection from the list of connections managed by QSqlDatabase.
-    QSqlDatabase::removeDatabase(connectionName);
+    // Checking if the connection is open
+    if(m_db.isOpen()){
+        // Gets the name of the current database connection.
+        QString connectionName = m_db.connectionName();
+        // Closes the database connection.
+        m_db.close();
+        // Removes the connection from the list of connections managed by QSqlDatabase.
+        QSqlDatabase::removeDatabase(connectionName);
+        qDebug() << "Database connection closed and removed:" << connectionName;
+    } else {
+        qWarning() << "Database connection is already closed.";
+    }
 }
 
 void db::DBManager::setLastError(const QString &msg)
