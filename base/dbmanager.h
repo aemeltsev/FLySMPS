@@ -33,8 +33,9 @@ protected:
     QSqlDatabase& db();
     void closeAll();
     void setLastError(const QString& msg);
-
+#if 0
     bool createTable(const QString& table, const QStringList& columns);
+#endif
     bool beginTransaction();
     bool rollback();
     bool endTransaction();
