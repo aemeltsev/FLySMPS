@@ -442,27 +442,105 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
 
 bool db::CoreManager::saveCoreHelper(db::CoreModel *core)
 {
-    int coreId = core->id();
-
     if(!beginTransaction()){
         qInfo(logCritical()) << QString::fromLatin1("Can not begin transaction");
         return false;
     }
-    // insert TABLE_NAME_MATERIAL
-    QString MaterialSqlQuery = sql("INSERT OR REPLACE INTO %1(name, high_relative_permeability, coercive_field, temp_curie, core_losses_relative, upper_operating_frequency, flux_density, electrical_resistivity) "
-                   "VALUES(:name, :high_relative_permeability, :coercive_field, :temp_curie, :core_losses_relative, :upper_operating_frequency, :flux_density, :electrical_resistivity)")
-            .arg(TABLE_NAME_MATERIAL);
 
-    QSqlQuery MaterialQuery(MaterialSqlQuery, db());
+    auto executeInsertQuery = [this](const QString& tableName, const QVariantMap& values) {
+        QStringList columns = values.keys();
+        QStringList placeholders;
+        for(const QString& column : columns) {
+            placeholders.append(":" + column);
+        }
+        qDebug() << columns;
+        qDebug() << placeholders;
+
+        QString sqlQuery = sql("INSERT OR REPLACE INTO %1(%2) VALUES (%3)")
+                .arg(tableName)
+                .arg(columns.join(", "))
+                .arg(placeholders.join(", "));
+
+        QSqlQuery query(sqlQuery, db());
+        for(auto it = values.begin(); it != values.end(); ++it) {
+            query.bindValue(":" + it.key(), it.value());
+        }
+
+        if(!query.exec()) {
+            setLastError(query.lastError().text());
+            qInfo(logCritical()) << QString::fromLatin1("Sql error:") << query.lastError().text();
+            return false;
+        }
+        return true;
+    };
+
+    // insert TABLE_NAME_MATERIAL
+    QVariantMap malerialValues = {
+        {"name", core->coreMaterial().materialName},
+        {"high_relative_permeability", core->coreMaterial().highRelativePermeability},
+        {"coercive_field", core->coreMaterial().coerciveField},
+        {"temp_curie", core->coreMaterial().tempCurie},
+        {"core_losses_relative", core->coreMaterial().coreLossesRelative},
+        {"upper_operating_frequency", core->coreMaterial().upperOperatingFrequency},
+        {"flux_density", core->coreMaterial().fluxDensity},
+        {"electrical_resistivity", core->coreMaterial().electricalResistivity},
+    };
+    if(!executeInsertQuery(TABLE_NAME_MATERIAL, malerialValues)) {
+        return false;
+    }
 
     // insert TABLE_NAME_GEOMETRY
-    QString GeometrySqlQuery = sql("INSERT OR REPLACE INTO %1()");
+    QVariantMap geometryValues = {
+        {"model", core->geometry().model_},
+        {"type", static_cast<int>(core->geometry().type_)},
+        {"h", core->geometry().H},
+        {"inner_diam", core->geometry().innerDiam},
+        {"outer_diam", core->geometry().outerDiam},
+        {"c", core->geometry().C},
+        {"b", core->geometry().B},
+        {"f", core->geometry().F},
+        {"a", core->geometry().A},
+        {"e", core->geometry().E},
+        {"d", core->geometry().D},
+        {"g", core->geometry().G},
+    };
+    if(!executeInsertQuery(TABLE_NAME_GEOMETRY, geometryValues)) {
+        return false;
+    }
 
     // insert TABLE_NAME_GAPPING
-    QString GappingSqlQuery = sql("INSERT OR REPLACE INTO %1()");
+    QVariantMap gappingValues = {
+        {"model", core->coreGapping().modelName},
+        {"actual_relative_permeability", core->coreGapping().actualRelativePermeability},
+        {"inductance_factor", core->coreGapping().inductanceFactor},
+        {"gap_length", core->coreGapping().gapLength},
+        {"actual_core_losses", core->coreGapping().actualCoreLosses},
+    };
+    if(!executeInsertQuery(TABLE_NAME_GAPPING, gappingValues)) {
+        return false;
+    }
 
     // insert TABLE_NAME_CORES
-    QString CoresSqlQuery = sql("INSERT OR REPLACE INTO %1()");
+    int isGapped = (core->gapped()) ? 1 : 0;
+    QVariantMap coreValues = {
+        {"name", core->name()},
+        {"model", core->model()},
+        {"gapped", isGapped},
+        //{"type", core->type()}, // TODO Write helper function return string value of core type
+        {"material", core->coreMaterial().materialName}, // TODO Check it is correct
+        {"gapping", core->coreGapping().modelName}, // TODO Check it is correct
+        {"resistance_factor", core->resistanceFactor()},
+        {"effective_magnetic_volume", core->effectiveMagneticVolume()},
+        {"window_cross_section", core->windowCrossSection()},
+        {"effective_magnetic_path_length", core->effectiveMagneticPathLength()},
+        {"effective_magnetic_cross_section", core->effectiveMagneticCrossSection()},
+        {"lengh_turn", core->lengthTurn()},
+        {"geometry", core->geometry().model_} // TODO Check it is correct
+    };
+    if(!executeInsertQuery(TABLE_NAME_CORES, coreValues)) {
+        return false;
+    }
+    return endTransaction();
 }
 
 bool db::CoreManager::removeCoreHelper(int coreId)
