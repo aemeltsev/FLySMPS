@@ -210,7 +210,7 @@ public:
     void windowCrossSection(double windowCrossSection){windowCrossSection_ = windowCrossSection;}
     void effectiveMagneticPathLength(double effectiveMagneticPathLength){effectiveMagneticPathLength_ = effectiveMagneticPathLength;}
     void effectiveMagneticCrossSection(double effectiveMagneticCrossSection){effectiveMagneticCrossSection_ = effectiveMagneticCrossSection;}
-    void lengthTurn(double lenghTurn){lenghTurn_ = lenghTurn;}
+    void lengthTurn(double lengthTurn){lengthTurn_ = lengthTurn;}
     void geometry(const Geometry& geom);
 
     const int& id() const {return deviceId_;}
@@ -225,7 +225,7 @@ public:
     double windowCrossSection() const {return windowCrossSection_;}
     double effectiveMagneticPathLength() const {return effectiveMagneticPathLength_;}
     double effectiveMagneticCrossSection() const {return effectiveMagneticCrossSection_;}
-    double lenghTurn() const {return lenghTurn_;}
+    double lengthTurn() const {return lengthTurn_;}
     const Geometry& geometry() const {return geometry_;}
 
 private:
@@ -241,7 +241,7 @@ private:
     double windowCrossSection_; //A_N
     double effectiveMagneticPathLength_; //l_e
     double effectiveMagneticCrossSection_; //A_e
-    double lenghTurn_; //l_N
+    double lengthTurn_; //l_N
     Geometry geometry_;
 };
 

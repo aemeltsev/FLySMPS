@@ -13,7 +13,7 @@ db::CoreModel::CoreModel()
     ,windowCrossSection_(0)
     ,effectiveMagneticPathLength_(0)
     ,effectiveMagneticCrossSection_(0)
-    ,lenghTurn_(0)
+    ,lengthTurn_(0)
     ,geometry_()
 {}
 
@@ -31,7 +31,7 @@ db::CoreModel::CoreModel(CoreType type, bool gapped)
     ,windowCrossSection_(0)
     ,effectiveMagneticPathLength_(0)
     ,effectiveMagneticCrossSection_(0)
-    ,lenghTurn_(0)
+    ,lengthTurn_(0)
     ,geometry_()
 {
     geometry_.type_ = type;
@@ -49,7 +49,7 @@ db::CoreModel::CoreModel(const CoreModel& other)
     ,windowCrossSection_(other.windowCrossSection_)
     ,effectiveMagneticPathLength_(other.effectiveMagneticPathLength_)
     ,effectiveMagneticCrossSection_(other.effectiveMagneticCrossSection_)
-    ,lenghTurn_(other.lenghTurn_)
+    ,lengthTurn_(other.lengthTurn_)
 {
     coreMaterial(other.coreMaterial_);
     coreGapping(other.coreGapping_);
