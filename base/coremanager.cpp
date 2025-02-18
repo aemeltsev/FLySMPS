@@ -376,65 +376,65 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
 
     //TABLE_NAME_MATERIAL
     QString MaterialSqlQuery = sql("SELECT * FROM %1 WHERE name:=name").arg(TABLE_NAME_MATERIAL);
-    QSqlQuery q2(MaterialSqlQuery, db());
-    q2.bindValue(":name", materialName);
-    if(!q2.exec() || !q2.next()){
-        setLastError(q2.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << q2.lastError().text();
+    QSqlQuery MaterialQuery(MaterialSqlQuery, db());
+    MaterialQuery.bindValue(":name", materialName);
+    if(!MaterialQuery.exec() || !MaterialQuery.next()){
+        setLastError(MaterialQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << MaterialQuery.lastError().text();
         delete core;
         return nullptr;
     }
-    QSqlRecord rec_mat(q2.record());
-    Material mat(q2.value(rec_mat.indexOf("name")).toString(),
-                 q2.value(rec_mat.indexOf("high_relative_permeability")).toInt(),
-                 q2.value(rec_mat.indexOf("coercive_field")).toInt(),
-                 q2.value(rec_mat.indexOf("temp_curie")).toInt(),
-                 q2.value(rec_mat.indexOf("core_losses_relative")).toInt(),
-                 q2.value(rec_mat.indexOf("upper_operating_frequency")).toInt(),
-                 q2.value(rec_mat.indexOf("flux_density")).toDouble(),
-                 q2.value(rec_mat.indexOf("electrical_resistivity")).toDouble());
+    QSqlRecord rec_mat(MaterialQuery.record());
+    Material mat(MaterialQuery.value(rec_mat.indexOf("name")).toString(),
+                 MaterialQuery.value(rec_mat.indexOf("high_relative_permeability")).toInt(),
+                 MaterialQuery.value(rec_mat.indexOf("coercive_field")).toInt(),
+                 MaterialQuery.value(rec_mat.indexOf("temp_curie")).toInt(),
+                 MaterialQuery.value(rec_mat.indexOf("core_losses_relative")).toInt(),
+                 MaterialQuery.value(rec_mat.indexOf("upper_operating_frequency")).toInt(),
+                 MaterialQuery.value(rec_mat.indexOf("flux_density")).toDouble(),
+                 MaterialQuery.value(rec_mat.indexOf("electrical_resistivity")).toDouble());
     core->coreMaterial(mat);
 
     //TABLE_NAME_GAPPING
-    sqlQuery = sql("SELECT * FROM %1 WHERE model:=model").arg(TABLE_NAME_GAPPING);
-    QSqlQuery q3(sqlQuery, db());
-    q2.bindValue(":model", coreModel);
-    if(!q3.exec() || !q3.next()){
-        setLastError(q3.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << q3.lastError().text();
+    QString GappingSqlQuery = sql("SELECT * FROM %1 WHERE model:=model").arg(TABLE_NAME_GAPPING);
+    QSqlQuery GappingQuery(GappingSqlQuery, db());
+    GappingQuery.bindValue(":model", coreModel);
+    if(!GappingQuery.exec() || !GappingQuery.next()){
+        setLastError(GappingQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << GappingQuery.lastError().text();
         delete core;
         return nullptr;
     }
-    QSqlRecord rec_gap(q3.record());
-    Gapping gap(q3.value(rec_gap.indexOf("model")).toString(),
-                q3.value(rec_gap.indexOf("actual_relative_permeability")).toInt(),
-                q3.value(rec_gap.indexOf("inductance_factor")).toDouble(),
-                q3.value(rec_gap.indexOf("gap_length")).toDouble(),
-                q3.value(rec_gap.indexOf("actual_core_losses")).toDouble());
+    QSqlRecord rec_gap(GappingQuery.record());
+    Gapping gap(GappingQuery.value(rec_gap.indexOf("model")).toString(),
+                GappingQuery.value(rec_gap.indexOf("actual_relative_permeability")).toInt(),
+                GappingQuery.value(rec_gap.indexOf("inductance_factor")).toDouble(),
+                GappingQuery.value(rec_gap.indexOf("gap_length")).toDouble(),
+                GappingQuery.value(rec_gap.indexOf("actual_core_losses")).toDouble());
     core->coreGapping(gap);
 
     //TABLE_NAME_GEOMETRY
-    sqlQuery = sql("SELECT * FROM %1 WHERE model:=model").arg(TABLE_NAME_GEOMETRY);
-    QSqlQuery q4(sqlQuery, db());
-    q4.bindValue(":model", coreModel);
-    if(!q4.exec() || !q4.next()){
-        setLastError(q4.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << q4.lastError().text();
+    QString GeometrySqlQuery = sql("SELECT * FROM %1 WHERE model=:model").arg(TABLE_NAME_GEOMETRY);
+    QSqlQuery GeometryQuery(GeometrySqlQuery, db());
+    GeometryQuery.bindValue(":model", coreModel);
+    if(!GeometryQuery.exec() || !GeometryQuery.next()){
+        setLastError(GeometryQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << GeometryQuery.lastError().text();
         delete core;
         return nullptr;
     }
-    QSqlRecord rec_geom(q4.record());
+    QSqlRecord rec_geom(GeometryQuery.record());
     Geometry geom(coreModel, core->type(),
-                  q4.value(rec_gap.indexOf("h")).toDouble(),
-                  q4.value(rec_gap.indexOf("inner_diam")).toDouble(),
-                  q4.value(rec_gap.indexOf("outer_diam")).toDouble(),
-                  q4.value(rec_gap.indexOf("c")).toDouble(),
-                  q4.value(rec_gap.indexOf("b")).toDouble(),
-                  q4.value(rec_gap.indexOf("f")).toDouble(),
-                  q4.value(rec_gap.indexOf("a")).toDouble(),
-                  q4.value(rec_gap.indexOf("e")).toDouble(),
-                  q4.value(rec_gap.indexOf("d")).toDouble(),
-                  q4.value(rec_gap.indexOf("g")).toDouble());
+                  GeometryQuery.value(rec_gap.indexOf("h")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("inner_diam")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("outer_diam")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("c")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("b")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("f")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("a")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("e")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("d")).toDouble(),
+                  GeometryQuery.value(rec_gap.indexOf("g")).toDouble());
     core->geometry(geom);
 
     return core;
