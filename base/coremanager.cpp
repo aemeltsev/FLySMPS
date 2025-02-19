@@ -346,7 +346,7 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
 {
     qInfo(logInfo()) << "Open core, with " << coreId << " core id.";
 
-    QString CoresSqlQuery = sql("SELECT * FROM %1 WHERE id:=id").arg(TABLE_NAME_CORES);
+    QString CoresSqlQuery = sql("SELECT * FROM %1 WHERE id=:id").arg(TABLE_NAME_CORES);
     QSqlQuery CoresQuery(CoresSqlQuery, db());
     CoresQuery.bindValue(":id", coreId);
 
@@ -375,7 +375,7 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     QString materialName = CoresQuery.value(rec.indexOf("material")).toString();
 
     //TABLE_NAME_MATERIAL
-    QString MaterialSqlQuery = sql("SELECT * FROM %1 WHERE name:=name").arg(TABLE_NAME_MATERIAL);
+    QString MaterialSqlQuery = sql("SELECT * FROM %1 WHERE name=:name").arg(TABLE_NAME_MATERIAL);
     QSqlQuery MaterialQuery(MaterialSqlQuery, db());
     MaterialQuery.bindValue(":name", materialName);
     if(!MaterialQuery.exec() || !MaterialQuery.next()){
@@ -396,7 +396,7 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     core->coreMaterial(mat);
 
     //TABLE_NAME_GAPPING
-    QString GappingSqlQuery = sql("SELECT * FROM %1 WHERE model:=model").arg(TABLE_NAME_GAPPING);
+    QString GappingSqlQuery = sql("SELECT * FROM %1 WHERE model=:model").arg(TABLE_NAME_GAPPING);
     QSqlQuery GappingQuery(GappingSqlQuery, db());
     GappingQuery.bindValue(":model", coreModel);
     if(!GappingQuery.exec() || !GappingQuery.next()){
