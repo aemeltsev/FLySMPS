@@ -327,8 +327,8 @@ bool db::CoreManager::createTables()
                    "lengh_turn REAL,"
                    "geometry TEXT,"
                    "PRIMARY KEY(id AUTOINCREMENT),"
-                   "FOREIGN KEY(gapping) REFERENCES gapping(model),"
-                   "FOREIGN KEY(geometry) REFERENCES geometry(model),"
+                   "FOREIGN KEY(gapping) REFERENCES gapping(model) ON DELETE CASCADE,"
+                   "FOREIGN KEY(geometry) REFERENCES geometry(model) ON DELETE CASCADE,"
                    "FOREIGN KEY(material) REFERENCES material(name)"
                    ")").arg(TABLE_NAME_CORES);
     QSqlQuery q4(sqlQuery, db());
@@ -543,9 +543,32 @@ bool db::CoreManager::saveCoreHelper(db::CoreModel *core)
     return endTransaction();
 }
 
+/*!
+ * \brief db::CoreManager::removeCoreHelper - Performs a core
+ *  deletion from the database by the given coreId
+ * \param coreId - Current the core id for to be deleted
+ * \return Should return true if the deletion was successful.
+ */
 bool db::CoreManager::removeCoreHelper(int coreId)
 {
-    //TODO
+    // Check if a core with the given coreId exists
+    QString checkExistenceQuery = sql("SELECT 1 FROM %1 WHERE id = %2").arg(TABLE_NAME_CORES).arg(coreId);
+    QSqlQuery checkQuery(checkExistenceQuery, db());
+    if(!checkQuery.exec() || !checkQuery.next()) {
+        // No core with this coreId found
+        return false;
+    }
+
+    // Generate a SQL query to delete the core
+    QString deleteByIdSqlQuery = sql("DELETE FROM %1 WHERE id = %2").arg(TABLE_NAME_CORES).arg(coreId);
+    QSqlQuery deleteQuery(deleteByIdSqlQuery, db());
+    if(!deleteQuery.exec()) {
+        setLastError(deleteQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << deleteQuery.lastError().text();
+        return false;
+    }
+    // The deletion was successful
+    return true;
 }
 
 
