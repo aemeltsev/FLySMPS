@@ -70,9 +70,14 @@ bool db::CoreManager::saveCore(db::CoreModel *core)
  * \param coreId - This parameter represents the ID of the object to be deleted.
  * \return Returns a bool indicating the success or failure of the operation.
  */
-bool db::CoreManager::removeCore(int coreId)
+bool db::CoreManager::removeCoreById(int coreId)
 {
-    return removeCoreHelper(coreId);
+    return removeCoreByIdHelper(coreId);
+}
+
+bool db::CoreManager::removeCoreByModel(const QString &model)
+{
+    return removeCoreByModelHelper(model);
 }
 
 /*!
@@ -549,7 +554,7 @@ bool db::CoreManager::saveCoreHelper(db::CoreModel *core)
  * \param coreId - Current the core id for to be deleted
  * \return Should return true if the deletion was successful.
  */
-bool db::CoreManager::removeCoreHelper(int coreId)
+bool db::CoreManager::removeCoreByIdHelper(int coreId)
 {
     // Check if a core with the given coreId exists
     QString checkExistenceQuery = sql("SELECT 1 FROM %1 WHERE id = %2").arg(TABLE_NAME_CORES).arg(coreId);
@@ -559,7 +564,7 @@ bool db::CoreManager::removeCoreHelper(int coreId)
         return false;
     }
 
-    // Generate a SQL query to delete the core
+    // Generate a SQL query to delete the core by id
     QString deleteByIdSqlQuery = sql("DELETE FROM %1 WHERE id = %2").arg(TABLE_NAME_CORES).arg(coreId);
     QSqlQuery deleteQuery(deleteByIdSqlQuery, db());
     if(!deleteQuery.exec()) {
@@ -567,6 +572,37 @@ bool db::CoreManager::removeCoreHelper(int coreId)
         qInfo(logCritical()) << QString::fromLatin1("Sql error:") << deleteQuery.lastError().text();
         return false;
     }
+    // The deletion was successful
+    return true;
+}
+
+/*!
+ * \brief db::CoreManager::removeCoreByModelHelper - Performs a core
+ *  deletion from the database for the specified core model.
+ * \param model- Current the core model for to be deleted
+ * \return Should return true if the deletion was successful.
+ */
+bool db::CoreManager::removeCoreByModelHelper(const QString &model)
+{
+    // Check for existence of a core with the given model
+    QString checkExistenceQuery = sql("SELECT 1 FROM %1 WHERE model = %2").arg(TABLE_NAME_CORES).arg(model);
+    QSqlQuery checkQuery(db());
+    checkQuery.prepare(checkExistenceQuery);
+    if (!checkQuery.exec() || !checkQuery.next()) {
+        // No core with this core model found
+        return false;
+    }
+
+    // Generate a SQL query to delete the core by model
+    QString deleteByNameSqlQuery = sql("DELETE FROM %1 WHERE model = %2").arg(TABLE_NAME_CORES).arg(model);
+    QSqlQuery deleteQuery(db());
+    deleteQuery.prepare(deleteByNameSqlQuery);
+    if (!deleteQuery.exec()) {
+        setLastError(deleteQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << deleteQuery.lastError().text();
+        return false;
+    }
+
     // The deletion was successful
     return true;
 }

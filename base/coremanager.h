@@ -17,9 +17,10 @@ public:
     QString dbName() const; //Redefined pure virtual function
     CoreModel* openCore(int coreId);
     bool saveCore(CoreModel* core);
-    bool removeCore(int coreId);
+    bool removeCoreById(int coreId);
+    bool removeCoreByModel(const QString& model);
+    bool removeMaterial(const QString& name);
     QMap<QString, int> listCores();
-
     bool existByKey(const QString& column, const QVariant &value);
 
 protected:
@@ -33,7 +34,8 @@ private:
 
     CoreModel* openCoreHelper(int coreId);
     bool saveCoreHelper(CoreModel* core);
-    bool removeCoreHelper(int coreId);
+    bool removeCoreByIdHelper(int coreId);
+    bool removeCoreByModelHelper(const QString& model);
 
     static QString TABLE_NAME_MATERIAL;
     static QString TABLE_NAME_GEOMETRY;
