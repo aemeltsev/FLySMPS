@@ -588,7 +588,7 @@ bool db::CoreManager::removeCoreByModelHelper(const QString &model)
     QString checkExistenceQuery = sql("SELECT 1 FROM %1 WHERE model = %2").arg(TABLE_NAME_CORES).arg(model);
     QSqlQuery checkQuery(db());
     checkQuery.prepare(checkExistenceQuery);
-    if (!checkQuery.exec() || !checkQuery.next()) {
+    if(!checkQuery.exec() || !checkQuery.next()) {
         // No core with this core model found
         return false;
     }
@@ -597,7 +597,7 @@ bool db::CoreManager::removeCoreByModelHelper(const QString &model)
     QString deleteByNameSqlQuery = sql("DELETE FROM %1 WHERE model = %2").arg(TABLE_NAME_CORES).arg(model);
     QSqlQuery deleteQuery(db());
     deleteQuery.prepare(deleteByNameSqlQuery);
-    if (!deleteQuery.exec()) {
+    if(!deleteQuery.exec()) {
         setLastError(deleteQuery.lastError().text());
         qInfo(logCritical()) << QString::fromLatin1("Sql error:") << deleteQuery.lastError().text();
         return false;
@@ -607,4 +607,33 @@ bool db::CoreManager::removeCoreByModelHelper(const QString &model)
     return true;
 }
 
+/*!
+ * \brief db::CoreManager::removeMaterial - The function is designed
+ *  to delete material from the database by its name.
+ * \param name - Material name
+ * \return Should return true if the deletion was successful.
+ */
+bool db::CoreManager::removeMaterial(const QString &name)
+{
+    // Check for existence of a material with the given mane
+    QString checkExistenceQuery = sql("SELECT 1 FROM %1 WHERE name = %2").arg(TABLE_NAME_MATERIAL).arg(name);
+    QSqlQuery checkQuery(db());
+    checkQuery.prepare(checkExistenceQuery);
+    if(!checkQuery.exec()) {
+        // No material with this material name found
+        return false;
+    }
 
+    // Generate a SQL query to delete the material by name
+    QString deleteByNameSqlQuery = sql("DELETE FROM %1 WHERE name = %2").arg(TABLE_NAME_MATERIAL).arg(name);
+    QSqlQuery deleteQuery(db());
+    deleteQuery.prepare(deleteByNameSqlQuery);
+    if(!deleteQuery.exec()) {
+        setLastError(deleteQuery.lastError().text());
+        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << deleteQuery.lastError().text();
+        return false;
+    }
+
+    // The deletion was successful
+    return true;
+}
