@@ -1,6 +1,6 @@
 #include "coremanager.h"
-#include "coremodel.h"
 #include <inc/loggercategories.h>
+#include "coremodel.h"
 #include <QScopedPointer>
 
 QString db::CoreManager::TABLE_NAME_MATERIAL = QString("material");
@@ -368,7 +368,7 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     core->name(CoresQuery.value(rec.indexOf("name")).toString());
     core->model(CoresQuery.value(rec.indexOf("model")).toString());
     core->gapped(CoresQuery.value(rec.indexOf("gapped")).toBool());
-    core->type(getCoreTypeByName(CoresQuery.value(rec.indexOf("type")).toString()));
+    core->type(getCoreType(CoresQuery.value(rec.indexOf("type")).toString()));
     core->resistanceFactor(CoresQuery.value(rec.indexOf("resistance_factor")).toDouble());
     core->effectiveMagneticVolume(CoresQuery.value(rec.indexOf("effective_magnetic_volume")).toInt());
     core->windowCrossSection(CoresQuery.value(rec.indexOf("window_cross_section")).toDouble());
@@ -527,20 +527,21 @@ bool db::CoreManager::saveCoreHelper(db::CoreModel *core)
 
     // insert TABLE_NAME_CORES
     int isGapped = (core->gapped()) ? 1 : 0;
+    QString type = getCoreString(core->type());
     QVariantMap coreValues = {
-        {"name", core->name()},
-        {"model", core->model()},
-        {"gapped", isGapped},
-        //{"type", core->type()}, // TODO Write helper function return string value of core type
-        {"material", core->coreMaterial().materialName}, // TODO Check it is correct
-        {"gapping", core->coreGapping().modelName}, // TODO Check it is correct
+        {"name", core->name()}, // String type, for ex. "EE8"
+        {"model", core->model()}, // String type, for ex. "PC47EE8-Z"
+        {"gapped", isGapped}, // Int type use 0 is not gapped 1 is gapped
+        {"type", type}, // Write string implementation of core type i.e. CoreType::TOR --> "TOR"
+        {"material", core->coreMaterial().materialName}, // String type, for ex. "PC47"
+        {"gapping", core->coreGapping().modelName}, // String type equal core model name, for ex. "PC47EE8-Z"
         {"resistance_factor", core->resistanceFactor()},
         {"effective_magnetic_volume", core->effectiveMagneticVolume()},
         {"window_cross_section", core->windowCrossSection()},
         {"effective_magnetic_path_length", core->effectiveMagneticPathLength()},
         {"effective_magnetic_cross_section", core->effectiveMagneticCrossSection()},
         {"lengh_turn", core->lengthTurn()},
-        {"geometry", core->geometry().model_} // TODO Check it is correct
+        {"geometry", core->geometry().model_} // String type equal core model name, for ex. "PC47EE8-Z"
     };
     if(!executeInsertQuery(TABLE_NAME_CORES, coreValues)) {
         return false;

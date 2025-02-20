@@ -4,7 +4,6 @@
 #include "singleton.h"
 #include "dbmanager.h"
 
-
 namespace db {
 class CoreModel;
 
