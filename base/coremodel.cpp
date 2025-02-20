@@ -58,7 +58,7 @@ db::CoreModel::CoreModel(const CoreModel& other)
 
 void db::CoreModel::type(const QString &type)
 {
-    coreType_ = getCoreType(type);
+    coreType_ = getCoreTypeByName(type);
 }
 
 void db::CoreModel::coreMaterial(db::Material material)
