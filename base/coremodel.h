@@ -6,7 +6,7 @@
 
 namespace db {
 
-enum class CoreType : int
+enum class CoreType
 {
     TOR = 0x01,
     UU  = 0x02,
@@ -28,6 +28,48 @@ enum class CoreType : int
     UNDEF = 0x00
 };
 
+const QString unknown = "UNKNOWN";
+const QMap<CoreType, QString> type2name = {
+    {CoreType::UNDEF, "UNDEF"},
+    {CoreType::TOR, "TOR"},
+    {CoreType::UU, "UU"},
+    {CoreType::EE, "EE"},
+    {CoreType::ETD, "ETD"},
+    {CoreType::RM, "RM"},
+    {CoreType::PQ, "PQ"},
+    {CoreType::PM, "PM"},
+    {CoreType::EP, "EP"},
+    {CoreType::EPX, "EPX"},
+    {CoreType::EPO, "EPO"},
+    {CoreType::P, "P"},
+    {CoreType::ELP, "ELP"},
+    {CoreType::EQ, "EQ"},
+    {CoreType::ER, "ER"},
+    {CoreType::EFD, "EFD"},
+    {CoreType::EV, "EV"},
+    {CoreType::UI, "UI"}
+};
+
+const QMap<QString, CoreType> name2type = {
+    {"UNDEF", CoreType::UNDEF},
+    {"TOR", CoreType::TOR},
+    {"UU", CoreType::UU},
+    {"EE", CoreType::EE},
+    {"ETD", CoreType::ETD},
+    {"RM", CoreType::RM},
+    {"PQ", CoreType::PQ},
+    {"PM", CoreType::PM},
+    {"EP", CoreType::EP},
+    {"EPX", CoreType::EPX},
+    {"EPO", CoreType::EPO},
+    {"P", CoreType::P},
+    {"ELP", CoreType::ELP},
+    {"EQ", CoreType::EQ},
+    {"ER", CoreType::ER},
+    {"EFD", CoreType::EFD},
+    {"EV", CoreType::EV},
+    {"UI", CoreType::UI}
+};
 
 //see Kazimierczuk M.-High-frequency magnetinc components - 2.11 Core Geometries
 struct Geometry
@@ -132,68 +174,8 @@ struct Gapping
     {}
 };
 
-CoreType getCoreTypeByName(const QString &type)
-{
-    static const QMap<QString, CoreType> map = {
-        {"UNDEF", CoreType::UNDEF},
-        {"TOR", CoreType::TOR},
-        {"UU", CoreType::UU},
-        {"EE", CoreType::EE},
-        {"ETD", CoreType::ETD},
-        {"RM", CoreType::RM},
-        {"PQ", CoreType::PQ},
-        {"PM", CoreType::PM},
-        {"EP", CoreType::EP},
-        {"EPX", CoreType::EPX},
-        {"EPO", CoreType::EPO},
-        {"P", CoreType::P},
-        {"ELP", CoreType::ELP},
-        {"EQ", CoreType::EQ},
-        {"ER", CoreType::ER},
-        {"EFD", CoreType::EFD},
-        {"EV", CoreType::EV},
-        {"UI", CoreType::UI}
-    };
-
-    auto it = map.find(type);
-    if(it != map.end()) {
-        return it.value();
-    } else {
-        return map["UNDEF"];
-    }
-}
-
-const QString& getCoreTyteByType(CoreType type)
-{
-    static const QString unknown = "UNKNOWN";
-    static const QMap<CoreType, QString> map = {
-        {CoreType::UNDEF, "UNDEF"},
-        {CoreType::TOR, "TOR"},
-        {CoreType::UU, "UU"},
-        {CoreType::EE, "EE"},
-        {CoreType::ETD, "ETD"},
-        {CoreType::RM, "RM"},
-        {CoreType::PQ, "PQ"},
-        {CoreType::PM, "PM"},
-        {CoreType::EP, "EP"},
-        {CoreType::EPX, "EPX"},
-        {CoreType::EPO, "EPO"},
-        {CoreType::P, "P"},
-        {CoreType::ELP, "ELP"},
-        {CoreType::EQ, "EQ"},
-        {CoreType::ER, "ER"},
-        {CoreType::EFD, "EFD"},
-        {CoreType::EV, "EV"},
-        {CoreType::UI, "UI"}
-    };
-
-    auto it = map.find(type);
-    if(it != map.end()) {
-        return it.value();
-    } else {
-        return unknown;
-    }
-}
+CoreType getCoreType(const QString &type);
+const QString& getCoreString(CoreType type);
 
 class CoreModel
 {
@@ -202,6 +184,7 @@ public:
     CoreModel(CoreType type, bool gapped);
     CoreModel(const CoreModel& other);
     CoreModel& operator=(const CoreModel& other);
+    ~CoreModel();
 
     void id(int deviceId){deviceId_ = deviceId;}
     void name(const QString& name){name_ = name;}

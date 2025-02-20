@@ -56,9 +56,13 @@ db::CoreModel::CoreModel(const CoreModel& other)
     geometry(other.geometry_);
 }
 
+db::CoreModel::~CoreModel()
+{
+}
+
 void db::CoreModel::type(const QString &type)
 {
-    coreType_ = getCoreTypeByName(type);
+    coreType_ = getCoreType(type);
 }
 
 void db::CoreModel::coreMaterial(db::Material material)
@@ -99,4 +103,24 @@ void db::CoreModel::geometry(const db::Geometry& geom)
     geometry_.E = geom.E;
     geometry_.D = geom.D;
     geometry_.G = geom.G;
+}
+
+db::CoreType db::getCoreType(const QString &type)
+{
+    auto it = db::name2type.find(type);
+    if(it != db::name2type.end()) {
+        return it.value();
+    } else {
+        return db::name2type["UNDEF"];
+    }
+}
+
+const QString& db::getCoreString(db::CoreType type)
+{
+    auto it = db::type2name.find(type);
+    if(it != db::type2name.end()) {
+        return it.value();
+    } else {
+        return db::unknown;
+    }
 }
