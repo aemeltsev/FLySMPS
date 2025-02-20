@@ -368,7 +368,7 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     core->name(CoresQuery.value(rec.indexOf("name")).toString());
     core->model(CoresQuery.value(rec.indexOf("model")).toString());
     core->gapped(CoresQuery.value(rec.indexOf("gapped")).toBool());
-    core->type(getCoreType(CoresQuery.value(rec.indexOf("type")).toString()));
+    core->type(getCoreTypeByName(CoresQuery.value(rec.indexOf("type")).toString()));
     core->resistanceFactor(CoresQuery.value(rec.indexOf("resistance_factor")).toDouble());
     core->effectiveMagneticVolume(CoresQuery.value(rec.indexOf("effective_magnetic_volume")).toInt());
     core->windowCrossSection(CoresQuery.value(rec.indexOf("window_cross_section")).toDouble());
