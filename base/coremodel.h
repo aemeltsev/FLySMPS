@@ -2,10 +2,11 @@
 #define COREMODEL_H
 
 #include <QObject>
+#include <QMap>
 
 namespace db {
 
-enum class CoreType
+enum class CoreType : int
 {
     TOR = 0x01,
     UU  = 0x02,
@@ -131,61 +132,66 @@ struct Gapping
     {}
 };
 
-CoreType getCoreType(const QString &type)
+CoreType getCoreTypeByName(const QString &type)
 {
-    if(type.compare("TOR") == 0){
-        return CoreType::TOR;
+    static const QMap<QString, CoreType> map = {
+        {"UNDEF", CoreType::UNDEF},
+        {"TOR", CoreType::TOR},
+        {"UU", CoreType::UU},
+        {"EE", CoreType::EE},
+        {"ETD", CoreType::ETD},
+        {"RM", CoreType::RM},
+        {"PQ", CoreType::PQ},
+        {"PM", CoreType::PM},
+        {"EP", CoreType::EP},
+        {"EPX", CoreType::EPX},
+        {"EPO", CoreType::EPO},
+        {"P", CoreType::P},
+        {"ELP", CoreType::ELP},
+        {"EQ", CoreType::EQ},
+        {"ER", CoreType::ER},
+        {"EFD", CoreType::EFD},
+        {"EV", CoreType::EV},
+        {"UI", CoreType::UI}
+    };
+
+    auto it = map.find(type);
+    if(it != map.end()) {
+        return it.value();
+    } else {
+        return map["UNDEF"];
     }
-    else if(type.compare("UU") == 0){
-        return CoreType::UU;
-    }
-    else if(type.compare("EE") == 0){
-        return CoreType::EE;
-    }
-    else if(type.compare("ETD") == 0){
-        return CoreType::ETD;
-    }
-    else if(type.compare("RM") == 0){
-        return CoreType::RM;
-    }
-    else if(type.compare("PQ") == 0){
-        return CoreType::PQ;
-    }
-    else if(type.compare("PM") == 0){
-        return CoreType::PM;
-    }
-    else if(type.compare("EP") == 0){
-        return CoreType::EP;
-    }
-    else if(type.compare("EPX") == 0){
-        return CoreType::EPX;
-    }
-    else if(type.compare("EPO") == 0){
-        return CoreType::EPO;
-    }
-    else if(type.compare("P") == 0){
-        return CoreType::P;
-    }
-    else if(type.compare("ELP") == 0){
-        return CoreType::ELP;
-    }
-    else if(type.compare("EQ") == 0){
-        return CoreType::EQ;
-    }
-    else if(type.compare("ER") == 0){
-        return CoreType::ER;
-    }
-    else if(type.compare("EFD") == 0){
-        return CoreType::EFD;
-    }
-    else if(type.compare("EV") == 0){
-        return CoreType::EV;
-    }
-    else if(type.compare("UI") == 0){
-        return CoreType::UI;
-    }
-    else{
-        return CoreType::UNDEF;
+}
+
+const QString& getCoreTyteByType(CoreType type)
+{
+    static const QString unknown = "UNKNOWN";
+    static const QMap<CoreType, QString> map = {
+        {CoreType::UNDEF, "UNDEF"},
+        {CoreType::TOR, "TOR"},
+        {CoreType::UU, "UU"},
+        {CoreType::EE, "EE"},
+        {CoreType::ETD, "ETD"},
+        {CoreType::RM, "RM"},
+        {CoreType::PQ, "PQ"},
+        {CoreType::PM, "PM"},
+        {CoreType::EP, "EP"},
+        {CoreType::EPX, "EPX"},
+        {CoreType::EPO, "EPO"},
+        {CoreType::P, "P"},
+        {CoreType::ELP, "ELP"},
+        {CoreType::EQ, "EQ"},
+        {CoreType::ER, "ER"},
+        {CoreType::EFD, "EFD"},
+        {CoreType::EV, "EV"},
+        {CoreType::UI, "UI"}
+    };
+
+    auto it = map.find(type);
+    if(it != map.end()) {
+        return it.value();
+    } else {
+        return unknown;
     }
 }
 
