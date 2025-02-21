@@ -19,6 +19,7 @@
 
 #include "inc/FLySMPS.h"
 #include "inc/loggercategories.h"
+//#include "inc/qcustomplot.h"
 
 FLySMPS::FLySMPS(QWidget *parent) :
     QMainWindow(parent),
@@ -27,7 +28,12 @@ FLySMPS::FLySMPS(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    m_psolve = new PowSuppSolve();
+    m_db_core_manager = new db::CoreManager();
+
     m_sthread = new QThread();
+    m_base_thread = new QThread();
+
     qRegisterMetaType<QVector<double>>("QVector<double>");
     qRegisterMetaType<QHash<QString, double>>("QHash<QString, double>");
 
@@ -42,6 +48,7 @@ FLySMPS::FLySMPS(QWidget *parent) :
     initFCPlot();
 
     m_psolve->moveToThread(m_sthread);
+    m_db_core_manager->moveToThread(m_base_thread);
 
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, this, &FLySMPS::setInputNetwork);
@@ -88,15 +95,26 @@ FLySMPS::FLySMPS(QWidget *parent) :
     connect(m_psolve.data(), &PowSuppSolve::newOCFDataHash, this, &FLySMPS::setOptoFeedbStage);
 
     connect(ui->InpUpdatePushButton, &QPushButton::clicked, this, &FLySMPS::setUpdateInputValues);
+
+    // Start threads
     m_sthread->start();
+    m_base_thread->start();
 }
 
 FLySMPS::~FLySMPS()
 {
-    if(m_sthread->isRunning()) {
+    if(m_sthread->isRunning() && m_base_thread->isRunning()) {
+        // Terminate threads
         m_sthread->quit();
+        m_base_thread->quit();
     }
+    // Delete objects
+    m_psolve->deleteLater();
+    m_db_core_manager->deleteLater();
+
+    // Delete threads
     m_sthread->deleteLater();
+    m_base_thread->deleteLater();
 }
 
 void FLySMPS::initInputValues()
