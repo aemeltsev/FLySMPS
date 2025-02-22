@@ -6,7 +6,6 @@ QString db::DBManager::DBASE_COMMON_NAME = QString("base.db");
 db::DBManager::DBManager(QObject *parent)
     :QObject(parent)
 {
-    allocateDb();
 }
 
 db::DBManager::~DBManager()
@@ -92,9 +91,9 @@ void db::DBManager::closeAll()
         m_db.close();
         // Removes the connection from the list of connections managed by QSqlDatabase.
         QSqlDatabase::removeDatabase(connectionName);
-        qDebug() << "Database connection closed and removed:" << connectionName;
+        qInfo(logInfo()) << "Database connection closed and removed:" << connectionName;
     } else {
-        qWarning() << "Database connection is already closed.";
+        qWarning(logWarning()) << "Database connection is already closed.";
     }
 }
 
@@ -127,6 +126,7 @@ void db::DBManager::setLastError(const QString &msg)
  */
 bool db::DBManager::beginTransaction()
 {
+    qInfo(logInfo()) << "Start transaction to " << dbName();
     if(!m_db.isOpen()){
         setLastError(QString("Database is not open"));
         return false;
@@ -135,6 +135,7 @@ bool db::DBManager::beginTransaction()
         setLastError(m_db.lastError().text());
         return false;
     }
+    qInfo(logInfo()) << "Manager ready to start transaction - OK";
     return true;
 }
 
@@ -145,6 +146,7 @@ bool db::DBManager::beginTransaction()
  */
 bool db::DBManager::rollback()
 {
+    qInfo(logInfo()) << "Start roll back";
     if(!m_db.isOpen()){
         setLastError(QString("Database is not open"));
         return false;
@@ -153,6 +155,7 @@ bool db::DBManager::rollback()
         setLastError(m_db.lastError().text());
         return false;
     }
+    qInfo(logInfo()) << "Rollback of write attempt was successful - OK";
     return true;
 }
 
@@ -163,6 +166,7 @@ bool db::DBManager::rollback()
  */
 bool db::DBManager::endTransaction()
 {
+    qInfo(logInfo()) << "End transaction to " << dbName();
     if(!m_db.isOpen()){
         setLastError(QString("Database is not open"));
         return false;
@@ -171,6 +175,7 @@ bool db::DBManager::endTransaction()
         setLastError(m_db.lastError().text());
         return false;
     }
+    qInfo(logInfo()) << "Manager ready to end transaction - OK";
     return true;
 }
 
@@ -216,6 +221,7 @@ bool db::DBManager::dropTable(const QString &table)
  */
 void db::DBManager::allocateDb()
 {
+    qInfo(logInfo()) << "Attempting to allocate a database" << dbName();
     m_db = QSqlDatabase::addDatabase("QSQLITE", connectionName());
     m_db.setDatabaseName(dbName());
 
@@ -227,4 +233,6 @@ void db::DBManager::allocateDb()
     if(!q.exec()){
         setLastError((q.lastError().text()));
     }
+    qInfo(logInfo()) << "Database allocation was successful - OK";
+
 }
