@@ -7,11 +7,12 @@ QString db::CoreManager::TABLE_NAME_MATERIAL = QString("material");
 QString db::CoreManager::TABLE_NAME_GEOMETRY = QString("geometry");
 QString db::CoreManager::TABLE_NAME_GAPPING = QString("gapping");
 QString db::CoreManager::TABLE_NAME_CORES = QString("core");
-QString db::CoreManager::CONNECTION_NAME_CORES = QString("corelib");
+QString db::CoreManager::CONNECTION_NAME_CORES = QString("CORELIB");
 
 db::CoreManager::CoreManager()
     :DBManager(nullptr)
 {
+    allocateDb();    
     const QString tableDoNotExist = "Tables its't exist. Create tables.";
 
     bool materialTable = tableExists(TABLE_NAME_MATERIAL);
@@ -23,6 +24,7 @@ db::CoreManager::CoreManager()
         qInfo(logInfo()) << tableDoNotExist;
         createTables();
     }
+    qInfo(logInfo()) << CONNECTION_NAME_CORES << "DB manager started was successful - OK";
 }
 
 db::CoreManager::~CoreManager()
