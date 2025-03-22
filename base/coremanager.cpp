@@ -119,6 +119,26 @@ QMap<QString, int> db::CoreManager::listCores()
     return result;
 }
 
+QList<QString> db::CoreManager::listMaterial()
+{
+    QList<QString> result;
+    QString sqlQuery;
+    sqlQuery = sql("SELECT name FROM %1").arg(TABLE_NAME_MATERIAL);
+
+    QSqlQuery q(sqlQuery, db());
+    if(!q.exec()){
+        setLastError((q.lastError().text()));
+        return QList<QString>();
+    }
+
+    QSqlRecord rec;
+    while(q.next()){
+        rec = QSqlRecord(q.record());
+        result.append(q.value(rec.indexOf("name")).toString());
+    }
+    return result;
+}
+
 /*!
  * \brief db::CoreManager::existByKey - A method designed to check
  *  for the presence of records in the TABLE_NAME_CORES table by

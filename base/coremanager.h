@@ -20,6 +20,7 @@ public:
     bool removeCoreByModel(const QString& model);
     bool removeMaterial(const QString& name);
     QMap<QString, int> listCores();
+    QList<QString> listMaterial();
     bool existByKey(const QString& column, const QVariant &value);
 
 protected:
