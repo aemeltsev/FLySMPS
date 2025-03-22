@@ -32,6 +32,8 @@ SOURCES += \
     base/dbmanager.cpp \
     base/coremodel.cpp \
     base/singleton.cpp \
+    coretabmodel.cpp \
+    magneticcoredialog.cpp \
     src/FLySMPS.cpp \
     src/bulkcap.cpp \
     src/capout.cpp \
@@ -53,6 +55,7 @@ HEADERS += \
     base/coremodel.h \
     base/dbmanager.h \
     base/singleton.h \
+    coretabmodel.h \
     inc/FLySMPS.h \
     inc/bulkcap.h \
     inc/capout.h \
@@ -66,10 +69,12 @@ HEADERS += \
     inc/powsuppsolve.h \
     #inc/qcustomplot.h \
     inc/swmosfet.h \
+    magneticcoredialog.h \
     qcustomplot/qcustomplot.h \
 
 FORMS += \
-        FLySMPS.ui
+        FLySMPS.ui \
+        magneticcoredialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
