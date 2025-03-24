@@ -2,18 +2,20 @@
 #include "coretabmodel.h"
 
 CoreTabModel::CoreTabModel(QObject *parent)
+    :QAbstractTableModel (parent)
 {
-
 }
 
 int CoreTabModel::rowCount(const QModelIndex &parent) const
 {
-
+    Q_UNUSED(parent);
+    return m_cores.size();
 }
 
 int CoreTabModel::columnCount(const QModelIndex &parent) const
 {
-
+    Q_UNUSED(parent);
+    return static_cast<int>(Column::LAST);
 }
 
 QVariant CoreTabModel::data(const QModelIndex &index, int role) const
@@ -40,11 +42,11 @@ void CoreTabModel::appendCoreRow(const int id, const QString &model, const QStri
 {
     if(!isHaveDuplicate(id)) {
         CoreTableData core_data;
-        core_data[ID] = id;
-        core_data[MODEL] = model;
-        core_data[TYPE_GEOMETRY] = geom;
-        core_data[GAPPED] = gapped;
-        core_data[MATERIAL] = mat;
+        core_data[Column::ID] = id;
+        core_data[Column::MODEL] = model;
+        core_data[Column::TYPE_GEOMETRY] = geom;
+        core_data[Column::GAPPED] = gapped;
+        core_data[Column::MATERIAL] = mat;
         /* maybe add element to hash with properties core_data[SELECTION] = false */
 
         int row = m_cores.count();
@@ -71,11 +73,11 @@ void CoreTabModel::appendCoreRows(const QList<CoreTableItem> &items)
 
     for(const auto& item : items){
         CoreTableData core_data;
-        core_data[ID] = item.m_id;
-        core_data[MODEL] = item.m_model;
-        core_data[TYPE_GEOMETRY] = item.m_geom;
-        core_data[GAPPED] = item.m_gapped;
-        core_data[MATERIAL] = item.m_mat;
+        core_data[Column::ID] = item.m_id;
+        core_data[Column::MODEL] = item.m_model;
+        core_data[Column::TYPE_GEOMETRY] = item.m_geom;
+        core_data[Column::GAPPED] = item.m_gapped;
+        core_data[Column::MATERIAL] = item.m_mat;
         /* maybe add element to hash with properties core_data[SELECTION] = false */
         m_cores.append(core_data);
     }
@@ -84,11 +86,16 @@ void CoreTabModel::appendCoreRows(const QList<CoreTableItem> &items)
     endInsertRows();
 }
 
+/*!
+ * \brief CoreTabModel::isHaveDuplicate
+ * \param id
+ * \return 
+ */
 bool CoreTabModel::isHaveDuplicate(const int id)
 {
     // Проверка на дубликаты
     for (const auto& core : m_cores) {
-        if (core[ID].toInt() == id) {
+        if (core[Column::ID].toInt() == id) {
             qWarning(logWarning()) << "Core with ID" << id << "already exists.";
             return true;
         }

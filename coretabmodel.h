@@ -48,13 +48,14 @@ private:
 
     bool isHaveDuplicate(const int id);
 
-    enum Column
+    enum class Column
     {
         ID = 0,
         MODEL,
         TYPE_GEOMETRY,
         GAPPED,
-        MATERIAL
+        MATERIAL,
+        LAST
     };
 
     // list cores for view in table widget
