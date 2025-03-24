@@ -29,12 +29,12 @@ class CoreTabModel : public QAbstractTableModel
 public:
     CoreTabModel(QObject* parent = nullptr);
 
-    int rowCount(const QModelIndex& parent) const;
-    int columnCount(const QModelIndex& parent) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role);
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    Qt::ItemFlags flags(const QModelIndex& index) const;
+    int rowCount(const QModelIndex& parent) const override;
+    int columnCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
     void appendCoreRow(const int id, const QString& model, const QString& geom, const bool gapped, const QString& mat);
     void appendCoreRows(const QList<CoreTableItem>& items);
