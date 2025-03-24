@@ -45,6 +45,9 @@ public:
     db::Gapping* getGapping();
 
 private:
+
+    bool isHaveDuplicate(const int id);
+
     enum Column
     {
         ID = 0,

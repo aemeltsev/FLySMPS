@@ -1,3 +1,4 @@
+#include <inc/loggercategories.h>
 #include "coretabmodel.h"
 
 CoreTabModel::CoreTabModel(QObject *parent)
@@ -37,23 +38,27 @@ Qt::ItemFlags CoreTabModel::flags(const QModelIndex &index) const
 
 void CoreTabModel::appendCoreRow(const int id, const QString &model, const QString &geom, const bool gapped, const QString &mat)
 {
-    CoreTableData core_data;
-    core_data[ID] = id;
-    core_data[MODEL] = model;
-    core_data[TYPE_GEOMETRY] = geom;
-    core_data[GAPPED] = gapped;
-    core_data[MATERIAL] = mat;
-    /* maybe add element to hash with properties core_data[SELECTION] = false */
+    if(!isHaveDuplicate(id)) {
+        CoreTableData core_data;
+        core_data[ID] = id;
+        core_data[MODEL] = model;
+        core_data[TYPE_GEOMETRY] = geom;
+        core_data[GAPPED] = gapped;
+        core_data[MATERIAL] = mat;
+        /* maybe add element to hash with properties core_data[SELECTION] = false */
 
-    int row = m_cores.count();
+        int row = m_cores.count();
 
-    // Уведомляем представление о том, что будут добавлена новая строка
-    beginInsertRows(QModelIndex(), row, row);
+        // Уведомляем представление о том, что будут добавлена новая строка
+        beginInsertRows(QModelIndex(), row, row);
 
-    m_cores.append(core_data);
+        m_cores.append(core_data);
 
-    // Завершаем добавление строки
-    endInsertRows();
+        // Завершаем добавление строки
+        endInsertRows();
+    } else{
+        return;
+    }
 }
 
 void CoreTabModel::appendCoreRows(const QList<CoreTableItem> &items)
@@ -77,5 +82,17 @@ void CoreTabModel::appendCoreRows(const QList<CoreTableItem> &items)
 
     // Завершаем добавление строки
     endInsertRows();
+}
+
+bool CoreTabModel::isHaveDuplicate(const int id)
+{
+    // Проверка на дубликаты
+    for (const auto& core : m_cores) {
+        if (core[ID].toInt() == id) {
+            qWarning(logWarning()) << "Core with ID" << id << "already exists.";
+            return true;
+        }
+    }
+    return false;
 }
 
