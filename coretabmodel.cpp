@@ -18,9 +18,25 @@ int CoreTabModel::columnCount(const QModelIndex &parent) const
     return static_cast<int>(Column::LAST);
 }
 
+/*!
+ * \brief CoreTabModel::data - function returns a QVariant, which is a type that can hold various kinds of data.
+ * \param index - A QModelIndex object that specifies the location of the data in the model.
+ * \param role - An integer that specifies the role of the data being requested (e.g., display, edit).
+ * \return If all conditions are met, the function returns the data from m_persons at the specified row and column.
+ * \details - !index.isValid(): Checks if the index is valid.
+ *            If it's not valid, the function returns an invalid QVariant.
+ *            m_persons.count() <= index.row(): Checks if the row specified by index is within the bounds of m_persons.
+ *            If it's out of bounds, the function returns an invalid QVariant.
+ *            role != Qt::DisplayRole && role != Qt::EditRole: Checks if the role is either Qt::DisplayRole or Qt::EditRole.
+ *            If it's neither, the function returns an invalid QVariant.
+ */
 QVariant CoreTabModel::data(const QModelIndex &index, int role) const
 {
+    if(!index.isValid() || m_cores.size() <= index.row() || (role != Qt::DisplayRole && role != Qt::EditRole)) {
+        return QVariant();
+    }
 
+    return m_cores[index.row()][Column(index.column())];
 }
 
 bool CoreTabModel::setData(const QModelIndex &index, const QVariant &value, int role)
