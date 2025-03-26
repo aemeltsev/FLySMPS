@@ -57,14 +57,65 @@ bool CoreTabModel::setData(const QModelIndex &index, const QVariant &value, int 
     return true;
 }
 
+/*!
+ * \brief CoreTabModel::headerData - The headerData method is used to provide header data to the model.
+ * \param section - If the orientation is Qt::Horizontal,
+ *                  the method uses a switch statement to determine what
+ *                  data to return depending on the value of section.
+ * \param orientation - If the orientation is Qt::Vertical,
+ *                      the method returns the section number.
+ *                      This means that for vertical headers (usually rows),
+ *                      their index will be displayed.
+ * \param role - The method first checks whether role matches the Qt::DisplayRole value.
+ *               This is the standard role used to display data in controls.
+ * \return
+ */
 QVariant CoreTabModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    if(role != Qt::DisplayRole) {
+        return QVariant();
+    }
 
+    if(orientation == Qt::Vertical) {
+        return section;
+    }
+
+    switch (section) {
+    case static_cast<int>(Column::ID):
+        return "Id";
+    case static_cast<int>(Column::MODEL):
+        return "Model";
+    case static_cast<int>(Column::TYPE_GEOMETRY):
+        return "Type Geometry";
+    case static_cast<int>(Column::GAPPED):
+        return "Gapped";
+    case static_cast<int>(Column::MATERIAL):
+        return "Material";
+    default:
+        return QVariant();
+    }
 }
 
+/*!
+ * \brief CoreTabModel::flags - This method is used to specify
+ * the element flags for a given index in the model.
+ * Element flags define properties of elements in the model,
+ * such as whether they can be edited, selected, etc.
+ * \param index - A QModelIndex object indicating the location of the data in the model.
+ * \return The method returns the item's flags,
+ * which may include the Qt::ItemIsEditable flag if conditions are met.
+ */
 Qt::ItemFlags CoreTabModel::flags(const QModelIndex &index) const
 {
-
+    Qt::ItemFlags flags = QAbstractTableModel::flags(index);
+#if DEBUG
+    if(index.isValid()) {
+        if(index.column() == static_cast<int>(Column::SELECTION)) {
+            flags |= Qt::ItemIsEditable;
+        }
+    }
+#endif
+    return flags;
 }
 
 void CoreTabModel::appendCoreRow(const int id, const QString &model, const QString &geom, const bool gapped, const QString &mat)
