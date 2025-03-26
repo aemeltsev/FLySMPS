@@ -39,9 +39,22 @@ QVariant CoreTabModel::data(const QModelIndex &index, int role) const
     return m_cores[index.row()][Column(index.column())];
 }
 
+/*!
+ * \brief CoreTabModel::setData - The function changes the data in the "cell" referenced by the index object.
+ * \param index - A QModelIndex object indicating the location of the data in the model.
+ * \param value - A QVariant object containing the new value to be set.
+ * \param role - An integer indicating the role of the data (e.g. editing)
+ * \return - Return true if data edited successful
+ */
 bool CoreTabModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+    if(!index.isValid() || role != Qt::EditRole || m_cores.size() <= index.row()) {
+        return false;
+    }
 
+    m_cores[index.row()][Column(index.column())] = value;
+    emit dataChanged(index, index);
+    return true;
 }
 
 QVariant CoreTabModel::headerData(int section, Qt::Orientation orientation, int role) const
