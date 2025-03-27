@@ -2,7 +2,9 @@
 #define MAGNETICCOREDIALOG_H
 
 #include <QDialog>
-#include "base/coremodel.h"
+#include <QStandardItemModel>
+#include <QDebug>
+#include "coretabmodel.h"
 
 namespace Ui {
 class MagneticCoreDialog;
@@ -16,14 +18,19 @@ public:
     explicit MagneticCoreDialog(QWidget *parent = nullptr);
     ~MagneticCoreDialog();
 
+    void setCores(const QList<CoreTableItem>& core_items);
+
 signals:
-    void coreSend(db::CoreModel core);
+    void sendIdValue(int value);
 
 private slots:
-    void sendCore();
+    void onAppend();
+    void sendId();
 
 private:
     Ui::MagneticCoreDialog *ui;
+
+    CoreTabModel *m_model;
 };
 
 #endif // MAGNETICCOREDIALOG_H
