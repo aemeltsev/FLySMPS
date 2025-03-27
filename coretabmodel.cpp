@@ -167,9 +167,10 @@ void CoreTabModel::appendCoreRows(const QList<CoreTableItem> &items)
 }
 
 /*!
- * \brief CoreTabModel::isHaveDuplicate
- * \param id
- * \return 
+ * \brief CoreTabModel::isHaveDuplicate - We check if there are duplicates
+ *  in the current list, we search by ID
+ * \param id - This value using in the search
+ * \return false if id is not found
  */
 bool CoreTabModel::isHaveDuplicate(const int id)
 {
