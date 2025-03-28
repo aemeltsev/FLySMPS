@@ -39,10 +39,9 @@ public:
     void appendCoreRow(const int id, const QString& model, const QString& geom, const bool gapped, const QString& mat);
     void appendCoreRows(const QList<CoreTableItem>& items);
 
-    db::CoreModel* getCoreModel();
-    db::Geometry* getGeometry();
-    db::Material* getMaterial();
-    db::Gapping* getGapping();
+    db::CoreModel* getCoreModel() const;
+    void setCoreModel(const db::CoreModel& core_model);
+
 
 private:
 
@@ -65,9 +64,6 @@ private:
 
     // core model to send in main form
     db::CoreModel* m_core_model;
-    db::Geometry* m_core_geometry;
-    db::Material* m_core_material;
-    db::Gapping* m_core_gapping;
 };
 
 #endif // CORETABMODEL_H
