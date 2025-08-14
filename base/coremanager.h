@@ -3,6 +3,7 @@
 
 #include "singleton.h"
 #include "dbmanager.h"
+#include "../coretabmodel.h"
 
 namespace db {
 class CoreModel;
@@ -22,6 +23,7 @@ public:
     QMap<QString, int> listCores();
     QList<QString> listMaterial();
     bool existByKey(const QString& column, const QVariant &value);
+    QList<CoreTableItem> getListDataForTable();
 
 protected:
     QString connectionName() const; //Redefined pure virtual function
@@ -29,6 +31,7 @@ protected:
 
 private:
     void testData();
+    CoreTableItem createCoreTableItem(const QSqlQuery& query);
 
     bool createTables();
 

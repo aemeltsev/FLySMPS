@@ -136,6 +136,11 @@ QList<QString> db::CoreManager::listMaterial()
         rec = QSqlRecord(q.record());
         result.append(q.value(rec.indexOf("name")).toString());
     }
+
+    /*
+     *     if (result.isEmpty()) {
+        qWarning() << "No materials found in the database.";
+    }*/
     return result;
 }
 
@@ -173,6 +178,42 @@ bool db::CoreManager::existByKey(const QString &column, const QVariant &value)
     }
 
     return false;
+}
+
+CoreTableItem db::CoreManager::createCoreTableItem(const QSqlQuery &query)
+{
+    CoreTableItem item;
+    item.m_id = query.value("id").toInt();
+    item.m_gapped = query.value("gapped").toBool();
+    item.m_model = query.value("model").toString();
+    item.m_geom = query.value("geometry").toString();
+    item.m_mat = query.value("material").toString();
+    return item;
+}
+
+QList<CoreTableItem> db::CoreManager::getListDataForTable()
+{
+    QList<CoreTableItem> result;
+    result.reserve(100);
+
+    QString sqlQuery = sql("SELECT id, model, geometry, material, gapped FROM %1").arg(TABLE_NAME_CORES);
+
+    // TODO: Add onlyGapped parameter to the method and check it if need the special sampling - sqlQuery += " WHERE gapped = 1";
+
+    QSqlQuery q(sqlQuery, db());
+    if(!q.exec(sqlQuery)){
+        QString errorMsg = QString("Sql error where make core list for table:").arg(q.lastError().text());
+
+        setLastError(errorMsg);
+        qInfo(logCritical()) << errorMsg;
+        return {};
+    }
+
+    while(q.next()) {
+        result.append(createCoreTableItem(q));
+    }
+
+    return result;
 }
 
 /*!
