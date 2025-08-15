@@ -3,23 +3,21 @@
 ## Introduction to FLYSMPS
 FLYSMPS(Small-Signal Model and Parameter Simulator for Flyback Switched-Mode Power Supply) is a small specialized software utility designed for calculating electrical parameters, component values, and dynamic properties of asymmetric power converters, with a primary focus on flyback converters in its current version.
 
----
 
 ## Key Purpose
 FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback converters by providing:
 
 - **Accurate calculations** of electrical parameters (e.g. input circuit values, power MOSFET properties, power transformer parameters).
-- **Small-signal modeling** for both Continuous Conduction Mode (CCM) and Discontinuous Conduction Mode (DCM).
+- **Small-signal modeling** for both Discontinuous Conduction Mode (DCM) and maybe for Continuous Conduction Mode (CCM) in future
 - **Graphical visualization** of key waveforms, control loops, and filter responses.
 
----
 
 ## Core Feature
 
-### 1. Comprehensive Calculation Methods
-- **Magnetic component parameters** (e.g., inductor/capacitor values, core losses).
-- **Transformer design** (turns ratio, winding configuration).
-- **Power stage characteristics** (efficiency, voltage/current stress).
+### 1. Complex calculation methods
+- **Parameters of magnetic components** (for example, values of inductance of the primary side of the power choke using various methods, losses in the core depending on the presence of a gap).
+- **Transformer design** (inductance of the windings of the primary and secondary sides, transformation ratio, optimal calculation of the cross-section of the windings).
+- **Characteristics of the power stage** (efficiency, permissible load of the power switch by voltage/current).
 
 ### 2. Small-Signal Modeling
 | Mode               | Features                                                                 |
@@ -49,37 +47,37 @@ FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback
 
 ![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/filter.png)
 
----
 
 ## Roadmap & TODO
 | Task                                      | Status          | Priority |
 |-------------------------------------------|-----------------|----------|
-| Debugging and bug fixing                  | ⏳ In Progress   | High     |
-| Unit tests                                | ❌ Not Started   | High     |
-| Add version info                          | ❌ Not Started   | Medium   |
-| Documentation                             | ⏳ In Progress   | High     |
-| Estimate RC-snubber for secondary side    | ⏳ In Progress   | High     |
-| Add forward converter support             | ❌ Not Started   | Low      |
-| Quasi-resonant topology support           | ❌ Not Started   | Low      |
-| Two-switch forward/flyback estimation     | ❌ Not Started   | Medium   |
-| Optimize transformer hot-side algorithm   | ⏳ Partial       | High     |
-| Optimize power stage/feedback control     | ⏳ Partial       | High     |
+| Add a database to store parameters        | ⏳ In Progress   | High     |
+| Infrastructure for working with the database | ⏳ In Progress   | High     |
+| Modal win. for writing/selecting core and geometry | ⏳ In Progress   | High     |
+| MVC controller for working with the modal window | ⏳ In Progress   | High     |
+| RC-snubber for secondary side             | ❌ Not Started   | High     |
+| Tests                                     | ❌ Not Started   | High     |
+| Logging                                   | ⏳ In Progress   | High     |
+| Stabilization of functionality and preparation for the alpha version | ❌ Not Started   | High     |
+| Documentation                             | ❌ Not Started   | Medium   |
+| Optimize transformer hot-side algorithm   | ❌ Not Started   | Medium   |
+| Optimization of feedback circuit calculations | ❌ Not Started   | Medium   |
 | Review data transfer containers           | ❌ Not Started   | Medium   |
+| Add forward converter support             | ❌ Not Started   | Low      |
+| Two-switch forward/flyback estimation     | ❌ Not Started   | Low      |
+| Quasi-resonant topology support           | ❌ Not Started   | Low      |
 
----
 
 ## Compatibility
 | Platform       | Status          | Notes                          |
 |----------------|-----------------|--------------------------------|
-| **Linux (Ubuntu/Debian)** | ✅ Tested | Install `libqt5charts5-dev`   |
-| **Windows 10/11** | ❓ Untested     | Requires Qt 5.15+              |
+| **Linux (Ubuntu/Debian)** | ✅ Tested | Requires Qt 5.12+ |
+| **Windows 10/11** | ❓ Not tested | Requires Qt 5.12+ |
 
----
 
 ## Installation
 TODO
 
----
 
 ## Usage at a glance
 1. **Input Specifications**:
@@ -88,13 +86,10 @@ TODO
 
 3. **Visualize Results**:
 
----
 
 ## License
 **GNU GPLv3** – See [LICENSE](LICENSE) for details.
 - **Free to use, modify, and distribute**.
-- **Contributions welcome!** (Submit a pull request.)
 
----
 
 ## Notes
