@@ -4,9 +4,9 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QDebug>
+
 #include <base/coremodel.h>
 #include "coretabmodel.h"
-
 
 namespace Ui {
 class MagneticCoreDialog;
@@ -28,19 +28,24 @@ public:
     ~MagneticCoreDialog();
 
     void setCores(const QList<CoreTableItem>& core_items);
+    void applyCoreDataToForm(const db::CoreModel* core);
 
 signals:
-    void sendIdValue(int value);
+    // TODO: review this sentences
+    void sendIdValue(int value); // Сигнал: выбор ядра по id
+    void requestCore(int id); // Сигнал: запрос ядра по id
+
+public slots:
+    void handleCorelReceived(const db::CoreModel* core); // Слот: получение ядра
 
 private slots:
-    void onAppend();
-    void sendId();
-    void seeDetail();
+    void onAppend(); // Слот: добавление информации о ядре в базу данных
+    void sendId(); // Слот: выбор id в таблице представления, пересыдка сигналом для поиска в базе
+    void seeDetail(); // Слот: выбор id для уточнения параметров ядра
 
 private:
     void logToFile(const QString &message);
     Ui::MagneticCoreDialog *ui;
-
     CoreTabModel *m_model;
 };
 

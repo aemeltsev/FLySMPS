@@ -72,6 +72,91 @@ void MagneticCoreDialog::setCores(const QList<CoreTableItem> &core_items)
     logToFile(QString("Successfully appended %1 %2").arg(core_items.size()).arg("core items to the model."));
 }
 
+void MagneticCoreDialog::applyCoreDataToForm(const db::CoreModel *core)
+{
+    // Gapping
+    const bool is_gapped = core->gapped();
+    db::Gapping gap = core->coreGapping();
+
+    ui->IsGappedCheckBox->setChecked(is_gapped);
+    if (is_gapped) {
+        ui->GapGLineEdit->setText(QString::number(gap.gapLength));
+    } else {
+        ui->IsGappedCheckBox->setChecked(false);
+        ui->GapGLineEdit->clear();
+    }
+
+    ui->GapMuLineEdit->setText(QString::number(gap.actualRelativePermeability));
+    ui->GapALLineEdit->setText(QString::number(gap.inductanceFactor));
+    ui->GapPvLineEdit->setText(QString::number(gap.actualCoreLosses));
+
+    // Material
+    db::Material mat = core->coreMaterial();
+
+    ui->MatNameLineEdit->setText(mat.materialName);
+    ui->MatHCLineEdit->setText(QString::number(mat.coerciveField));
+    ui->MatPVLineEdit->setText(QString::number(mat.coreLossesRelative));
+    ui->MatBSLineEdit->setText(QString::number(mat.fluxDensity));
+    ui->MatMuRcLineEdit->setText(QString::number(mat.highRelativePermeability));
+    ui->MatTCLineEdit->setText(QString::number(mat.tempCurie));
+    ui->MatFHLineEdit->setText(QString::number(mat.upperOperatingFrequency));
+    ui->MatRhoCLineEdit->setText(QString::number(mat.electricalResistivity));
+
+    // Geometry
+    db::CoreType c_type = core->type();
+    db::Geometry geom = core->geometry();
+    if(c_type == db::CoreType::TOR) {
+        ui->TorCheckBox->setChecked(true);
+        ui->GeomTorHLineEdit->setText(QString::number(geom.H));
+        ui->GeomTorDInnLineEdit->setText(QString::number(geom.innerDiam));
+        ui->GeomTorDOutLineEdit->setText(QString::number(geom.outerDiam));
+    } else if(c_type == db::CoreType::EE ||
+              c_type == db::CoreType::ETD ||
+              c_type == db::CoreType::EP ||
+              c_type == db::CoreType::EPX ||
+              c_type == db::CoreType::EPO ||
+              c_type == db::CoreType::ELP ||
+              c_type == db::CoreType::EQ ||
+              c_type == db::CoreType::ER ||
+              c_type == db::CoreType::EFD ||
+              c_type == db::CoreType::EV) {
+        ui->ECheckBox->setChecked(true);
+        ui->GeomECLineEdit->setText(QString::number(geom.C));
+        ui->GeomEFLineEdit->setText(QString::number(geom.F));
+        ui->GeomEELineEdit->setText(QString::number(geom.E));
+        ui->GeomEBLineEdit->setText(QString::number(geom.B));
+        ui->GeomEALineEdit->setText(QString::number(geom.A));
+        ui->GeomEDLineEdit->setText(QString::number(geom.D));
+    } else if(c_type == db::CoreType::UU ||
+              c_type == db::CoreType::UI) {
+        ui->UCheckBox->setChecked(true);
+        ui->GeomUDLineEdit->setText(QString::number(geom.D));
+        ui->GeomUELineEdit->setText(QString::number(geom.E));
+        ui->GeomUFLineEdit->setText(QString::number(geom.F));
+        ui->GeomUGLineEdit->setText(QString::number(geom.G));
+    }
+
+    // Core
+    ui->CoreNameLineEdit->setText(core->name());
+    ui->CoreTypeLineEdit->setText(db::getCoreString(core->type()));
+    ui->CoreVELineEdit->setText(QString::number(core->effectiveMagneticVolume()));
+    ui->CoreLELineEdit->setText(QString::number(core->effectiveMagneticPathLength()));
+    ui->CoreLNLineEdit->setText(QString::number(core->lengthTurn()));
+    ui->CoreModelLineEdit->setText(core->model());
+    ui->CorePVLineEdit->setText(QString::number(core->resistanceFactor()));
+    ui->CoreANLineEdit->setText(QString::number(core->windowCrossSection()));
+    ui->CoreAELineEdit->setText(QString::number(core->effectiveMagneticCrossSection()));
+}
+
+void MagneticCoreDialog::handleCorelReceived(const db::CoreModel *core)
+{
+    if(!core) {
+        logToFile("Error. Failed to load core data");
+        return;
+    }
+    applyCoreDataToForm(core);
+}
+
 
 void MagneticCoreDialog::onAppend()
 {
@@ -81,36 +166,72 @@ void MagneticCoreDialog::onAppend()
 }
 
 /*!
- * \brief MagneticCoreDialog::sendId -
- */
+* \brief MagneticCoreDialog::sendId - Sends the ID of the selected row.
+* If no row is selected, logs an error and does not send a signal.
+*/
 void MagneticCoreDialog::sendId()
 {
-    // Получаем модель выделения
+    logToFile("sendId() method called");
+    // Get the selection model
     QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
 
-    // Получаем список выделенных строк
+    // Get the list of selected lines
     QModelIndexList selectedRows = selectionModel->selectedRows();
 
+    // Check if something is selected and not more than one line
     if(selectedRows.isEmpty()) {
-        // Предполагаем, что выделена только одна строка
-        QModelIndex rowIndex = selectedRows.first();
-        int row = rowIndex.row();
-
-        // Получаем значения ячееки с индексом 0 в выделенной строке
-        QModelIndex cellIndex = m_model->index(row, 0);
-        int value = m_model->data(cellIndex, Qt::DisplayRole).toInt();
-        emit sendIdValue(value);
-        accept();
-
-    } else {
         logToFile("No row is currently selected.");
+        return; // Exit if no row is selected
     }
+    if(selectedRows.size() > 1) {
+        logToFile("Multiple rows are selected. Only one row should be selected.");
+        return; // // Exit if more than one row is selected
+    }
+
+    logToFile(QString("Selected rows count: %1").arg(selectedRows.size()));
+    // Take the first (and only) selected row
+    QModelIndex rowIndex = selectedRows.first();
+    int row = rowIndex.row();
+
+    // Get the values of the cell with index 0 in the selected row
+    QModelIndex cellIndex = m_model->index(row, 0);
+
+    int value = m_model->data(cellIndex, Qt::DisplayRole).toInt();
+    emit sendIdValue(value);
+    accept();
 }
 
+/*!
+* \brief MagneticCoreDialog::seeDetail - Shows details of the selected row.
+* If no row is selected, logs an error.
+* TODO : review this method
+*/
 void MagneticCoreDialog::seeDetail()
 {
-    //m_model->
-    logToFile("use seeDetail() method");
+    logToFile("seeDetail() method called");
+    // Get the selection model
+    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
+
+    // Get the list of selected lines
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+
+    // Check if something is selected and not more than one line
+    if(selectedRows.isEmpty()) {
+        logToFile("No row is currently selected.");
+        return; // Exit if no row is selected
+    }
+    if(selectedRows.size() > 1) {
+        logToFile("Multiple rows are selected. Only one row should be selected.");
+        return; // // Exit if more than one row is selected
+    }
+
+    // Take the first (and only) selected row
+    QModelIndex rowIndex = selectedRows.first();
+    int row = rowIndex.row();
+
+    QModelIndex cellIndex = m_model->index(row, 0);
+    int id = m_model->data(cellIndex, Qt::DisplayRole).toInt();
+    emit requestCore(id);
 }
 
 void MagneticCoreDialog::logToFile(const QString &message)
