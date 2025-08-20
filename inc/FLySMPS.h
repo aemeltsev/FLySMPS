@@ -28,6 +28,7 @@
 #include "base/coremanager.h"
 #include "base/coremodel.h"
 #include "qcustomplot.h"
+#include "magneticcoredialog.h"
 
 #include "ui_FLySMPS.h"
 
@@ -80,6 +81,8 @@ private slots:
     void setUpdateInputValues();
     //void checkCorrect(const QString &text);
 
+    void setMagneticCoreDialog();
+
 signals:
     void initTransValuesComplete();
     void initTransCoreValuesComplete();
@@ -103,6 +106,7 @@ private:
     QScopedPointer<Ui::FLySMPS> ui; // Current ui object
     QPointer<PowSuppSolve> m_psolve; // Current solver object, who is work on separated thread
     QPointer<db::CoreManager> m_db_core_manager; // Current db manager
+    //QPointer<MagneticCoreDialog> m_magnetic_dialog;
     QThread* m_sthread; // Thread for work with m_psolve
     QThread* m_base_thread; //Thread for work with db manager
 
