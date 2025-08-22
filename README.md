@@ -47,6 +47,8 @@ FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback
 
 ![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/filter.png)
 
+![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/transf_select.png)
+
 
 ## Roadmap & TODO
 | Task                                      | Status          | Priority |
