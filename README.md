@@ -75,7 +75,7 @@ FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback
 | **Windows 10/11** | ❓ Not tested | Requires Qt 5.12+ |
 
 
-## Installation
+## How to build
 TODO
 
 
