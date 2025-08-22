@@ -180,23 +180,57 @@ bool db::CoreManager::existByKey(const QString &column, const QVariant &value)
     return false;
 }
 
+/*!
+* \brief Creates a CoreTableItem object based on the data from the current SQL query row.
+*
+* The method extracts the field values from the passed SQL query and executes them on the CoreTableItem object.
+* It is assumed that the query contains the fields: id, gap, model, geometry, material.
+*
+* \param query SQL query positioned in the current row.
+* \return CoreTableItem Object, regardless of the data from the current query row.
+*
+* \note If the field in the database is NULL, the method will return the default value:
+* 0 for int, false for bool, empty text for QString.
+* For explicit handling of NULL values, it is recommended to add a query.isNull("field") check.
+*/
 CoreTableItem db::CoreManager::createCoreTableItem(const QSqlQuery &query)
 {
     CoreTableItem item;
     item.m_id = query.value("id").toInt();
     item.m_gapped = query.value("gapped").toBool();
     item.m_model = query.value("model").toString();
-    item.m_geom = query.value("geometry").toString();
+    item.m_geom = query.value("geometry_type").toString();
     item.m_mat = query.value("material").toString();
     return item;
 }
 
+/*!
+* \brief Returns a list of CoreTableItem objects to display in the table.
+*
+* The method executes a SQL query on the TABLE_NAME_CORES table and returns a list of objects
+* filled with data from the database. This is used to populate tables in the user interface.
+*
+* \return QList<CoreTableItem> A list of objects containing data from the TABLE_NAME_CORES table.
+* Returns an empty list if the query fails.
+*
+* \note The query selects all records from the TABLE_NAME_CORES table.
+* TODO: Implement the onlyGapped parameter to filter records by the gapped field.
+* Warning: The current implementation passes the query twice to q.exec(sqlQuery).
+* You should use q.exec() without arguments.
+*
+* \warning If the query fails, an error message is logged,
+* and an empty list is returned. This may hide the problem.
+* Consider throwing an exception or using std::optional.
+*/
 QList<CoreTableItem> db::CoreManager::getListDataForTable()
 {
     QList<CoreTableItem> result;
     result.reserve(100);
 
-    QString sqlQuery = sql("SELECT id, model, geometry, material, gapped FROM %1").arg(TABLE_NAME_CORES);
+    //QString sqlQuery = sql("SELECT id, model, geometry, material, gapped FROM %1").arg(TABLE_NAME_CORES);
+    QString sqlQuery = sql("SELECT c.id, c.model, c.geometry, c.material, c.gapped, g.type AS geometry_type FROM %1 c JOIN %2 g ON c.geometry = g.model;")
+            .arg(TABLE_NAME_CORES)
+            .arg(TABLE_NAME_GEOMETRY);
 
     // TODO: Add onlyGapped parameter to the method and check it if need the special sampling - sqlQuery += " WHERE gapped = 1";
 
@@ -402,7 +436,8 @@ bool db::CoreManager::createTables()
     QSqlQuery q4(sqlQuery, db());
     if(!q4.exec()){
         setLastError(q4.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << q4.lastError().text();
+        qInfo(logCritical()) << "createTables() method";
+        qInfo(logCritical()) << "Sql error:" << q4.lastError().text();
         return false;
     }
     qInfo(logInfo()) << "Table" << TABLE_NAME_CORES << " is created.";
@@ -412,15 +447,18 @@ bool db::CoreManager::createTables()
 
 db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
 {
-    qInfo(logInfo()) << "Open core, with " << coreId << " core id.";
+    qInfo(logInfo()) << "Open core, with" << coreId << "core id.";
 
-    QString CoresSqlQuery = sql("SELECT * FROM %1 WHERE id=:id").arg(TABLE_NAME_CORES);
+    QString CoresSqlQuery = sql("SELECT * FROM %1 WHERE id=%2").arg(TABLE_NAME_CORES).arg(coreId);
     QSqlQuery CoresQuery(CoresSqlQuery, db());
-    CoresQuery.bindValue(":id", coreId);
+    //CoresQuery.bindValue(":id", coreId);
 
     if(!CoresQuery.exec() || !CoresQuery.next()){
         setLastError(CoresQuery.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << CoresQuery.lastError().text();
+        qInfo(logCritical()) << "openCoreHelper() method, query for core";
+        qInfo(logCritical()) << "Sql error:" << CoresQuery.lastError().text();
+        qInfo(logCritical()) << "Final SQL Query:" << CoresSqlQuery;
+        qInfo(logCritical()) << "Bound ID:" << coreId;
         return nullptr;
     }
 
@@ -441,14 +479,18 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
 
     QString coreModel = core->model();
     QString materialName = CoresQuery.value(rec.indexOf("material")).toString();
+    //qInfo(logInfo()) << "model:" << coreModel;
+    //qInfo(logInfo()) << "material:" << materialName;
 
     //TABLE_NAME_MATERIAL
-    QString MaterialSqlQuery = sql("SELECT * FROM %1 WHERE name=:name").arg(TABLE_NAME_MATERIAL);
+    QString MaterialSqlQuery = sql("SELECT * FROM %1 WHERE name='%2'").arg(TABLE_NAME_MATERIAL).arg(materialName);
     QSqlQuery MaterialQuery(MaterialSqlQuery, db());
-    MaterialQuery.bindValue(":name", materialName);
+    //MaterialQuery.bindValue(":name", materialName);
     if(!MaterialQuery.exec() || !MaterialQuery.next()){
         setLastError(MaterialQuery.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << MaterialQuery.lastError().text();
+        qInfo(logCritical()) << "openCoreHelper() method, query for material";
+        qInfo(logCritical()) << "Sql error:" << MaterialQuery.lastError().text();
+        qInfo(logCritical()) << "Final SQL Query:" << MaterialSqlQuery;
         delete core;
         return nullptr;
     }
@@ -464,12 +506,14 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     core->coreMaterial(mat);
 
     //TABLE_NAME_GAPPING
-    QString GappingSqlQuery = sql("SELECT * FROM %1 WHERE model=:model").arg(TABLE_NAME_GAPPING);
+    QString GappingSqlQuery = sql("SELECT * FROM %1 WHERE model='%2'").arg(TABLE_NAME_GAPPING).arg(coreModel);
     QSqlQuery GappingQuery(GappingSqlQuery, db());
-    GappingQuery.bindValue(":model", coreModel);
+    //GappingQuery.bindValue(":model", coreModel);
     if(!GappingQuery.exec() || !GappingQuery.next()){
         setLastError(GappingQuery.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << GappingQuery.lastError().text();
+        qInfo(logCritical()) << "openCoreHelper() method, query for gapping";
+        qInfo(logCritical()) << "Sql error:" << GappingQuery.lastError().text();
+        qInfo(logCritical()) << "Final SQL Query:" << GappingSqlQuery;
         delete core;
         return nullptr;
     }
@@ -482,29 +526,38 @@ db::CoreModel *db::CoreManager::openCoreHelper(int coreId)
     core->coreGapping(gap);
 
     //TABLE_NAME_GEOMETRY
-    QString GeometrySqlQuery = sql("SELECT * FROM %1 WHERE model=:model").arg(TABLE_NAME_GEOMETRY);
+    QString GeometrySqlQuery = sql("SELECT * FROM %1 WHERE model='%2'").arg(TABLE_NAME_GEOMETRY).arg(coreModel);
     QSqlQuery GeometryQuery(GeometrySqlQuery, db());
-    GeometryQuery.bindValue(":model", coreModel);
+    //GeometryQuery.bindValue(":model", coreModel);
     if(!GeometryQuery.exec() || !GeometryQuery.next()){
         setLastError(GeometryQuery.lastError().text());
-        qInfo(logCritical()) << QString::fromLatin1("Sql error:") << GeometryQuery.lastError().text();
+        qInfo(logCritical()) << "openCoreHelper() method, query for geometry";
+        qInfo(logCritical()) << "Sql error:" << GeometryQuery.lastError().text();
+        qInfo(logCritical()) << "Final SQL Query:" << GeometrySqlQuery;
         delete core;
         return nullptr;
     }
-    QSqlRecord rec_geom(GeometryQuery.record());
-    Geometry geom(coreModel, core->type(),
-                  GeometryQuery.value(rec_gap.indexOf("h")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("inner_diam")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("outer_diam")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("c")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("b")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("f")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("a")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("e")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("d")).toDouble(),
-                  GeometryQuery.value(rec_gap.indexOf("g")).toDouble());
-    core->geometry(geom);
 
+    if(GeometryQuery.size() == 0) {
+        qInfo(logCritical()) << "No geometry found with name" << coreModel;
+        delete core;
+        return nullptr;
+    }
+
+    QSqlRecord rec_geom(GeometryQuery.record());
+    Geometry geom(GeometryQuery.value(rec_geom.indexOf("model")).toString(),
+                  db::getCoreType(GeometryQuery.value(rec_geom.indexOf("type")).toString()),
+                  GeometryQuery.value(rec_geom.indexOf("h")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("inner_diam")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("outer_diam")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("c")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("b")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("f")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("a")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("e")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("d")).toDouble(),
+                  GeometryQuery.value(rec_geom.indexOf("g")).toDouble());
+    core->geometry(geom);
     return core;
 }
 
