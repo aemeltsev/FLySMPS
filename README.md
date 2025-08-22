@@ -78,7 +78,29 @@ FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback
 
 
 ## How to build
-TODO
+**Use terminal**
+- Go to the directory with the project
+```
+cd FLySMPS
+```
+- Generate Makefile with qmake
+```
+qmake FLySMPS.pro
+```
+- Build
+  - On Linux/macOS use make:
+  ```
+  make
+  ```
+  - On Windows. If you are using MinGW, run:
+  ```
+  mingw32-make
+  ```
+
+**Use Qt Creator**
+- Launch Qt Creator.
+- Select File -> Open File or Project.
+- Select .pro file and follow the instructions.
 
 
 ## Usage at a glance
