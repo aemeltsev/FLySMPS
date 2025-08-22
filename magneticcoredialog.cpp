@@ -15,24 +15,54 @@ MagneticCoreDialog::MagneticCoreDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MagneticCoreDialog)
 {
+    // Path to the log file for the near window
+    m_logPath = QCoreApplication::applicationDirPath() + "/core_dialog_" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + ".log";
+
+    // Open file for one time
+    m_logFile.setFileName(m_logPath);
+    if (!m_logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        qCritical() << "Failed to open dialog log file! Error:" << m_logFile.errorString();
+    }
+
     logToFile("Initializing MagneticCoreDialog...");
 
     ui->setupUi(this);
     m_model = new CoreTabModel(this);
     ui->tableView->setModel(m_model);
 
-    /* When the OK button is pressed (the clicked signal),
+    /* When the "OK" button is pressed (the clicked signal),
      * the sendId() slot processes it and sends the sendIdValue() signal,
      * which must be processed in the main window class, in the method setMagneticCoreDialog().*/
     connect(ui->OkButton, &QPushButton::clicked, this, &MagneticCoreDialog::sendId);
 
-    /*When the Append button is pressed...*/
+    /* When the "Append" button is pressed...*/
     connect(ui->AddButton, &QPushButton::clicked, this, &MagneticCoreDialog::onAppend);
 
-    /*When the Detail button is pressed...*/
+    /* When the "Detail" button is pressed (the clicked signal), if at least one row is selected,
+     * the id information is sent to the main form, the requestCore(id) signal.
+     * In the main form, this signal is caught and processed by
+     * the onCoreRequested() slot and the openCore(id) auxiliary method of
+     * the db::CoreManager object. The slot sends the sendCore(core) signal
+     * with the found object from the database, and in the dialog,
+     * the signal is processed by the handleCorelReceived slot and
+     * the applyCoreDataToForm(const db::CoreModel *core) auxiliary method. */
     connect(ui->DetailButton, &QPushButton::clicked, this, &MagneticCoreDialog::seeDetail);
 
-    /*When the Cancel button is pressed */
+    /* Connects the "Cancel" button click signal to the dialog's close slot.
+     * When the `ui->CancelButton` button (an object of type `QPushButton`) is clicked,
+     * the `clicked()` signal is emitted. This signal is connected to the `close()` slot of
+     * the current dialog (`MagneticCoreDialog`), which causes the dialog to close.
+     * If the dialog has unsaved data, it will be lost without warning.
+     * `MagneticCoreDialog` is a modal window, closing it unlocks the parent window.
+     * You can use `reject()` instead of `close()` if the dialog inherits `QDialog`.
+     * `reject()` emits the `finished(int)` signal with the code `QDialog::Rejected`,
+     * which is convenient for processing the result.
+     * If you need confirmation before closing, you can connect
+     * the button to a custom slot:
+     * ```cpp
+     * connect(ui->CancelButton, &QPushButton::clicked, this, &MagneticCoreDialog::onCancelButtonClicked);
+     * ```
+     * and implement `onCancelButtonClicked()` with the confirmation logic. */
     connect(ui->CancelButton, &QPushButton::clicked, this, &MagneticCoreDialog::close);
 
     logToFile("MagneticCoreDialog initialized successfully");
@@ -40,6 +70,9 @@ MagneticCoreDialog::MagneticCoreDialog(QWidget *parent) :
 
 MagneticCoreDialog::~MagneticCoreDialog()
 {
+    if (m_logFile.isOpen()) {
+        m_logFile.close();
+    }
     delete ui;
     // m_model удаляется автоматически, так как передан this как parent
 }
@@ -69,7 +102,7 @@ void MagneticCoreDialog::setCores(const QList<CoreTableItem> &core_items)
     m_model->appendCoreRows(core_items);
 
     // Log succes
-    logToFile(QString("Successfully appended %1 %2").arg(core_items.size()).arg("core items to the model."));
+    logToFile(QString("Successfully appended %1 %2").arg(core_items.size()).arg("core[s] item[s] to the model."));
 }
 
 void MagneticCoreDialog::applyCoreDataToForm(const db::CoreModel *core)
@@ -157,11 +190,13 @@ void MagneticCoreDialog::handleCorelReceived(const db::CoreModel *core)
     applyCoreDataToForm(core);
 }
 
-
+/*!
+ * \brief MagneticCoreDialog::onAppend - Append all information about transformer
+ * kernel(magnetic properties, geometry) in to the database.
+ */
 void MagneticCoreDialog::onAppend()
 {
 
-    //m_model->
     logToFile("use onAppend() method");
 }
 
@@ -236,23 +271,17 @@ void MagneticCoreDialog::seeDetail()
 
 void MagneticCoreDialog::logToFile(const QString &message)
 {
-    // Path to the log file for the near window
-    QString logPath = QCoreApplication::applicationDirPath() + "/core_dialog_" + QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + ".log";
-
     // Open the file for writing
-    QFile logFile(logPath);
-    if (logFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
-        QTextStream out(&logFile);
-
-        // Write time and message
+    if (m_logFile.isOpen()) {
+        QTextStream out(&m_logFile);
         out << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")
             << "\t[Select Core Dialog]\t"
             << message
             << endl;
+        out.flush(); // Принудительно сбрасываем буфер
 
-        logFile.close(); // Close the file
     } else {
         // If the file cannot be opened, send an error message to output
-        qCritical() << "Failed to open dialog log file! Error:" << logFile.errorString();
+        qCritical() << "Failed to open dialog log file! Error:" << m_logFile.errorString();
     }
 }

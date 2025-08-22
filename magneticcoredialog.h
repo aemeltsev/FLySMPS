@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QDebug>
+#include <QFile>
 
 #include <base/coremodel.h>
 #include "coretabmodel.h"
@@ -31,22 +32,23 @@ public:
     void applyCoreDataToForm(const db::CoreModel* core);
 
 signals:
-    // TODO: review this sentences
-    void sendIdValue(int value); // Сигнал: выбор ядра по id
-    void requestCore(int id); // Сигнал: запрос ядра по id
+    void sendIdValue(int value); // Signal: send the ID of the core with which will work in the main program
+    void requestCore(int id); // Signal: send the core ID so that the main program can find it in the database
 
 public slots:
-    void handleCorelReceived(const db::CoreModel* core); // Слот: получение ядра
+    void handleCorelReceived(const db::CoreModel* core); // Slot: take of the core object
 
 private slots:
-    void onAppend(); // Слот: добавление информации о ядре в базу данных
-    void sendId(); // Слот: выбор id в таблице представления, пересыдка сигналом для поиска в базе
-    void seeDetail(); // Слот: выбор id для уточнения параметров ядра
+    void onAppend(); // Slot: add kernel info to database
+    void sendId(); // Slot: select id in view table, send signal to search database
+    void seeDetail(); // Slot: select id to refine kernel parameters
 
 private:
     void logToFile(const QString &message);
     Ui::MagneticCoreDialog *ui;
     CoreTabModel *m_model;
+    QFile m_logFile;
+    QString m_logPath;
 };
 
 #endif // MAGNETICCOREDIALOG_H
