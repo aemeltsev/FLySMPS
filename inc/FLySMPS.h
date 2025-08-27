@@ -54,6 +54,7 @@ private slots:
     void setCoreAreaProp();
 
     void initTransCoreValues();
+    void initTransCoreValuesById(int id);
     void setTransPrimaryProp();
 
     void initTransWireds();
@@ -82,6 +83,7 @@ private slots:
     //void checkCorrect(const QString &text);
 
     void setMagneticCoreDialog();
+    void onCoreRequested(int id);
 
 signals:
     void initTransValuesComplete();
@@ -92,6 +94,7 @@ signals:
     void initOutFilterComplete();
     void initPowerStageModelComplete();
     void initOptoFeedbStageComplete();
+    void sendCore(const db::CoreModel*);
 
 private:
     void initOutDCData();

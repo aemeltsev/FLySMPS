@@ -488,6 +488,73 @@ void FLySMPS::initTransCoreValues()
     emit initTransCoreValuesComplete();
 }
 
+// TODO - Review this method
+void FLySMPS::initTransCoreValuesById(int id)
+{
+    qInfo(logInfo()) << "Get Id value from MagCoreDialog and create CoreModel object";
+    db::CoreModel* core = m_db_core_manager->openCore(id);
+    if (core != nullptr) {
+        qInfo(logInfo()) << "Successful create CoreModel object";
+    } else {
+        qInfo(logCritical()) << "CoreModel object Error";
+    }
+
+    if(core->type() == db::CoreType::P || core->type() == db::CoreType::RM ||
+       core->type() == db::CoreType::PQ || core->type() == db::CoreType::PM ||
+       core->type() == db::CoreType::EP || core->type() == db::CoreType::EPX ||
+       core->type() == db::CoreType::EPO || core->type() == db::CoreType::ETD ||
+       core->type() == db::CoreType::EQ || core->type() == db::CoreType::ER) {
+        // round airgap
+        qInfo(logInfo()) << "Add round airgap type";
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
+        ui->RGap->setChecked(true);
+    } else if(core->type() == db::CoreType::UU || core->type() == db::CoreType::EE ||
+              core->type() == db::CoreType::ELP || core->type() == db::CoreType::EFD ||
+              core->type() == db::CoreType::EV || core->type() == db::CoreType::UI) {
+        qInfo(logInfo()) << "Add rectangular airgap type";
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
+        ui->SGap->setChecked(true);
+    } 
+    
+    // TODO - About db::CoreType::TOR
+    // Add data from db object to solver model and to ui form
+    qInfo(logInfo()) << "Get Core Cross Sect Area and Windows Cross Section";
+    m_psolve->m_cs.core_cross_sect_area = core->effectiveMagneticCrossSection();
+    m_psolve->m_cs.core_wind_area = core->windowCrossSection();
+    qInfo(logInfo()) << "Write Core Cross Sect Area and Windows Cross Section values into form";
+    ui->AE->setText(QString::number(core->effectiveMagneticCrossSection()));
+    ui->WA->setText(QString::number(core->windowCrossSection()));
+    qInfo(logInfo()) << "Write values into form successful";
+
+    m_psolve->m_cs.core_vol = core->effectiveMagneticVolume();
+    m_psolve->m_cs.mean_leng_per_turn = core->lengthTurn();
+    m_psolve->m_cs.mean_mag_path_leng = core->effectiveMagneticPathLength();
+    m_psolve->m_cs.core_permeal = core->coreGapping().actualRelativePermeability;
+    m_psolve->m_md.D = core->geometry().D;
+    m_psolve->m_md.C = core->geometry().C;
+    m_psolve->m_md.F = core->geometry().F;
+    m_psolve->m_md.E = core->geometry().E;
+    ui->VE->setText(QString::number(core->effectiveMagneticVolume()));
+    ui->MLT->setText(QString::number(core->lengthTurn()));
+    ui->AE->setText(QString::number(core->effectiveMagneticPathLength()));
+    ui->MUE->setText(QString::number(core->coreGapping().actualRelativePermeability));
+    ui->Dsize->setText(QString::number(core->geometry().D));
+    ui->Csize->setText(QString::number(core->geometry().C));
+    ui->Fsize->setText(QString::number(core->geometry().F));
+    ui->Esize->setText(QString::number(core->geometry().E));
+
+    // TODO - Maybe reimplement this sentention more correct
+    /** If use core with round central kern */
+    if(m_psolve->m_fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP){
+        m_psolve->m_md.Diam = core->geometry().D;
+        //TODO Check error value, use QValidator
+    }
+    else{
+        m_psolve->m_md.Diam = 0.;
+    }
+    //emit initTransCoreValuesComplete();
+}
+
 void FLySMPS::setTransPrimaryProp()
 {
     ui->PrimaryNum->setNum(static_cast<int32_t>(m_psolve->m_ptpe->number_primary));
@@ -1207,10 +1274,23 @@ void FLySMPS::setMagneticCoreDialog()
     // Automatically delete on close
     magnetic_dialog->setAttribute(Qt::WA_DeleteOnClose);
     magnetic_dialog->setWindowTitle("Transfotmer Select");
-    magnetic_dialog->setModal(true);
+    //magnetic_dialog->setModal(true);
     magnetic_dialog->setCores(items);
-    if (magnetic_dialog->exec() == QDialog::Accepted) {
 
+    connect(magnetic_dialog, &MagneticCoreDialog::requestCore, this, &FLySMPS::onCoreRequested);
+    connect(this, &FLySMPS::sendCore, magnetic_dialog, &MagneticCoreDialog::handleCorelReceived);
+    connect(magnetic_dialog, &MagneticCoreDialog::sendIdValue, this, &FLySMPS::initTransCoreValuesById);
+
+    if (magnetic_dialog->exec() == QDialog::Accepted) {
+        //TODO
+    }
+}
+
+void FLySMPS::onCoreRequested(int id)
+{
+    db::CoreModel* core = m_db_core_manager->openCore(id);
+    if (core) {
+        emit sendCore(core);
     }
 }
 
