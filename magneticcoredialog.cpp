@@ -232,6 +232,7 @@ void MagneticCoreDialog::sendId()
     QModelIndex cellIndex = m_model->index(row, 0);
 
     int value = m_model->data(cellIndex, Qt::DisplayRole).toInt();
+    logToFile(QString("Send id value = %1 to main form").arg(value));
     emit sendIdValue(value);
     accept();
 }
