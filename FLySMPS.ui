@@ -67,7 +67,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -1478,14 +1478,27 @@
      <widget class="QPushButton" name="UpdateCoreParamPushButton">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>210</x>
         <y>410</y>
         <width>80</width>
-        <height>22</height>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
        <string>Update</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="TransSelectPushButton">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>410</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Transfotmer Select</string>
       </property>
      </widget>
     </widget>
