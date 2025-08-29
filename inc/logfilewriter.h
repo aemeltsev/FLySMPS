@@ -31,7 +31,6 @@ public:
                                    qint64 maxsize = static_cast<qint64>(FILE_MAX_SIZE));
 
     // Other public methods
-
     void abort();
 
 signals:

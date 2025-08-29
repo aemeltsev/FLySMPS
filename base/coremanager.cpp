@@ -422,11 +422,11 @@ bool db::CoreManager::createTables()
                    "material TEXT,"
                    "gapping TEXT,"
                    "resistance_factor REAL,"
-                   "effective_magnetic_volume INTEGER,"
-                   "window_cross_section REAL,"
-                   "effective_magnetic_path_length REAL,"
-                   "effective_magnetic_cross_section REAL,"
-                   "lengh_turn REAL,"
+                   "effective_magnetic_volume INTEGER,"       // Vc/Ve
+                   "window_cross_section REAL,"               // Wa/An
+                   "effective_magnetic_path_length REAL,"     // l_c/l_e
+                   "effective_magnetic_cross_section REAL,"   // Ac/Ae
+                   "lengh_turn REAL,"                         // l_t/l_n
                    "geometry TEXT,"
                    "PRIMARY KEY(id AUTOINCREMENT),"
                    "FOREIGN KEY(gapping) REFERENCES gapping(model) ON DELETE CASCADE,"

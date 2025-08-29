@@ -79,7 +79,7 @@ struct Geometry
     //GeometryToroidal - H, innerDiam, outerDiam
     //GeometryUU - D, F, E, G
     //GeometryEE - C, B, F, A, E, D
-    //eometryETD - C, B, F, A, E, D
+    //GeometryETD - C, B, F, A, E, D
     double H;
     double innerDiam;
     double outerDiam;
@@ -235,4 +235,5 @@ private:
 };
 
 } // namespace db
+
 #endif // COREMODEL_H
