@@ -12,6 +12,8 @@ struct CoreTableItem
     QString m_geom;
     QString m_mat;
 
+    CoreTableItem(){}
+
     CoreTableItem(bool gapped, int id, QString model, QString geom, QString mat)
         :m_gapped(gapped)
         ,m_id(id)
@@ -47,7 +49,7 @@ private:
 
     bool isHaveDuplicate(const int id);
 
-    enum class Column
+    enum Column
     {
         ID = 0,
         MODEL,

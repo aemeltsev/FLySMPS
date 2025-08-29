@@ -52,7 +52,7 @@ bool CoreTabModel::setData(const QModelIndex &index, const QVariant &value, int 
         return false;
     }
 
-    m_cores[index.row()][Column(index.column())] = value;
+    //m_cores[index.row()][Column(index.column())] = value;
     emit dataChanged(index, index);
     return true;
 }
