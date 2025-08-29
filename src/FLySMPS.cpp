@@ -19,20 +19,40 @@
 
 #include "inc/FLySMPS.h"
 #include "inc/loggercategories.h"
+//#include "inc/qcustomplot.h"
 
-FLySMPS::FLySMPS(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::FLySMPS),
-    m_psolve(new PowSuppSolve)
+FLySMPS::FLySMPS(QWidget *parent)
+    :QMainWindow(parent)
+    ,ui(new Ui::FLySMPS)
+    //,m_psolve(new PowSuppSolve)
 {
     ui->setupUi(this);
 
+    m_psolve = new PowSuppSolve();
+    m_db_core_manager = new db::CoreManager();
+    //m_magnetic_dialog = new MagneticCoreDialog(this);
+
+    qInfo(logInfo()) << "Initialise solver - OK";
+    qInfo(logInfo()) << "Initialise database core manager - OK";
+
     m_sthread = new QThread();
+    m_base_thread = new QThread();
+
+    qInfo(logInfo()) << "Create thread for main application - OK";
+    qInfo(logInfo()) << "Create thread for db operation - OK";
+
     qRegisterMetaType<QVector<double>>("QVector<double>");
     qRegisterMetaType<QHash<QString, double>>("QHash<QString, double>");
+    qRegisterMetaType<db::CoreModel>("db::CoreModel");
+    qRegisterMetaType<db::CoreModel*>("db::CoreModel*");
 
     initInputValues();
 
+    qInfo(logInfo()) << "Initialize default values - OK";
+
+    /* By default use inductance factor for primary side estimate.
+     * And use rectangular gap for specific core geometry.
+     */
     ui->InductanceFact->setReadOnly(ui->ALUse->checkState() == Qt::Unchecked);
     ui->RGDiam->setReadOnly(ui->RGap->checkState() == Qt::Unchecked);
 
@@ -41,7 +61,12 @@ FLySMPS::FLySMPS(QWidget *parent) :
     initSSMplot();
     initFCPlot();
 
+    qInfo(logInfo()) << "Initialize input design parameters - OK";
+
     m_psolve->moveToThread(m_sthread);
+    m_db_core_manager->moveToThread(m_base_thread);
+
+    qInfo(logInfo()) << "Take the objects and move them into the thread - OK";
 
     connect(ui->InpCalcPushButton, &QPushButton::clicked, m_psolve.data(), &PowSuppSolve::calcInputNetwork);
     connect(m_psolve.data(), &PowSuppSolve::finishedCalcInputNetwork, this, &FLySMPS::setInputNetwork);
@@ -88,25 +113,45 @@ FLySMPS::FLySMPS(QWidget *parent) :
     connect(m_psolve.data(), &PowSuppSolve::newOCFDataHash, this, &FLySMPS::setOptoFeedbStage);
 
     connect(ui->InpUpdatePushButton, &QPushButton::clicked, this, &FLySMPS::setUpdateInputValues);
+
+    connect(ui->TransSelectPushButton, &QPushButton::clicked, this, &FLySMPS::setMagneticCoreDialog);
+
+    // Start threads
     m_sthread->start();
+    m_base_thread->start();
+    qInfo(logInfo()) << "Start threads: for solver" << m_sthread->currentThreadId() << "and for database" << m_base_thread->currentThreadId() << "- OK";
 }
 
 FLySMPS::~FLySMPS()
 {
-    if(m_sthread->isRunning()) {
+    if(m_sthread->isRunning() && m_base_thread->isRunning()) {
+        // Terminate threads
         m_sthread->quit();
+        m_base_thread->quit();
     }
+    // Delete objects
+    m_psolve->deleteLater();
+    m_db_core_manager->deleteLater();
+
+    // Delete threads
     m_sthread->deleteLater();
+    m_base_thread->deleteLater();
 }
 
 void FLySMPS::initInputValues()
 {
     m_psolve->m_indata.input_volt_ac_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmax->text())));
-    qInfo(logInfo()) << (QString("Input AC maximaly=\"%1\"").arg(m_psolve->m_indata.input_volt_ac_max)).toStdString().c_str();
     m_psolve->m_indata.input_volt_ac_min = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VACmin->text())));
     m_psolve->m_indata.freq_line = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->FLine->text())));
     m_psolve->m_indata.freq_switch = static_cast<uint32_t>(convertToValues(static_cast<QString>(ui->FSw->text())));
     m_psolve->m_indata.temp_amb = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->Tamb->text())));
+
+    // logging
+    qInfo(logInfo()) << (QString("Input AC max value=\"%1\"V").arg(m_psolve->m_indata.input_volt_ac_max)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Input AC min value=\"%1\"V").arg(m_psolve->m_indata.input_volt_ac_min)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Input AC frequency of power line=\"%1\"Hz").arg(m_psolve->m_indata.freq_line)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Input frequency of power switch=\"%1\"Hz").arg(m_psolve->m_indata.freq_switch)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Ambient temperature=\"%1\"C").arg(m_psolve->m_indata.freq_switch)).toStdString().c_str();
 
     m_psolve->m_indata.volt_out_one = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VOut1->text())));
     m_psolve->m_indata.curr_out_one = static_cast<float>(convertToValues(static_cast<QString>(ui->IOut1->text())));
@@ -119,9 +164,19 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_out_aux = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VAux->text())));
     m_psolve->m_indata.curr_out_aux = static_cast<float>(convertToValues(static_cast<QString>(ui->IAux->text())));
 
+    // logging
+    qInfo(logInfo()) << (QString("First output voltage=\"%1\"V and current==\"%2\"A values").arg(m_psolve->m_indata.volt_out_one).arg(m_psolve->m_indata.curr_out_one)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Second output voltage=\"%1\"V and current==\"%2\"A values").arg(m_psolve->m_indata.volt_out_two).arg(m_psolve->m_indata.curr_out_two)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Third output voltage=\"%1\"V and current==\"%2\"A values").arg(m_psolve->m_indata.volt_out_three).arg(m_psolve->m_indata.curr_out_three)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Fourth output voltage=\"%1\"V and current==\"%2\"A values").arg(m_psolve->m_indata.volt_out_four).arg(m_psolve->m_indata.curr_out_four)).toStdString().c_str();
+    qInfo(logInfo()) << (QString("Auxulary voltage=\"%1\"V and current==\"%2\"A values").arg(m_psolve->m_indata.volt_out_aux).arg(m_psolve->m_indata.curr_out_aux)).toStdString().c_str();
+
     m_psolve->m_indata.eff = convertToValues(static_cast<QString>(ui->Eff->text()));
     m_psolve->m_indata.mrgn = static_cast<float>(convertToValues(static_cast<QString>(ui->OutPwrMrg->text())));
     m_psolve->m_indata.power_out_max = outPwr(m_psolve->m_indata.mrgn);
+
+    // logging
+    qInfo(logInfo()) << (QString("Efficiency of power converter is=\"%1\" with margin=\"%2\" and maximum output power=\"%3\"W").arg(m_psolve->m_indata.eff).arg(m_psolve->m_indata.mrgn).arg(m_psolve->m_indata.power_out_max)).toStdString().c_str();
 
     m_psolve->m_indata.refl_volt_max = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->ReflVoltage->text())));
     m_psolve->m_indata.voltage_spike = static_cast<int16_t>(convertToValues(static_cast<QString>(ui->VSpike->text())));
@@ -130,6 +185,9 @@ void FLySMPS::initInputValues()
     m_psolve->m_indata.volt_diode_drop_sec = convertToValues(static_cast<QString>(ui->VoltDropSec->text()));
     m_psolve->m_indata.volt_diode_drop_bridge = convertToValues(static_cast<QString>(ui->VoltBridgeDrop->text()));
     m_psolve->m_indata.leakage_induct = convertToValues(static_cast<QString>(ui->LeakageInduct->text()));
+
+    // logging
+    qInfo(logInfo()) << (QString("Reflected voltage=\"%1\"V, Converter ripple factor=\"%1\"").arg(m_psolve->m_indata.refl_volt_max).arg(m_psolve->m_indata.ripple_fact)).toStdString().c_str();
 }
 
 void FLySMPS::initLCPlot()
@@ -428,6 +486,73 @@ void FLySMPS::initTransCoreValues()
         m_psolve->m_md.Diam = 0.;
     }
     emit initTransCoreValuesComplete();
+}
+
+// TODO - Review this method
+void FLySMPS::initTransCoreValuesById(int id)
+{
+    qInfo(logInfo()) << "Get Id value from MagCoreDialog and create CoreModel object";
+    db::CoreModel* core = m_db_core_manager->openCore(id);
+    if (core != nullptr) {
+        qInfo(logInfo()) << "Successful create CoreModel object";
+    } else {
+        qInfo(logCritical()) << "CoreModel object Error";
+    }
+
+    if(core->type() == db::CoreType::P || core->type() == db::CoreType::RM ||
+       core->type() == db::CoreType::PQ || core->type() == db::CoreType::PM ||
+       core->type() == db::CoreType::EP || core->type() == db::CoreType::EPX ||
+       core->type() == db::CoreType::EPO || core->type() == db::CoreType::ETD ||
+       core->type() == db::CoreType::EQ || core->type() == db::CoreType::ER) {
+        // round airgap
+        qInfo(logInfo()) << "Add round airgap type";
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP;
+        ui->RGap->setChecked(true);
+    } else if(core->type() == db::CoreType::UU || core->type() == db::CoreType::EE ||
+              core->type() == db::CoreType::ELP || core->type() == db::CoreType::EFD ||
+              core->type() == db::CoreType::EV || core->type() == db::CoreType::UI) {
+        qInfo(logInfo()) << "Add rectangular airgap type";
+        m_psolve->m_fsag = FBPT_SHAPE_AIR_GAP::RECT_AIR_GAP;
+        ui->SGap->setChecked(true);
+    } 
+    
+    // TODO - About db::CoreType::TOR
+    // Add data from db object to solver model and to ui form
+    qInfo(logInfo()) << "Get Core Cross Sect Area and Windows Cross Section";
+    m_psolve->m_cs.core_cross_sect_area = core->effectiveMagneticCrossSection();
+    m_psolve->m_cs.core_wind_area = core->windowCrossSection();
+    qInfo(logInfo()) << "Write Core Cross Sect Area and Windows Cross Section values into form";
+    ui->AE->setText(QString::number(core->effectiveMagneticCrossSection()));
+    ui->WA->setText(QString::number(core->windowCrossSection()));
+    qInfo(logInfo()) << "Write values into form successful";
+
+    m_psolve->m_cs.core_vol = core->effectiveMagneticVolume();
+    m_psolve->m_cs.mean_leng_per_turn = core->lengthTurn();
+    m_psolve->m_cs.mean_mag_path_leng = core->effectiveMagneticPathLength();
+    m_psolve->m_cs.core_permeal = core->coreGapping().actualRelativePermeability;
+    m_psolve->m_md.D = core->geometry().D;
+    m_psolve->m_md.C = core->geometry().C;
+    m_psolve->m_md.F = core->geometry().F;
+    m_psolve->m_md.E = core->geometry().E;
+    ui->VE->setText(QString::number(core->effectiveMagneticVolume()));
+    ui->MLT->setText(QString::number(core->lengthTurn()));
+    ui->AE->setText(QString::number(core->effectiveMagneticPathLength()));
+    ui->MUE->setText(QString::number(core->coreGapping().actualRelativePermeability));
+    ui->Dsize->setText(QString::number(core->geometry().D));
+    ui->Csize->setText(QString::number(core->geometry().C));
+    ui->Fsize->setText(QString::number(core->geometry().F));
+    ui->Esize->setText(QString::number(core->geometry().E));
+
+    // TODO - Maybe reimplement this sentention more correct
+    /** If use core with round central kern */
+    if(m_psolve->m_fsag == FBPT_SHAPE_AIR_GAP::ROUND_AIR_GAP){
+        m_psolve->m_md.Diam = core->geometry().D;
+        //TODO Check error value, use QValidator
+    }
+    else{
+        m_psolve->m_md.Diam = 0.;
+    }
+    qInfo(logInfo()) << "Complete write the data of a core properties";
 }
 
 void FLySMPS::setTransPrimaryProp()
@@ -1139,6 +1264,34 @@ void FLySMPS::setUpdateInputValues()
             qInfo(logWarning()) << (QString("Leakage inductance - Incorrect input value")).toStdString().c_str();
         m_psolve->m_indata.leakage_induct = tmp;
     });
+}
+
+void FLySMPS::setMagneticCoreDialog()
+{
+    QList<CoreTableItem> items = m_db_core_manager->getListDataForTable();
+    // Create dynamically
+    MagneticCoreDialog *magnetic_dialog = new MagneticCoreDialog(this);
+    // Automatically delete on close
+    magnetic_dialog->setAttribute(Qt::WA_DeleteOnClose);
+    magnetic_dialog->setWindowTitle("Transfotmer Select");
+    //magnetic_dialog->setModal(true);
+    magnetic_dialog->setCores(items);
+
+    connect(magnetic_dialog, &MagneticCoreDialog::requestCore, this, &FLySMPS::onCoreRequested);
+    connect(this, &FLySMPS::sendCore, magnetic_dialog, &MagneticCoreDialog::handleCorelReceived);
+    connect(magnetic_dialog, &MagneticCoreDialog::sendIdValue, this, &FLySMPS::initTransCoreValuesById);
+
+    if (magnetic_dialog->exec() == QDialog::Accepted) {
+        //TODO
+    }
+}
+
+void FLySMPS::onCoreRequested(int id)
+{
+    db::CoreModel* core = m_db_core_manager->openCore(id);
+    if (core) {
+        emit sendCore(core);
+    }
 }
 
 double FLySMPS::convertToValues(const QString &input)

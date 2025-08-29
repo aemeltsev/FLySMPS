@@ -25,8 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+#INCLUDEPATH += /
+
 SOURCES += \
+    base/coremanager.cpp \
     base/dbmanager.cpp \
+    base/coremodel.cpp \
+    base/singleton.cpp \
+    coretabmodel.cpp \
+    magneticcoredialog.cpp \
     src/FLySMPS.cpp \
     src/bulkcap.cpp \
     src/capout.cpp \
@@ -39,11 +46,16 @@ SOURCES += \
     src/main.cpp \
     src/outfilter.cpp \
     src/powsuppsolve.cpp \
-    src/qcustomplot.cpp \
+    #src/qcustomplot.cpp \
     src/swmosfet.cpp \
+    qcustomplot/qcustomplot.cpp \
 
 HEADERS += \
+    base/coremanager.h \
+    base/coremodel.h \
     base/dbmanager.h \
+    base/singleton.h \
+    coretabmodel.h \
     inc/FLySMPS.h \
     inc/bulkcap.h \
     inc/capout.h \
@@ -55,11 +67,14 @@ HEADERS += \
     inc/loggercategories.h \
     inc/outfilter.h \
     inc/powsuppsolve.h \
-    inc/qcustomplot.h \
+    #inc/qcustomplot.h \
     inc/swmosfet.h \
+    magneticcoredialog.h \
+    qcustomplot/qcustomplot.h \
 
 FORMS += \
-        FLySMPS.ui
+        FLySMPS.ui \
+        magneticcoredialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

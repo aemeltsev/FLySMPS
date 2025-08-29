@@ -67,7 +67,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="InpData">
      <attribute name="title">
@@ -1425,7 +1425,7 @@
        <rect>
         <x>710</x>
         <y>80</y>
-        <width>73</width>
+        <width>91</width>
         <height>20</height>
        </rect>
       </property>
@@ -1438,7 +1438,7 @@
        <rect>
         <x>710</x>
         <y>54</y>
-        <width>59</width>
+        <width>71</width>
         <height>20</height>
        </rect>
       </property>
@@ -1454,7 +1454,7 @@
        <rect>
         <x>710</x>
         <y>27</y>
-        <width>60</width>
+        <width>71</width>
         <height>20</height>
        </rect>
       </property>
@@ -1478,14 +1478,27 @@
      <widget class="QPushButton" name="UpdateCoreParamPushButton">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>210</x>
         <y>410</y>
         <width>80</width>
-        <height>22</height>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
        <string>Update</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="TransSelectPushButton">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>410</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Transfotmer Select</string>
       </property>
      </widget>
     </widget>
@@ -4798,7 +4811,7 @@
   <customwidget>
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
-   <header location="global">qcustomplot.h</header>
+   <header>qcustomplot/qcustomplot.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

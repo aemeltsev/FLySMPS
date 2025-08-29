@@ -22,11 +22,15 @@ class LogFileWriter : public QObject
 {
     Q_OBJECT
 public:
-    explicit LogFileWriter(QString prefix = "",
-                           qint64 maxsize = static_cast<qint64>(FILE_MAX_SIZE),
-                           QObject *parent = nullptr);
-    ~LogFileWriter();
-    void push(QDateTime timestamp, QtMsgType type, QString category, QString msg);
+    // Remove the constructor to prevent direct instantiation
+    LogFileWriter(const LogFileWriter&) = delete;
+    LogFileWriter& operator=(const LogFileWriter&) = delete;
+
+    // Method for getting singleton
+    static LogFileWriter* instance(QString prefix = "",
+                                   qint64 maxsize = static_cast<qint64>(FILE_MAX_SIZE));
+
+    // Other public methods
     void abort();
 
 signals:
@@ -34,8 +38,18 @@ signals:
 
 public slots:
     void main_loop();
+    void push(QDateTime timestamp, QtMsgType type, QString category, QString msg);
 
 private:
+    // Private constructor and destructor
+    explicit LogFileWriter(QString prefix = "",
+                           qint64 maxsize = static_cast<qint64>(FILE_MAX_SIZE),
+                           QObject *parent = nullptr);
+    ~LogFileWriter();
+
+    // Static variable for singleton
+    static LogFileWriter* m_instance;
+
     struct log_quantum
     {
         QDateTime m_timestamp;

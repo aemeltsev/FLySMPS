@@ -38,9 +38,11 @@ public:
                 float fl = 50.0f)
         :ac_inp_volt_max(max_volt)
         ,ac_inp_volt_min(min_volt)
-        ,efficiency(eff)
-        ,pow_max_out(pout)
+        //,efficiency(eff)
+        //,pow_max_out(pout)
         ,freq_line(fl)
+        ,cur_max_load(static_cast<double>(pout) / (eff * min_volt))
+        ,cur_min_load(static_cast<double>(pout) / (eff * max_volt))
     {}
 
     /**
@@ -115,7 +117,7 @@ public:
      */
     double IDiodeRMSTot() const
     {
-        return (ILoadAVG()*qSqrt(2.))/(qSqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
+        return (ILoadAVG() * M_SQRT2)/(qSqrt(3.*static_cast<double>(freq_line)*DiodeConductTime()));
     }
 
     /**
@@ -124,7 +126,7 @@ public:
      */
     double MinPeakInVoltage() const
     {
-        return ac_inp_volt_min*qSqrt(2.);
+        return ac_inp_volt_min * M_SQRT2;
     }
 
     /**
@@ -133,21 +135,21 @@ public:
      */
     double MaxPeakInVoltage() const
     {
-        return  ac_inp_volt_max*qSqrt(2.);
+        return  ac_inp_volt_max * M_SQRT2;
     }
 
 private:
     int16_t ac_inp_volt_max;
     int16_t ac_inp_volt_min;
-    float efficiency;
-    float pow_max_out;
+    //float efficiency;
+    //float pow_max_out;
     float freq_line;
 
-    double cap_char_time; // the capacitor total charging time
-    float cap_peak_curr; // bulk capacitor peak current
+    double cap_char_time = 0.0; // the capacitor total charging time
+    float cap_peak_curr = 0.0f; // bulk capacitor peak current
 
-    double cur_max_load = static_cast<double>(pow_max_out)/static_cast<double>((efficiency*ac_inp_volt_min)); // load maximum current
-    double cur_min_load = static_cast<double>(pow_max_out)/static_cast<double>((efficiency*ac_inp_volt_max)); // load minimum current
+    double cur_max_load; // load maximum current
+    double cur_min_load; // load minimum current
 
 };
 #endif // DIODEBRIDGE_H
