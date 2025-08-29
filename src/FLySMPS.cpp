@@ -552,7 +552,7 @@ void FLySMPS::initTransCoreValuesById(int id)
     else{
         m_psolve->m_md.Diam = 0.;
     }
-    //emit initTransCoreValuesComplete();
+    qInfo(logInfo()) << "Complete write the data of a core properties";
 }
 
 void FLySMPS::setTransPrimaryProp()
