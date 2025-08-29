@@ -102,6 +102,8 @@ qmake FLySMPS.pro
 - Select File -> Open File or Project.
 - Select .pro file and follow the instructions.
 
+**Use .sh script**
+TODO
 
 ## Usage at a glance
 1. **Input Specifications**:
