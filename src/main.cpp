@@ -29,28 +29,35 @@
 QThread *log_thread;
 LogFileWriter *log_writer;
 
-//Message handler - qDebug, qInfo and etc
+/*//Message handler - qDebug, qInfo and etc
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     log_writer->push(QDateTime::currentDateTime(), type, QString(context.category), msg);
-}
+}*/
 
 int main(int argc, char *argv[])
 {
-    log_thread = new QThread();
-    log_writer = new LogFileWriter("fsmps-logging-out", static_cast<qint64>(FILE_MAX_SIZE));
+    // Регистрируем QtMsgType для передачи через потоки
+    qRegisterMetaType<QtMsgType>("QtMsgType");
 
+    // Run the logger in a separate thread
+    log_thread = new QThread();
+    //log_writer = new LogFileWriter("fsmps-logging-out", static_cast<qint64>(FILE_MAX_SIZE));
+    log_writer = LogFileWriter::instance("fsmps-logging-out", static_cast<qint64>(FILE_MAX_SIZE));
     log_writer->moveToThread(log_thread);
-    QObject::connect(log_thread, SIGNAL(started()), log_writer, SLOT(main_loop()));
+    QObject::connect(log_thread, &QThread::started, log_writer, &LogFileWriter::main_loop);
     /** The LogFileWriter class uses its main_loop() loop,
      *  i.e. does not exit this function -> the thread event loop is blocked.
      *  Therefore, you need to use Qt::DirectConnection.
      */
-    QObject::connect(log_writer, SIGNAL(finished()), log_thread, SLOT(quit()), Qt::DirectConnection);
+    QObject::connect(log_writer, &LogFileWriter::finished, log_thread, &QThread::quit, Qt::DirectConnection);
     log_thread->start();
 
-    //Set handler
-    qInstallMessageHandler(messageHandler);
+    // Set global handler BEFORE creating any windows
+    qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, const QString &msg){
+        QDateTime timestamp = QDateTime::currentDateTime();
+        LogFileWriter::instance()->push(timestamp, type, context.category, msg);
+    });
 
     QApplication a(argc, argv);
     FLySMPS w;
@@ -63,7 +70,7 @@ int main(int argc, char *argv[])
     log_thread->wait(5000); //Better to limit the waiting time
 
     delete log_thread;
-    delete log_writer;
+    //delete log_writer;
 
     return a.exec();
 }
