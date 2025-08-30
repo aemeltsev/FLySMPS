@@ -50,13 +50,13 @@ FLYSMPS simplifies the **design**, **analysis**, and **optimization** of flyback
 ![FLYSMPS screenshot](https://github.com/aemeltsev/FLySMPS/blob/master/img/transf_select.png)
 
 
-## Roadmap & TODO
+## Current Roadmap & TODO
 | Task                                      | Status          | Priority |
 |-------------------------------------------|-----------------|----------|
-| Add a database to store parameters        | ⏳ In Progress   | High     |
-| Infrastructure for working with the database | ⏳ In Progress   | High     |
-| Modal win. for writing/selecting core and geometry | ⏳ In Progress   | High     |
-| MVC controller for working with the modal window | ⏳ In Progress   | High     |
+| Add a database to store parameters        | ✅ Done   | High     |
+| Infrastructure for working with the database | ✅ Done   | High     |
+| Modal win. for writing/selecting core and geometry | ✅ Done   | High     |
+| MVC controller for working with the modal window | ✅ Done   | High     |
 | RC-snubber for secondary side             | ❌ Not Started   | High     |
 | Tests                                     | ❌ Not Started   | High     |
 | Logging                                   | ⏳ In Progress   | High     |

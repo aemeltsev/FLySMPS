@@ -11,7 +11,7 @@
 set -e  # Exit on error
 
 # --- Config ---
-QT_PATH="Qt5.12.12/5.12.12/gcc_64"         # Path to installed Qt (replace by your path)
+QT_PATH="your/path_to_Qt/gcc"         # Path to installed Qt (replace by your path)
 QT_DIR="$HOME/$QT_PATH"                    # Path to Qt directory
 PROJECT_DIR="$(pwd)"                       # Current directory as default
 BUILD_TYPE="Debug"                         # Default build type
